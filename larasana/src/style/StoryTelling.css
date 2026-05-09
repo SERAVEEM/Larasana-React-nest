@@ -1,0 +1,325 @@
+.storytelling-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #fff;
+  overflow: hidden;
+
+}
+
+/* ── Vertical grid lines ── */
+.st-line {
+  position: absolute;
+  bottom: 73px;
+  height: 750px;
+  width: 1px;
+  background: #7B7B7B;
+  z-index: 1;
+  pointer-events: none;
+  /* smooth fade when a hover zone covers it */
+  transition: opacity 0.5s ease;
+}
+
+.st-line--left {
+  left: calc(50% - 8.125rem);
+}
+
+.st-line--right {
+  left: calc(75% - 3.125rem);
+}
+
+/* Hide the left line when STORY zone is hovered */
+.st-hover-zone--story:hover~.st-line--left,
+/* Hide right line when IMPACT zone is hovered */
+.st-hover-zone--impact:hover~.st-line--right {
+  opacity: 0;
+}
+
+/* ── Left column: Title + Description ── */
+.st-left-col {
+  position: absolute;
+  right: auto;
+  top: 0;
+  width: calc(50% - 8.125rem - 6.4375rem);
+  z-index: 2;
+}
+
+.st-title {
+  margin-left: 6.4375rem;
+  margin-top: 25.125rem;
+  color: #000;
+  font-family: 'Gelasio', Georgia, serif;
+  font-size: 5rem;
+  font-weight: 400;
+  line-height: 115%;
+  letter-spacing: -0.04rem;
+  margin-bottom: 1.625rem;
+}
+
+.st-description {
+  margin-left: 6.875rem;
+  margin-top: 0rem;
+  color: #000;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.375rem;
+  font-weight: 400;
+  line-height: 150%;
+  text-shadow: none;
+}
+
+/* HOVER EFFECT PICTURE*/
+.st-hover-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  cursor: pointer;
+}
+
+/* STORY zone: from left line to right line */
+.st-hover-zone--story {
+  left: calc(50% - 8.125rem);
+  right: calc(25% + 3.125rem);
+  /* = 100% - (75% - 3.125rem) */
+}
+
+/* IMPACT zone: from right line to right edge */
+.st-hover-zone--impact {
+  left: calc(75% - 3.125rem);
+  right: 0;
+}
+
+/* ── Static column label (visible by default) ── */
+.st-col-label {
+  position: absolute;
+  font-family: 'GFS Didot', 'Gelasio', Georgia, serif;
+  font-size: 3.75rem;
+  font-weight: 400;
+  color: #000;
+  text-transform: uppercase;
+  text-shadow: none;
+  top: 37.3125rem;
+  transition: color 0.45s ease, opacity 0.45s ease;
+  pointer-events: none;
+  z-index: 4;
+  white-space: nowrap;
+}
+
+.st-col-label--story {
+  /* centred inside the STORY zone */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.st-col-label--impact {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* When the zone is hovered, the static label fades out
+   (the animated label inside the card takes over) */
+.st-hover-zone:hover .st-col-label {
+  opacity: 0;
+}
+
+
+.st-card {
+  position: absolute;
+  top: calc(100% - 46.875rem - 4.5625rem);
+  /* aligns with line top: bottom:4.5625rem, h:46.875rem */
+  width: 31rem;
+  height: 46.9375rem;
+  overflow: hidden;
+  z-index: 5;
+  border-radius: 1.5rem;
+
+  /* Hidden at rest via clip-path — reveals from the anchored edge */
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* STORY card: anchored at left (= left dividing line), grows rightward */
+.st-card--story {
+  left: 0;
+}
+
+/* IMPACT card: anchored at left:0 of its zone (= right dividing line), grows rightward */
+.st-card--impact {
+  left: 0;
+  /* Mirror clip-path so it reveals from the LEFT (the right dividing line) */
+  clip-path: inset(0 100% 0 0);
+}
+
+/* Expand both cards on hover */
+.st-hover-zone:hover .st-card {
+  clip-path: inset(0 0% 0 0);
+}
+
+/* ── Card image ── */
+.st-card__img {
+  width: 31rem;
+  height: 46.9375rem;
+  object-fit: cover;
+  display: block;
+  /* keep image stationary while the container clips */
+  flex-shrink: 0;
+}
+
+/* ── Dark gradient overlay on the card ── */
+.st-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0) 30%,
+      rgba(0, 0, 0, 0.72) 100%);
+  /* Content anchored at exact position: left 14.6875rem, top 31.25rem from card top-left */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  /* Use absolute children positioning */
+  padding: 0;
+}
+
+/* ── Text content group — absolutely positioned inside the overlay ── */
+.st-card__content {
+  position: absolute;
+  left: 14.6875rem;
+  top: 31.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Animated title inside card: descends from ABOVE ── */
+.st-card__title {
+  font-family: 'GFS Didot', 'Gelasio', Georgia, serif;
+  font-size: 3.75rem;
+  font-weight: 400;
+  line-height: 115%;
+  color: #fff;
+  text-transform: uppercase;
+  text-shadow: none;
+  white-space: nowrap;
+
+  /* Starts 3.75rem ABOVE final position, then descends down */
+  opacity: 0;
+  transform: translateY(-3.75rem);
+  transition:
+    opacity 0.55s ease 0.3s,
+    transform 0.55s cubic-bezier(0.33, 1, 0.68, 1) 0.3s;
+}
+
+.st-hover-zone:hover .st-card__title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Subtitle inside card ── */
+.st-card__subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 115%;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-shadow: none;
+
+  opacity: 0;
+  transform: translateY(-1.25rem);
+  transition:
+    opacity 0.45s ease 0.5s,
+    transform 0.45s ease 0.5s;
+}
+
+.st-hover-zone:hover .st-card__subtitle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── CTA arrow link ── */
+.st-card__cta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  /* medium */
+  line-height: 115%;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-shadow: none;
+
+  opacity: 0;
+  transform: translateY(-0.75rem);
+  transition:
+    opacity 0.4s ease 0.65s,
+    transform 0.4s ease 0.65s;
+}
+
+.st-hover-zone:hover .st-card__cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.st-card__cta-line {
+  display: inline-block;
+  width: 2.5rem;
+  height: 0.0625rem;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+@media (max-height: 60rem) {
+  .st-line {
+    height: 25rem;
+  }
+
+  .st-left-col {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .st-title {
+    position: relative;
+    margin-left: 6.575rem;
+    padding-top: 1rem;
+    font-size: 5rem;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .st-description {
+    margin-left: 6.875rem;
+    margin-top: 0rem;
+    color: #000;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.375rem;
+    font-weight: 400;
+    line-height: 150%;
+    text-shadow: none;
+  }
+
+  .st-card__title {
+    bottom: 30rem;
+  }
+
+  .st-line {
+    height: 40rem;
+    bottom: 5rem;
+  }
+
+  .st-card {
+    top: calc(100% - 36.875rem - 4.5625rem);
+    height: 40rem;
+  }
+
+  .st-card__img {
+    height: 40rem;
+  }
+}
