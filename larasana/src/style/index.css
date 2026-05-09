@@ -1,0 +1,458 @@
+/* ===== Google Fonts ===== */
+@import url('https://fonts.googleapis.com/css2?family=GFS+Didot&family=Inter:wght@300;400;500;600&display=swap');
+
+@font-face {
+  font-family: 'Linotype Didot Bold';
+  src: url('../assets/fonts/Linotype Didot Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* ===== CSS Reset & Base ===== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #fff;
+  color: #1a1a1a;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+}
+
+body::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+.navbar-wrapper {
+  position: fixed;
+  top: 5.625rem;
+  width: 100%;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  padding: 0.75rem 2rem;
+  border-radius: 3.125rem;
+  gap: 34.375rem;
+
+  /* No glass effect initially */
+  background: transparent;
+  border: 0.09375rem solid transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  transition: all 0.5s ease;
+}
+
+.navbar--scrolled {
+  gap: 17.1875rem;
+  /* Glass effect border container */
+  background: linear-gradient(-45deg,
+      rgba(255, 255, 255, 0.80) 0%,
+      rgba(255, 255, 255, 0.35) 100%);
+  backdrop-filter: blur(1.125rem) saturate(1.46);
+  -webkit-backdrop-filter: blur(1.125rem) saturate(1.46);
+  border: 0.09375rem solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 0.5rem 2rem rgba(0, 0, 0, 0.06),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.6),
+    inset 0 -0.0625rem 0 rgba(255, 255, 255, 0.15);
+}
+
+.navbar--scrolled:hover {
+  box-shadow:
+    0 0.75rem 2.5rem rgba(0, 0, 0, 0.08),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.7),
+    inset 0 -0.0625rem 0 rgba(255, 255, 255, 0.2);
+}
+
+.navbar__logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo img {
+  height: 2.25rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 8.75rem;
+}
+
+.navbar__hamburger {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__links li a {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #555;
+  letter-spacing: 0.02em;
+  transition: color 0.25s ease;
+  position: relative;
+}
+
+.navbar__links li a::after {
+  content: '';
+  position: absolute;
+  bottom: -0.25rem;
+  left: 0;
+  width: 0;
+  height: 0.09375rem;
+  background: #b8860b;
+  transition: width 0.3s ease;
+}
+
+.navbar__links li a:hover {
+  color: #1a1a1a;
+}
+
+.navbar__links li a:hover::after {
+  width: 100%;
+}
+
+/* ===== Hero Section ===== */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+}
+
+.hero-section__canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.hero-section__mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* ===== Hamburger Button ===== */
+.hamburger-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.hamburger-btn:hover {
+  opacity: 0.7;
+}
+
+.hamburger-btn__line1 {
+  width: 3.125rem;
+  height: 0.125rem;
+  background: #555;
+  border-radius: 0.125rem;
+  transition: all 0.3s ease;
+}
+
+.hamburger-btn__line2 {
+  width: 1.5625rem;
+  height: 0.125rem;
+  background: #555;
+  border-radius: 0.125rem;
+  transition: all 0.3s ease;
+}
+
+.hamburger-btn__line3 {
+  width: 3.125rem;
+  height: 0.125rem;
+  background: #555;
+  border-radius: 0.125rem;
+  transition: all 0.3s ease;
+}
+
+/* ===== Hamburger Menu Overlay ===== */
+.hamburger-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50vw;
+  height: 100vh;
+  z-index: 1100;
+  transform: translateX(-100%);
+  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* Glass effect */
+  background: linear-gradient(-45deg,
+      rgba(255, 255, 255, 0.80) 0%,
+      rgba(255, 255, 255, 0.40) 100%);
+  backdrop-filter: blur(1.5rem) saturate(1.46);
+  -webkit-backdrop-filter: blur(1.5rem) saturate(1.46);
+  border-right: 0.09375rem solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0.5rem 0 2rem rgba(0, 0, 0, 0.08),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.6),
+    inset 0 -0.0625rem 0 rgba(255, 255, 255, 0.15);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3.75rem;
+}
+
+.hamburger-overlay--open {
+  transform: translateX(0);
+}
+
+.hamburger-overlay__backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1099;
+  background: rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.hamburger-overlay__backdrop--visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.hamburger-overlay__close {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.hamburger-overlay__close:hover {
+  transform: rotate(90deg);
+}
+
+.hamburger-overlay__close svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  stroke: #333;
+  stroke-width: 2;
+}
+
+.hamburger-overlay__links {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.hamburger-overlay__link {
+  font-family: 'GFS Didot', serif;
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: #333;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+  position: relative;
+  padding-left: 0;
+}
+
+.hamburger-overlay__link::before {
+  content: '';
+  position: absolute;
+  left: -1.25rem;
+  top: 50%;
+  transform: translateY(-50%) scaleX(0);
+  width: 0.75rem;
+  height: 0.125rem;
+  background: #000000;
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
+.hamburger-overlay__link:hover {
+  color: #efefef;
+  transform: translateX(0.625rem);
+}
+
+.hamburger-overlay__link:hover::before {
+  transform: translateY(-50%) scaleX(1);
+}
+
+/* ===== Scroll Down Arrow ===== */
+.hero-section__scroll-down {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  cursor: pointer;
+  animation: bounceArrow 2s infinite ease-in-out;
+}
+
+.hero-section__scroll-down svg {
+  width: 2rem;
+  height: 2rem;
+  stroke: #999;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+@keyframes bounceArrow {
+
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(0.625rem);
+  }
+}
+
+/* ===== ScrollReveal Animations ===== */
+.sr-hidden {
+  visibility: hidden;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 48rem) {
+  .navbar {
+    width: 95%;
+    padding: 0.625rem 1.25rem;
+  }
+
+  .navbar__links {
+    gap: 1.125rem;
+  }
+
+  .navbar__links li a {
+    font-size: 0.75rem;
+  }
+
+  .hero-section__title {
+    font-size: 6rem;
+  }
+
+  .hamburger-overlay {
+    width: 80vw;
+    padding: 2.5rem 1.875rem;
+  }
+
+  .hamburger-overlay__link {
+    font-size: 1.8rem;
+  }
+
+  .hamburger-btn {
+    left: 1rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .hero-section__title {
+    font-size: 4rem;
+  }
+
+  .hamburger-overlay {
+    width: 100vw;
+  }
+
+  .hamburger-overlay__link {
+    font-size: 1.5rem;
+  }
+
+  .navbar__links {
+    gap: 0.75rem;
+  }
+}

@@ -1,0 +1,321 @@
+/* ===================================================
+   HeroShowcase — LARASANA
+   Dark background, 5 rounded portrait cards in a
+   staggered layout (reference: Zevana style)
+=================================================== */
+
+.hs-section {
+  position: relative;
+  width: 100%;
+  /* Use max() to ensure it takes full screen height, BUT never shrinks below 75rem to prevent collision */
+  min-height: max(100vh, 75rem);
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Description (top-left) ── */
+.hs-description {
+  position: absolute;
+  top: 13rem;
+  left: 4rem;
+  max-width: 55rem;
+  font-family: 'Inter', serif;
+  font-size: 0.8rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.01em;
+  z-index: 10;
+}
+
+/* ── Big italic headline (top-right) ── */
+.hs-headline {
+  position: absolute;
+  top: 12rem;
+  right: 0;
+  padding-right: 6rem;
+  font-family: 'Gelasio', serif;
+  font-size: clamp(2rem, 3.8vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.05;
+  text-align: right;
+  color: #fff;
+  letter-spacing: -0.01em;
+  z-index: 10;
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.5);
+}
+
+
+
+/*card section*/
+
+/* We override the .sm, .md, .lg from the component 
+   and just rely on the positions for height and staggered offset */
+
+/* We will apply a unified 3D perspective to the container */
+.CardFrame {
+  height: 52rem;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  /* Crucial: Aligns from the top so margin-top works */
+  gap: 1.5rem;
+  perspective: 1500px;
+}
+
+.hs-card {
+  position: relative;
+  border-radius: 32px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #d6d6d6 0%, #ffffff 100%);
+  transition: transform 0.4s ease, width 0.4s ease, height 0.4s ease;
+  transform-style: preserve-3d;
+  width: 20rem;
+  /* Uniform base width */
+  opacity: 0;
+  will-change: transform, opacity, margin-top;
+  backface-visibility: hidden;
+}
+
+/* 2nd Left & Right (Far outer) */
+.hs-card.far-left,
+.hs-card.far-right {
+  height: 28rem;
+  margin-top: 5rem;
+}
+
+.hs-card.far-left {
+  transform: rotateY(30deg);
+  z-index: 1;
+}
+
+.hs-card.far-right {
+  transform: rotateY(-30deg);
+  z-index: 1;
+}
+
+/* 1st Left & Right */
+.hs-card.left,
+.hs-card.right {
+  height: 38rem;
+  margin-top: 0;
+}
+
+.hs-card.left {
+  transform: rotateY(20deg);
+  z-index: 3;
+}
+
+.hs-card.right {
+  transform: rotateY(-20deg);
+  z-index: 3;
+}
+
+/* Center */
+.hs-card.center {
+  height: 32rem;
+  margin-top: 12rem;
+  transform: rotateY(0deg);
+  z-index: 5;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* Image / Placeholder styles */
+.hs-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Hover effects */
+.hs-card.far-left:hover {
+  transform: rotateY(30deg) translateY(-0.5rem);
+}
+
+.hs-card.left:hover {
+  transform: rotateY(20deg) translateY(-0.5rem);
+}
+
+.hs-card.center:hover {
+  transform: rotateY(0deg) translateY(-0.5rem);
+}
+
+.hs-card.right:hover {
+  transform: rotateY(-20deg) translateY(-0.5rem);
+}
+
+.hs-card.far-right:hover {
+  transform: rotateY(-30deg) translateY(-0.5rem);
+}
+
+@keyframes hs-fan-center {
+  0% {
+    opacity: 0;
+    transform: rotateY(0deg) translateY(10rem) scale(0.84);
+    margin-top: 16rem;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg) translateY(0) scale(1);
+    margin-top: 12rem;
+  }
+}
+
+@keyframes hs-fan-left {
+  0% {
+    opacity: 0;
+    transform: rotateY(0deg) translateY(10rem) scale(0.86);
+    margin-top: 10rem;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(20deg) translateY(0) scale(1);
+    margin-top: 0;
+  }
+}
+
+@keyframes hs-fan-right {
+  0% {
+    opacity: 0;
+    transform: rotateY(0deg) translateY(10rem) scale(0.86);
+    margin-top: 10rem;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(-20deg) translateY(0) scale(1);
+    margin-top: 0;
+  }
+}
+
+@keyframes hs-fan-far-left {
+  0% {
+    opacity: 0;
+    transform: rotateY(0deg) translateY(10rem) scale(0.88);
+    margin-top: 10rem;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(30deg) translateY(0) scale(1);
+    margin-top: 5rem;
+  }
+}
+
+@keyframes hs-fan-far-right {
+  0% {
+    opacity: 0;
+    transform: rotateY(0deg) translateY(10rem) scale(0.88);
+    margin-top: 10rem;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateY(-30deg) translateY(0) scale(1);
+    margin-top: 5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-card {
+    opacity: 1;
+    animation: none !important;
+    transform: none;
+  }
+
+  .hs-card.far-left {
+    transform: rotateY(30deg);
+  }
+
+  .hs-card.left {
+    transform: rotateY(20deg);
+  }
+
+  .hs-card.center {
+    transform: rotateY(0deg);
+  }
+
+  .hs-card.right {
+    transform: rotateY(-20deg);
+  }
+
+  .hs-card.far-right {
+    transform: rotateY(-30deg);
+  }
+}
+
+/* ===================================================
+   UPDATED ENTRANCE ANIMATION: "DEAL FROM CENTER"
+=================================================== */
+
+/* 1. Center card starts faded and slightly dropped */
+.CardFrame.is-initial .hs-card.center {
+  opacity: 0;
+  transform: translateY(2rem) rotateY(0deg);
+}
+
+/* 2. Outer cards start invisible, completely collapsed behind the center card.
+      We use translateX to pull them inward by exactly their width + gap. */
+.CardFrame.is-initial .hs-card.left {
+  opacity: 0;
+  transform: translateX(21.5rem) rotateY(0deg);
+  margin-top: 12rem;
+  /* match center height so it hides perfectly */
+}
+
+.CardFrame.is-initial .hs-card.right {
+  opacity: 0;
+  transform: translateX(-21.5rem) rotateY(0deg);
+  margin-top: 12rem;
+}
+
+.CardFrame.is-initial .hs-card.far-left {
+  opacity: 0;
+  transform: translateX(43rem) rotateY(0deg);
+  margin-top: 12rem;
+}
+
+.CardFrame.is-initial .hs-card.far-right {
+  opacity: 0;
+  transform: translateX(-43rem) rotateY(0deg);
+  margin-top: 12rem;
+}
+
+/* 3. Slower, smoother movement curve (3 seconds) */
+.CardFrame .hs-card {
+  transition: transform 3s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 1.5s ease-out,
+    margin-top 3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 4. Final state opacity */
+.CardFrame.is-mounted .hs-card {
+  opacity: 1;
+}
+
+/* 5. The Stagger Sequence */
+
+/* Step 1: Center card appears immediately */
+.CardFrame.is-mounted .center {
+  transition-delay: 0s;
+}
+
+/* Step 2: Left and Right wait 1.2s for the center to establish, then slide out */
+.CardFrame.is-mounted .left,
+.CardFrame.is-mounted .right {
+  transition-delay: 1.2s;
+}
+
+/* Step 3: Far Left and Far Right wait 1.8s, then slide out to the edges */
+.CardFrame.is-mounted .far-left,
+.CardFrame.is-mounted .far-right {
+  transition-delay: 1.8s;
+}
