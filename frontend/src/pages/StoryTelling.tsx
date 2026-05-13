@@ -60,7 +60,7 @@ export default function StoryTelling() {
                   <br />
                   for generations to come.
                 </p>
-                <a href="#" className="st-card__cta">
+                <a href="/impact" className="st-card__cta">
                   <span className="st-card__cta-line" />
                   IMPACT PAGES
                 </a>

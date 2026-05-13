@@ -22,16 +22,19 @@ const impactSections = [
   {
     id: 'education',
     title: 'Education',
+    description: 'Our Mission is not only to immortalize the legacy of tenun and batik, take a look, listen, and learn the art from home!. LARASANA is designing a education program for students, teacher, family, and public everywhere and everytime!',
     image: educationImg,
   },
   {
     id: 'regeneration',
     title: 'Regeneration',
+    description: 'To achieve our missions to immortalize the legacy of tenun and batik, we empower artisans and inspire future generations world wide, preserving culture and shaping the brighter future.',
     image: regenerationImg,
   },
   {
     id: 'social',
     title: 'Social',
+    description: 'Beyond our missions to immortalize the legacy of tenun and batik, we are commited to giving back to society. Through community empowerment, and sustainable opportunities. Every piece we create carries not only heritage and artistry, but also hope for a brighter future.',
     image: socialImg,
   },
 ] as const;
@@ -133,7 +136,7 @@ const ImpactPages = () => {
               key={`${logo.name}-${index}`}
               src={logo.image}
               alt={logo.name}
-              className="impact-partners__logo"
+              className={`impact-partners__logo ${logo.name === 'Wonderful Indonesia' ? 'impact-partners__logo--wi' : ''}`}
               loading="lazy"
             />
           ))}
@@ -193,6 +196,11 @@ const ImpactPages = () => {
                 }}
               >
                 <h2 className="impact-section__title">{section.title}</h2>
+                <div className="impact-section__desc-wrapper">
+                  <div className="impact-section__desc-inner">
+                    <p className="impact-section__desc">{section.description}</p>
+                  </div>
+                </div>
                 <p className="impact-section__prompt">
                   Click For More Information!
                 </p>
