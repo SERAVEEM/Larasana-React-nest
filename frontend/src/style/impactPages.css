@@ -1,0 +1,249 @@
+.impact-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff !important;
+    /* Force white background */
+    font-family: "Poppins", sans-serif;
+    color: #111827;
+}
+
+/* Hero Section */
+.impact-hero {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 13rem 1rem 5rem 1rem;
+    text-align: center;
+    background-color: #ffffff;
+    /* Explicitly white to override any leaks */
+}
+
+.impact-title {
+    font-family: Gelasio, serif;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    color: #000000;
+}
+
+.impact-subtitle {
+    margin-top: 2rem;
+    color: #374151;
+    max-width: 600px;
+    font-size: 1rem;
+    line-height: 1.625;
+}
+
+/* Call to Action Button */
+.impact-cta {
+    margin-top: 2.5rem;
+    padding: 0.75rem 2rem;
+    background-color: #987A01;
+    color: #ffffff;
+    border: none;
+
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.impact-cta:hover {
+    background-color: #ad884a;
+}
+
+/* Partners Bottom Section */
+.partners-section {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+}
+
+.partners-container {
+    width: 100%;
+    max-width: 1920px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.partners-banner {
+    width: 100%;
+    height: auto;
+    max-height: 180px;
+    object-fit: contain;
+    filter: grayscale(100%);
+    opacity: 1;
+    transition: all 0.4s ease;
+}
+
+.partners-banner:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+/* Responsive Utilities */
+.desktop-break {
+    display: none;
+}
+
+
+
+
+
+
+.impact-sections-wrapper {
+    width: 100%;
+    max-width: 1400px;
+    /* Increased for a more cinematic look */
+    margin: 0 auto;
+    padding: 0 10rem 10rem;
+}
+
+/* Individual section */
+.impact-section {
+    position: relative;
+}
+
+/* Text-only (Education): tall breathing room */
+
+
+/* With image (Regeneration, Social): shorter vertical rhythm */
+.impact-section--with-image {
+    padding: 0 0 12rem;
+}
+
+/* Thin horizontal rule */
+.impact-divider {
+    border: none;
+    border-top: 1px solid #d1d5db;
+    margin: 0 0 5rem;
+}
+
+/* Row: text left, image right */
+.impact-section__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 7rem;
+}
+
+/* Text column */
+.impact-section__text {
+    flex: 0 0 auto;
+    width: 38%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.impact-section__title {
+    font-family: Poppins, sans-serif, medium;
+    font-weight: 550;
+    font-size: 2.5rem;
+    color: #111827;
+    margin: 0;
+
+}
+
+.impact-section__link {
+    font-family: "Poppins", sans-serif;
+    font-size: 0.875rem;
+    color: #374151;
+    text-decoration: none;
+    display: inline-block;
+    transition: color 0.2s ease;
+}
+
+.impact-section__link:hover {
+    color: #987a01;
+}
+
+/* Image column */
+.impact-section__image-wrap {
+    flex: 0 0 auto;
+    width: 58%;
+    /* Adjusted to fit alongside the 38% text column */
+    overflow: hidden;
+   
+}
+
+.impact-section__image {
+    width: 35.0625rem; /* 561px */
+    height: 43.75rem;  /* 700px */
+    object-fit: cover;
+    display: block;
+   
+    max-width: 100%; /* Ensure it doesn't overflow on smaller viewports */
+}
+
+/* ─────────────────────────────────────────
+   Responsive
+───────────────────────────────────────── */
+@media (max-width: 767px) {
+    .impact-sections-wrapper {
+        padding: 0 1.25rem 4rem;
+    }
+
+    .impact-section--text-only {
+        padding: 4rem 0 5rem;
+    }
+
+    .impact-section--with-image {
+        padding: 0 0 4rem;
+    }
+
+    .impact-divider {
+        margin-bottom: 3rem;
+    }
+
+    /* Stack on mobile: image below text */
+    .impact-section__inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem;
+    }
+
+    .impact-section__text {
+        width: 100%;
+    }
+
+    .impact-section__image-wrap {
+        width: 100%;
+    }
+
+    .impact-section__image {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+    }
+}
+
+@media (min-width: 768px) {
+    .impact-title {
+        font-size: 6rem;
+        /* Scaled up for tablet */
+    }
+
+    .impact-subtitle {
+        font-size: 1.125rem;
+    }
+
+    .desktop-break {
+        display: block;
+    }
+}
+
+@media (min-width: 1024px) {
+    .impact-title {
+        font-size: 5rem;
+        /* Final size for desktop */
+    }
+}

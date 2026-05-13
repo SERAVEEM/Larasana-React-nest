@@ -10,22 +10,22 @@
 /* ── Vertical grid lines ── */
 .st-line {
   position: absolute;
-  bottom: 73px;
-  height: 750px;
+  top: 10.5vh;
+  bottom: 5.4vh;
   width: 1px;
   background: #7B7B7B;
   z-index: 1;
   pointer-events: none;
-  /* smooth fade when a hover zone covers it */
+  /* smooth fade when Z hover zone covers it */
   transition: opacity 0.5s ease;
 }
 
 .st-line--left {
-  left: calc(50% - 8.125rem);
+  left: calc(50% - 15rem);
 }
 
 .st-line--right {
-  left: calc(75% - 3.125rem);
+  left: calc(75% - 8rem);
 }
 
 /* Hide the left line when STORY zone is hovered */
@@ -38,30 +38,33 @@
 /* ── Left column: Title + Description ── */
 .st-left-col {
   position: absolute;
-  right: auto;
+  left: 0;
   top: 0;
-  width: calc(50% - 8.125rem - 6.4375rem);
+  bottom: 0;
+  width: calc(50% - 15rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 6.4375rem;
   z-index: 2;
 }
 
 .st-title {
-  margin-left: 6.4375rem;
-  margin-top: 25.125rem;
+  margin: 0 0 1.625rem 0;
   color: #000;
   font-family: 'Gelasio', Georgia, serif;
-  font-size: 5rem;
+  font-size: 4.75rem;
   font-weight: 400;
   line-height: 115%;
   letter-spacing: -0.04rem;
-  margin-bottom: 1.625rem;
 }
 
 .st-description {
-  margin-left: 6.875rem;
-  margin-top: 0rem;
+  margin: 0;
+  padding-left: 0.4375rem;
   color: #000;
   font-family: 'Inter', sans-serif;
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   font-weight: 400;
   line-height: 150%;
   text-shadow: none;
@@ -78,14 +81,13 @@
 
 /* STORY zone: from left line to right line */
 .st-hover-zone--story {
-  left: calc(50% - 8.125rem);
-  right: calc(25% + 3.125rem);
-  /* = 100% - (75% - 3.125rem) */
+  left: calc(50% - 15rem);
+  right: calc(25% + 9rem);
 }
 
 /* IMPACT zone: from right line to right edge */
 .st-hover-zone--impact {
-  left: calc(75% - 3.125rem);
+  left: calc(75% - 8rem);
   right: 0;
 }
 
@@ -98,7 +100,7 @@
   color: #000;
   text-transform: uppercase;
   text-shadow: none;
-  top: 37.3125rem;
+  top: 54%;
   transition: color 0.45s ease, opacity 0.45s ease;
   pointer-events: none;
   z-index: 4;
@@ -107,13 +109,13 @@
 
 .st-col-label--story {
   /* centred inside the STORY zone */
-  left: 50%;
-  transform: translateX(-50%);
+  left: 53%;
+  transform: translate(-50%, -50%);
 }
 
 .st-col-label--impact {
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
 }
 
 /* When the zone is hovered, the static label fades out
@@ -125,10 +127,9 @@
 
 .st-card {
   position: absolute;
-  top: calc(100% - 46.875rem - 4.5625rem);
-  /* aligns with line top: bottom:4.5625rem, h:46.875rem */
-  width: 31rem;
-  height: 46.9375rem;
+  top: 10.5vh;
+  bottom: 5.4vh;
+  width: 100%;
   overflow: hidden;
   z-index: 5;
   border-radius: 1.5rem;
@@ -140,12 +141,13 @@
 
 /* STORY card: anchored at left (= left dividing line), grows rightward */
 .st-card--story {
-  left: 0;
+  left: 0rem;
 }
 
 /* IMPACT card: anchored at left:0 of its zone (= right dividing line), grows rightward */
 .st-card--impact {
-  left: 0;
+  left: 0rem;
+  width: calc(100% - 6.4375rem);
   /* Mirror clip-path so it reveals from the LEFT (the right dividing line) */
   clip-path: inset(0 100% 0 0);
 }
@@ -157,8 +159,8 @@
 
 /* ── Card image ── */
 .st-card__img {
-  width: 31rem;
-  height: 46.9375rem;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
   /* keep image stationary while the container clips */
@@ -172,19 +174,19 @@
   background: linear-gradient(to bottom,
       rgba(0, 0, 0, 0) 30%,
       rgba(0, 0, 0, 0.72) 100%);
-  /* Content anchored at exact position: left 14.6875rem, top 31.25rem from card top-left */
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  /* Use absolute children positioning */
   padding: 0;
 }
 
 /* ── Text content group — absolutely positioned inside the overlay ── */
 .st-card__content {
   position: absolute;
-  left: 14.6875rem;
-  top: 31.25rem;
+  right: 0.8rem;
+  bottom: 3rem;
+  align-items: flex-end;
+  text-align: right;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -241,6 +243,7 @@
 .st-card__cta {
   display: flex;
   align-items: center;
+  flex-direction: row-reverse;
   gap: 0.75rem;
   font-family: 'Inter', sans-serif;
   font-size: 0.8125rem;
@@ -273,53 +276,4 @@
   flex-shrink: 0;
 }
 
-@media (max-height: 60rem) {
-  .st-line {
-    height: 25rem;
-  }
-
-  .st-left-col {
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .st-title {
-    position: relative;
-    margin-left: 6.575rem;
-    padding-top: 1rem;
-    font-size: 5rem;
-    line-height: 1;
-    margin-bottom: 1rem;
-  }
-
-  .st-description {
-    margin-left: 6.875rem;
-    margin-top: 0rem;
-    color: #000;
-    font-family: 'Inter', sans-serif;
-    font-size: 1.375rem;
-    font-weight: 400;
-    line-height: 150%;
-    text-shadow: none;
-  }
-
-  .st-card__title {
-    bottom: 30rem;
-  }
-
-  .st-line {
-    height: 40rem;
-    bottom: 5rem;
-  }
-
-  .st-card {
-    top: calc(100% - 36.875rem - 4.5625rem);
-    height: 40rem;
-  }
-
-  .st-card__img {
-    height: 40rem;
-  }
-}
+/* Removed arbitrary height media queries as layout is now fully vertically responsive */
