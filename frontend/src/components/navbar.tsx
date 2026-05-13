@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 import logo from '../assets/images/Logo.png';
 import Hamburger from './hamburger';
 
-const NAV_LINKS = ['Product', 'Login', 'About Us'];
+const NAV_LINKS = [
+  { label: 'Home', href: '/' },
+  { label: 'Product', href: '/#hero-showcase' },
+  { label: 'About Us', href: '/impact' },
+];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -31,8 +35,8 @@ export default function Navbar() {
 
         <ul className="navbar__links">
           {NAV_LINKS.map((link) => (
-            <li key={link}>
-              <a href={`#${link.toLowerCase().replace(/\s+/g, '-')}`}>{link}</a>
+            <li key={link.label}>
+              <a href={link.href}>{link.label}</a>
             </li>
           ))}
         </ul>

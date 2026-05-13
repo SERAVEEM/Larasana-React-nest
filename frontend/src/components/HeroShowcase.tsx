@@ -15,7 +15,14 @@ const CARDS = [
   { id: 'card-5', image: fifthImg, gradient: null, alt: 'Look 5', size: 'sm', position: 'far-right', name: 'Tenun Classic', price: '$200', rating: '4.2' },
 ];
 
-const GRID_ITEMS = [
+const GRID_ITEMS: Array<{
+  id: string;
+  image: string;
+  name: string;
+  price: string;
+  rating: string;
+  empty?: boolean;
+}> = [
   { id: 'grid-1', image: firstImg, name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
   { id: 'grid-2', image: secondImg, name: 'Anchronic Vest', price: '$260', rating: '4.5' },
   { id: 'grid-3', image: thirdImg, name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },

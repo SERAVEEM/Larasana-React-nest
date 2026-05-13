@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Lenis from 'lenis';
-
-import Navbar from '../components/navbar';
 import '../style/impactPages.css';
-
-
 import hhi from '../assets/images/impact/HHI.png';
 import socialImg from '../assets/images/impact/Social.png';
 import unesco from '../assets/images/impact/UNESCO.png';
@@ -13,6 +9,10 @@ import wfi from '../assets/images/impact/WFI.png';
 import ycab from '../assets/images/impact/YCAB.png';
 import educationImg from '../assets/images/impact/education.png';
 import regenerationImg from '../assets/images/impact/regeneration.png';
+import nauseaImg from '../assets/images/impact/NAUSEA.png';
+import maxmaraImg from '../assets/images/impact/MAXMARA.png';
+import constelationImg from '../assets/images/impact/CONSTELATION.png';
+
 
 const fadeInUpInitial = { opacity: 0, y: 50 };
 const fadeInUpWhileInView = { opacity: 1, y: 0 };
@@ -36,6 +36,33 @@ const impactSections = [
   },
 ] as const;
 
+const partnerLogos = [
+  { name: 'Wonderful Indonesia', image: wfi },
+  { name: 'Happy Hearts Indonesia', image: hhi },
+  { name: 'YCAB Ventures', image: ycab },
+  { name: 'UNESCO', image: unesco }
+] as const;
+const programsData = [
+  {
+    category: 'Collaboration',
+    title: 'LARASANA x NAUSEA',
+    description: '23.05-04.10.2026',
+    image: nauseaImg,
+  },
+  {
+    category: 'Exhibition',
+    title: 'The 10th Max Mara Art Prize for Women',
+    description: '30.09-04.10.2026',
+    image: maxmaraImg,
+  },
+  {
+    category: 'Performance',
+    title: 'Constelations | Theater Show by the Pandora',
+    description: '21.11-23.11.2026',
+    image: constelationImg,
+  },
+];
+
 const ImpactPages = () => {
   useEffect(() => {
     const lenis = new Lenis({
@@ -57,7 +84,6 @@ const ImpactPages = () => {
 
   return (
     <div className="impact-page">
-      <Navbar />
       <main className="impact-hero">
         <motion.h1
           className="impact-title"
@@ -84,7 +110,8 @@ const ImpactPages = () => {
             delay: 0.2,
           }}
         >
-         A digital space dedicated to preserving the beauty of Lombok weaving traditions while connecting local artisans with modern audiences.
+          A digital space dedicated to preserving the beauty of Lombok weaving
+          traditions while connecting local artisans with modern audiences.
         </motion.p>
 
         <motion.button
@@ -95,19 +122,64 @@ const ImpactPages = () => {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8, delay: 0.35, ease: 'easeOut' }}
         >
-          Discover our pillars
+          Explore Our Product
         </motion.button>
       </main>
 
-      <section className="impact-sections-wrapper">
+      <section className="impact-partners" aria-label="Impact partners">
+        <div className="impact-partners__track">
+          {partnerLogos.map((logo, index) => (
+            <img
+              key={`${logo.name}-${index}`}
+              src={logo.image}
+              alt={logo.name}
+              className="impact-partners__logo"
+              loading="lazy"
+            />
+          ))}
+        </div>
+      </section>
 
+    
+
+      <section className="impact-programs-wrapper">
+        <motion.h2 
+          className="impact-programs-title"
+          initial={fadeInUpInitial}
+          whileInView={fadeInUpWhileInView}
+          viewport={fadeInUpViewport}
+          transition={{ duration: 1, ease: 'easeInOut' }}
+        >
+          Our Programs
+        </motion.h2>
+        <div className="impact-programs-grid">
+          {programsData.map((program, idx) => (
+            <motion.article 
+              key={program.title}
+              className="impact-program-card"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.8, delay: 0.1 * idx, ease: 'easeOut' }}
+            >
+              <span className="impact-program-card__category">{program.category}</span>
+              <div className="impact-program-card__image-wrap">
+                <img src={program.image} alt={program.title} loading="lazy" />
+              </div>
+              <h3 className="impact-program-card__title">{program.title}</h3>
+              <p className="impact-program-card__desc">{program.description}</p>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+
+      <section className="impact-sections-wrapper">
         {impactSections.map((section, index) => (
           <article
             key={section.id}
             id={section.id}
             className="impact-section impact-section--with-image"
           >
-            <hr className="impact-divider" />
             <div className="impact-section__inner">
               <motion.div
                 className="impact-section__text"
@@ -121,17 +193,14 @@ const ImpactPages = () => {
                 }}
               >
                 <h2 className="impact-section__title">{section.title}</h2>
-                <p>
-                  Each pillar reflects how Larasana shows up beyond the garment—from sharing knowledge to lightening our footprint.
+                <p className="impact-section__prompt">
+                  Click For More Information!
                 </p>
-                <a href={`#${section.id}`} className="impact-section__link">
-                  Read more
-                </a>
               </motion.div>
 
               <motion.div
                 className="impact-section__image-wrap"
-                initial={{ opacity: 0, x: index % 2 === 0 ? 60 : -60 }}
+                initial={{ opacity: 0, x: 60 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 1, ease: 'easeOut' }}
@@ -144,6 +213,9 @@ const ImpactPages = () => {
                 />
               </motion.div>
             </div>
+            {index < impactSections.length - 1 && (
+              <hr className="impact-divider" />
+            )}
           </article>
         ))}
       </section>
@@ -152,4 +224,3 @@ const ImpactPages = () => {
 };
 
 export default ImpactPages;
-
