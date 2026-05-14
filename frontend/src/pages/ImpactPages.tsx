@@ -165,10 +165,10 @@ const ImpactPages = () => {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.8, delay: 0.1 * idx, ease: 'easeOut' }}
             >
-              <span className="impact-program-card__category">{program.category}</span>
               <div className="impact-program-card__image-wrap">
                 <img src={program.image} alt={program.title} loading="lazy" />
               </div>
+              <span className="impact-program-card__category">{program.category}</span>
               <h3 className="impact-program-card__title">{program.title}</h3>
               <p className="impact-program-card__desc">{program.description}</p>
             </motion.article>

@@ -122,15 +122,16 @@
   color: #666;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 0.5rem;
+  margin-top:1rem;
   font-weight: 600;
+  margin-left:0.11rem;
 }
 
 .impact-program-card__image-wrap {
   width: 130%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: #f0f0f0;
+  background: #ffffff;
 }
 
 .impact-program-card__image-wrap img {
@@ -138,18 +139,23 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;
+   border-radius: 1.5rem;
+  
 }
 
 .impact-program-card:hover .impact-program-card__image-wrap img {
   transform: scale(1.05);
+  
 }
 
 .impact-program-card__title {
-  margin: 1.5rem 0 0.5rem 0;
+  margin: 0.5rem 0 0.5rem 0;
   font-size: 1.5rem;
   font-weight: 600;
   color: #000;
   line-height: 1.4;
+  left: 16rem;
+  margin-left: 0.1rem;
 }
 
 .impact-program-card__desc {
@@ -241,6 +247,7 @@
   width: 100%;
   overflow: hidden;
   margin-left: 7rem;
+  border-radius:1.5rem;
 }
 
 .impact-section__image {
@@ -287,6 +294,7 @@
 
   .impact-programs-wrapper {
     padding: 6rem 2rem 2rem;
+    border-radius: 1.5rem;
   }
 
   .impact-programs-grid {
