@@ -80,7 +80,7 @@ export default function Hero() {
                   fontFamily: "'Linotype Didot Bold', 'GFS Didot', serif",
                   fontSize: '16rem',
                   fontWeight:'bold',
-                  letterSpacing: '-0.068em',
+                  letterSpacing: 0,
                   transform: 'scaleY(1.1)',
                   transformOrigin: 'center'
                 }}
