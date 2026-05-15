@@ -106,7 +106,6 @@ ul {
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-
   transition: all 0.5s ease;
 }
 
@@ -130,6 +129,11 @@ ul {
     0 0.75rem 2.5rem rgba(0, 0, 0, 0.08),
     inset 0 0.0625rem 0 rgba(255, 255, 255, 0.7),
     inset 0 -0.0625rem 0 rgba(255, 255, 255, 0.2);
+}
+.navbar__logo, .navbar__hamburger {
+  width: 5rem; /* Or whatever width fits your logo */
+  display: flex;
+  justify-content: center;
 }
 
 .navbar__logo {

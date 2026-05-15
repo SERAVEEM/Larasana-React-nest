@@ -5,7 +5,7 @@ import Hamburger from './hamburger';
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Product', href: '/#hero-showcase' },
-  { label: 'About Us', href: '/impact' },
+  { label: 'About Us', href: '/about' },
 ];
 
 export default function Navbar() {

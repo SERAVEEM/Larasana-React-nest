@@ -9,6 +9,8 @@ import LoginPage from './pages/LoginPage.tsx'
 import RegisterPage from './pages/RegisterPage.tsx'
 import HeroShowcasePage from './pages/HeroShowcasePage.tsx'
 import ImpactPages from "./pages/ImpactPages.tsx"
+import Story from './pages/Story.tsx'
+import AboutUs from './pages/AboutUs.tsx'
 
 import Navbar from './components/navbar.tsx'
 
@@ -19,7 +21,9 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<><Navbar /><LandingPages /><StoryTelling /><HeroShowcasePage /></>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/impact" element={<><Navbar/><ImpactPages /></>} />
+        <Route path="/Impact" element={<><Navbar/><ImpactPages /></>} />
+        <Route path="/Story" element={<><Navbar /><Story /></>} />
+        <Route path="/about" element={<><Navbar/><AboutUs /></>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
