@@ -1,9 +1,3 @@
-/* ===================================================
-   HeroShowcase — LARASANA
-   Dark background, 5 rounded portrait cards in a
-   staggered layout (reference: Zevana style)
-=================================================== */
-
 .hs-super-wrapper {
   position: relative;
   width: 100%;
@@ -12,7 +6,6 @@
 .hs-bg-black {
   position: relative;
   width: 100%;
-  /* Ensure it has a consistent height */
   min-height: max(100vh, 75rem);
   background: #0a0a0a;
   overflow: hidden;
@@ -33,7 +26,6 @@
   pointer-events: none;
 }
 
-/* ── Description (top-left) ── */
 .hs-description {
   position: absolute;
   top: 13rem;
@@ -49,7 +41,6 @@
   z-index: 10;
 }
 
-/* ── Big italic headline (top-right) ── */
 .hs-headline {
   position: absolute;
   top: 12rem;
@@ -88,8 +79,7 @@
   gap: calc(2rem + 20px);
   perspective: 2000px;
   perspective-origin: 50% 80%;
-  color: linear(top top left 
-  );
+  color: linear(top top left);
 }
 
 .hs-card {

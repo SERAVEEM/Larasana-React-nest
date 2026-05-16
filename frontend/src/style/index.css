@@ -8,7 +8,6 @@
   font-style: normal;
 }
 
-/* ===== CSS Reset & Base ===== */
 *,
 *::before,
 *::after {
@@ -99,7 +98,6 @@ ul {
   padding: 0.75rem 2rem;
   border-radius: 3.125rem;
   gap: 34.375rem;
-
   /* No glass effect initially */
   background: transparent;
   border: 0.09375rem solid transparent;
@@ -130,8 +128,9 @@ ul {
     inset 0 0.0625rem 0 rgba(255, 255, 255, 0.7),
     inset 0 -0.0625rem 0 rgba(255, 255, 255, 0.2);
 }
-.navbar__logo, .navbar__hamburger {
-  width: 5rem; /* Or whatever width fits your logo */
+
+.navbar__logo,
+.navbar__hamburger {
   display: flex;
   justify-content: center;
 }

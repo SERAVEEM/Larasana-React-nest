@@ -6,7 +6,6 @@ const MENU_ITEMS = ['Login', 'Product', 'About Us', 'Story'];
 export default function Hamburger() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Lock body scroll when menu is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -31,7 +30,7 @@ export default function Hamburger() {
         <span className="hamburger-btn__line3" />
       </button>
 
-      {/* Backdrop & Overlay rendered via Portal to escape navbar transform */}
+
       {createPortal(
         <>
           <div

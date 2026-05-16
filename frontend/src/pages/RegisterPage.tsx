@@ -9,12 +9,9 @@ export default function RegisterPage() {
   return (
     <div className="auth-page">
 
-      {/* ══════════════════════════════════
-          LEFT — Form panel
-      ══════════════════════════════════ */}
+    
       <div className="auth-panel auth-panel--form">
 
-        {/* Back arrow */}
         <Link to="/" className="auth-back">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -23,11 +20,10 @@ export default function RegisterPage() {
 
         <div className="auth-form-container">
 
-          {/* Title — 64px per spec */}
           <h1 className="auth-heading auth-heading--join">Join the Circle</h1>
           <p className="auth-subheading">Create an account for a more personalized shopping experience</p>
 
-          {/* ── Registration form ── */}
+        
           <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
 
             <div className="auth-field">
@@ -82,19 +78,17 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Submit */}
             <button type="submit" className="auth-btn" id="register-submit">
               Sign Up
             </button>
           </form>
 
-          {/* Switch to login */}
           <p className="auth-switch">
             Already have an account?{' '}
             <Link to="/login" className="auth-switch__link">Login</Link>
           </p>
 
-          {/* ── Social — at the bottom, small ── */}
+       
           <div className="auth-divider">
           </div>
 
@@ -103,9 +97,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* ══════════════════════════════════
-          RIGHT — Image panel
-      ══════════════════════════════════ */}
+    
       <div className="auth-panel auth-panel--image">
         <img src={registerImg} alt="Larasana fashion" className="auth-image" />
         <div className="auth-image-overlay">

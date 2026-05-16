@@ -1,8 +1,3 @@
-/* ================================================================
-   auth.css — Login & Register Pages  |  GFS Didot
-   ================================================================ */
-
-/* ── Page shell ── */
 .auth-page {
   display: flex;
   width: 100vw;
@@ -12,9 +7,7 @@
   background: #ffffff;
 }
 
-/* ──────────────────────────────────────────
-   LEFT PANEL  (form)
-─────────────────────────────────────────── */
+
 .auth-panel--form {
   position: relative;
   flex: 0 0 50%;
@@ -32,7 +25,6 @@
   display: none;
 }
 
-/* ── Back arrow ── */
 .auth-back {
   position: absolute;
   top: 2.25rem;
@@ -55,7 +47,6 @@
   height: 1.5rem;
 }
 
-/* ── Form container (centred column) ── */
 .auth-form-container {
   width: 100%;
   max-width: 35.6875rem;
@@ -66,10 +57,6 @@
   align-items: stretch;
 }
 
-/* ──────────────────────────────────────────
-   HEADINGS
-─────────────────────────────────────────── */
-/* Login page title = 3rem */
 .auth-heading {
   font-family: 'GFS Didot', serif;
   font-size: 3rem;
@@ -81,7 +68,6 @@
   letter-spacing: -6%;
 }
 
-/* Register page "Join the Circle" = 4rem */
 .auth-heading--join {
   font-size: 4rem;
   line-height: 1.05;
@@ -98,9 +84,6 @@
   line-height: 1.6;
 }
 
-/* ──────────────────────────────────────────
-   FORM FIELDS
-─────────────────────────────────────────── */
 .auth-form {
   flex-direction: column;
   gap: 0.875rem;
@@ -152,7 +135,6 @@
   box-shadow: 0 0 0 0.125rem rgba(154, 138, 46, 0.12);
 }
 
-/* password eye toggle */
 .auth-input-wrapper .auth-input {
   padding-right: 2.75rem;
 }
@@ -181,7 +163,7 @@
   height: 1rem;
 }
 
-/* forgot link */
+
 .auth-forgot {
   font-family: 'GFS Didot', serif;
   font-size: 0.75rem;
@@ -197,9 +179,6 @@
   color: #6b5c3e;
 }
 
-/* ──────────────────────────────────────────
-   SUBMIT BUTTON
-─────────────────────────────────────────── */
 .auth-btn {
   width: 100%;
   padding: 0.75rem 1.25rem;
@@ -227,9 +206,6 @@
   box-shadow: none;
 }
 
-/* ──────────────────────────────────────────
-   SWITCH LINK  (already have an account)
-─────────────────────────────────────────── */
 .auth-switch {
   font-family: 'GFS Didot', serif;
   font-size: 0.8125rem;
@@ -249,9 +225,6 @@
   text-decoration: underline;
 }
 
-/* ──────────────────────────────────────────
-   DIVIDER  (thin horizontal line)
-─────────────────────────────────────────── */
 .auth-divider {
   display: flex;
   align-items: center;
@@ -272,9 +245,6 @@
   color: #aaa;
 }
 
-/* ──────────────────────────────────────────
-   SOCIAL BUTTONS  (bottom, small)
-─────────────────────────────────────────── */
 .auth-social {
   display: flex;
   flex-direction: column;
@@ -310,9 +280,6 @@
   flex-shrink: 0;
 }
 
-/* ──────────────────────────────────────────
-   RIGHT PANEL  (image)
-─────────────────────────────────────────── */
 .auth-panel--image {
   flex: 1;
   position: relative;
@@ -329,8 +296,7 @@
   position: relative;
   z-index: 2;
   object-position: 10% -15%;
-  /* Zoom in the picture */
-  transform: scale(1.2); /* Adjust this value to zoom more or less (e.g. 1.2, 1.3) */
+  transform: scale(1.2);
 }
 .auth-image-overlay {
   position: absolute;
@@ -339,11 +305,9 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 2rem 2.25rem;
-  /* LAYER 3 (Top): The text floats completely above the image */
   z-index: 3;
 }
 
-/* "LARASANA" top-right, 3rem */
 .auth-brand {
   font-family: 'GFS Didot', serif;
   font-size: 3rem;
@@ -379,16 +343,13 @@
   left: 1.9375rem;
 }
 
-/* ──────────────────────────────────────────
-   RESPONSIVE
-─────────────────────────────────────────── */
+
 @media (max-width: 56.25rem) {
   .auth-panel--form {
     flex: 0 0 100%;
     padding: 3rem 2rem;
   }
 
-  /* Show image panel on all screen sizes for development */
   .auth-panel--image {
     display: flex;
   }

@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import "../style/BackgroundandMissions.css";
 import first from "../assets/images/About US/First.png";
 import second from "../assets/images/About US/Second.png";
@@ -8,12 +9,31 @@ import faruk from "../assets/images/About US/faruk.png";
 import joel from "../assets/images/About US/joel.png";
 import apis from "../assets/images/About US/apis.png";
 
+const fadeInUp = {
+    initial: { opacity: 0, y: 60 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-100px" },
+    transition: { duration: 1.5, ease: [0.215, 0.61, 0.355, 1] }
+};
+
+const staggerContainer = {
+    initial: {},
+    whileInView: {
+        transition: {
+            staggerChildren: 0.5
+        }
+    }
+};
+
 export default function BackgroundandMissions() {
     return (
         <div className="about-us-container">
-            <section className="about-section">
+            <motion.section 
+                className="about-section"
+                {...fadeInUp}
+            >
                 <div className="about-text">
-                    <h2 className="about-title">About <span className="serif-text">LARASANA</span></h2>
+                    <h2 className="about-title">About Us <span className="serif-text"></span></h2>
                     <div className="about-desc-wrapper">
                         <div className="about-desc-inner">
                             <p className="about-desc">
@@ -35,16 +55,19 @@ export default function BackgroundandMissions() {
                 <div className="about-image">
                     <img src={first} alt="About Larasana" />
                 </div>
-            </section>
+            </motion.section>
 
             <div className="about-divider"></div>
 
-            <section className="missions-section">
+            <motion.section 
+                className="missions-section"
+                {...fadeInUp}
+            >
                 <div className="missions-image">
                     <img src={second} alt="Larasana Missions" />
                 </div>
                 <div className="missions-text">
-                    <h2 className="missions-title"><span className="serif-text">LARASANA</span> Missions</h2>
+                    <h2 className="missions-title">Our Missions <span className="serif-text"></span></h2>
                     <div className="missions-desc-wrapper">
                         <div className="missions-desc-inner">
                             <p className="missions-desc">
@@ -66,11 +89,14 @@ export default function BackgroundandMissions() {
                     </div>
                     <p className="missions-prompt">Our Pillars</p>
                 </div>
-            </section>
+            </motion.section>
 
             <div className="about-divider"></div>
 
-            <section className="team-intro-section">
+            <motion.section 
+                className="team-intro-section"
+                {...fadeInUp}
+            >
                 <div className="team-intro-header">
                     <div className="team-badges">
                         <span className="team-icon">
@@ -94,68 +120,90 @@ export default function BackgroundandMissions() {
                         <p>We preserve the timeless art of tenun and batik, while reimagining it for today's generation. Together with local artisans, we create meaningful fashion that honors craftsmanship, celebrates Indonesian heritage, and carries the spirit of Lombok to the world.</p>
                     </div>
                 </div>
-            </section>
+            </motion.section>
 
             <section className="team-members-section">
                 <div className="team-category">
-                    <h3 className="category-title">Founder</h3>
-                    <div className="members-grid founders-grid">
-                        <div className="member-card">
+                    <motion.h3 
+                        className="category-title"
+                        {...fadeInUp}
+                    >
+                        Founder
+                    </motion.h3>
+                    <motion.div 
+                        className="members-grid founders-grid"
+                        variants={staggerContainer}
+                        initial="initial"
+                        whileInView="whileInView"
+                        viewport={{ once: true, margin: "-100px" }}
+                    >
+                        <motion.div className="member-card" variants={fadeInUp}>
                             <div className="member-image"><img src={fawwaz} alt="Fawwaz Sidiq Nurseto" /></div>
                             <div className="member-info">
                                 <span className="member-name">Fawwaz Sidiq Nurseto</span>
                                 <span className="member-role">Founder & CTO</span>
                             </div>
-                        </div>
-                        <div className="member-card">
+                        </motion.div>
+                        <motion.div className="member-card" variants={fadeInUp}>
                             <div className="member-image"><img src={sheva} alt="Anak Agung Sheva" /></div>
                             <div className="member-info">
                                 <span className="member-name">Anak Agung Sheva</span>
                                 <span className="member-role">Founder & CFO</span>
                             </div>
-                        </div>
-                        <div className="member-card">
+                        </motion.div>
+                        <motion.div className="member-card" variants={fadeInUp}>
                             <div className="member-image"><img src={nauval} alt="Nauval Aziz R" /></div>
                             <div className="member-info">
                                 <span className="member-name">Nauval Aziz R</span>
                                 <span className="member-role">Founder & CEO</span>
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 </div>
 
                 <div className="team-category">
-                    <h3 className="category-title">Dev Team</h3>
-                    <div className="members-grid dev-grid">
-                        <div className="member-card">
+                    <motion.h3 
+                        className="category-title"
+                        {...fadeInUp}
+                    >
+                        Dev Team
+                    </motion.h3>
+                    <motion.div 
+                        className="members-grid dev-grid"
+                        variants={staggerContainer}
+                        initial="initial"
+                        whileInView="whileInView"
+                        viewport={{ once: true, margin: "-100px" }}
+                    >
+                        <motion.div className="member-card" variants={fadeInUp}>
                             <div className="member-image"><img src={fawwaz} alt="Fawwaz Sidiq Nurseto" /></div>
                             <div className="member-info">
                                 <span className="member-name">Fawwaz Sidiq Nurseto</span>
                                 <span className="member-role">PM, FE, UI/UX</span>
                             </div>
-                        </div>
-                        <div className="member-card">
+                        </motion.div>
+                        <motion.div className="member-card" variants={fadeInUp}>
                             <div className="member-image"><img src={faruk} alt="M. Faruk" /></div>
                             <div className="member-info">
                                 <span className="member-name">M. Faruk</span>
                                 <span className="member-role">UI/UX Designer</span>
                             </div>
-                        </div>
-                        <div className="member-card">
+                        </motion.div>
+                        <motion.div className="member-card" variants={fadeInUp}>
                             <div className="member-image"><img src={joel} alt="Joel A.S" /></div>
                             <div className="member-info">
                                 <span className="member-name">Joel A.S</span>
                                 <span className="member-role">BE Engineer</span>
                             </div>
-                        </div>
-                        <div className="member-card">
+                        </motion.div>
+                        <motion.div className="member-card" variants={fadeInUp}>
                             <div className="member-image"><img src={apis} alt="Alfis Fathoni" /></div>
                             <div className="member-info">
                                 <span className="member-name">Alfis Fathoni</span>
                                 <span className="member-role">BE Engineer</span>
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 </div>
             </section>
         </div>

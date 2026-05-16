@@ -9,12 +9,9 @@ export default function LoginPage() {
   return (
     <div className="auth-page">
 
-      {/* ══════════════════════════════════
-          LEFT — Form panel
-      ══════════════════════════════════ */}
+
       <div className="auth-panel auth-panel--form">
 
-        {/* Back arrow */}
         <Link to="/" className="auth-back">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -27,7 +24,7 @@ export default function LoginPage() {
           <h1 className="auth-heading">Welcome Back</h1>
           <p className="auth-subheading">Sign in to your Larasana account</p>
 
-          {/* ── Email / Password form ── */}
+  
           <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
 
             <div className="auth-field">
@@ -72,19 +69,16 @@ export default function LoginPage() {
               <a href="#" className="auth-forgot">Forgot password?</a>
             </div>
 
-            {/* Submit */}
             <button type="submit" className="auth-btn" id="login-submit">
               Sign In
             </button>
           </form>
 
-          {/* Switch to register */}
           <p className="auth-switch">
             Don't have an account?{' '}
             <Link to="/register" className="auth-switch__link">Register</Link>
           </p>
 
-          {/* ── Social — at the bottom, small ── */}
           <div className="auth-divider">
             <span className="auth-divider__line" />
             <span className="auth-divider__text">or continue with</span>
@@ -113,9 +107,9 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ══════════════════════════════════
-          RIGHT — Image panel
-      ══════════════════════════════════ */}
+ 
+
+
       <div className="auth-panel auth-panel--image">
         <img src={loginImg} alt="Larasana fashion" className="auth-image" />
         <div className="auth-image-overlay">

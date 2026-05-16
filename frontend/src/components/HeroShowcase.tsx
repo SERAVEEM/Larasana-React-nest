@@ -23,22 +23,17 @@ const GRID_ITEMS: Array<{
   rating: string;
   empty?: boolean;
 }> = [
-  { id: 'grid-1', image: firstImg, name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
-  { id: 'grid-2', image: secondImg, name: 'Anchronic Vest', price: '$260', rating: '4.5' },
-  { id: 'grid-3', image: thirdImg, name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
-  { id: 'grid-4', image: fourthImg, name: 'Larasana Signature', price: '$350', rating: '4.8' },
-  { id: 'grid-5', image: fifthImg, name: 'Tenun Classic', price: '$200', rating: '4.2' },
-];
+    { id: 'grid-1', image: firstImg, name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
+    { id: 'grid-2', image: secondImg, name: 'Anchronic Vest', price: '$260', rating: '4.5' },
+    { id: 'grid-3', image: thirdImg, name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
+    { id: 'grid-4', image: fourthImg, name: 'Larasana Signature', price: '$350', rating: '4.8' },
+    { id: 'grid-5', image: fifthImg, name: 'Tenun Classic', price: '$200', rating: '4.2' },
+  ];
 
 export default function HeroShowcase() {
   const [hasScrolledIntoView, setHasScrolledIntoView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const whiteBgRef = useRef<HTMLDivElement>(null);
-
-  // Animate the background box opacity as the white section enters the viewport
-  // Starts fading when white space hits the bottom of the screen (100%), 
-  // fully fades out when it reaches the center (50%)
-  // 1. Fades out the background box as the white section comes up from bottom (100%) to center (50%)
   const { scrollYProgress: fadeProgress } = useScroll({
     target: whiteBgRef,
     offset: ["start 100%", "start 50%"]
@@ -50,14 +45,10 @@ export default function HeroShowcase() {
 
 
   useEffect(() => {
-    // Set up the Intersection Observer
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // If the section enters the viewport...
         if (entry.isIntersecting) {
           setHasScrolledIntoView(true);
-
-          // Stop observing once it has animated so it doesn't repeat every scroll
           if (sectionRef.current) {
             observer.unobserve(sectionRef.current);
           }
@@ -66,7 +57,7 @@ export default function HeroShowcase() {
       {
         root: null,
         rootMargin: '0px',
-        threshold: 0.3, // Triggers when 30% of the section is visible on screen
+        threshold: 0.3,
       }
     );
 
@@ -84,7 +75,7 @@ export default function HeroShowcase() {
 
   return (
     <section ref={sectionRef} className="hs-super-wrapper" id="hero-showcase">
-      {/* Black Background Section */}
+
       <div className="hs-bg-black">
         <motion.p
           className="hs-description"
@@ -108,7 +99,7 @@ export default function HeroShowcase() {
         </motion.h2>
       </div>
 
-      {/* White Background Section */}
+    
       <div className="hs-bg-white" ref={whiteBgRef}>
         <motion.div
           className="hs-product-grid"

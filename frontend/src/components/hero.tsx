@@ -43,7 +43,7 @@ export default function Hero() {
 
   return (
     <section className="hero-section" id="hero">
-      {/* Visually hide video instead of display: none to prevent browsers from pausing it */}
+    
       <video
         ref={videoRef}
         src={v2}
@@ -63,12 +63,12 @@ export default function Hero() {
       {/* Canvas that captures video frames — used as text background */}
       <canvas ref={canvasRef} className="hero-section__canvas" />
 
-      {/* SVG text mask — creates the hollow/transparent effect */}
+     
       <div className="hero-section__mask">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <mask id="text-mask">
-              {/* White background = visible, black text = transparent */}
+     
               <rect width="100%" height="100%" fill="white" />
               <text
                 x="50%"

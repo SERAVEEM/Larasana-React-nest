@@ -23,7 +23,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/Impact" element={<><Navbar/><ImpactPages /></>} />
         <Route path="/Story" element={<><Navbar /><Story /></>} />
-        <Route path="/about" element={<><Navbar/><AboutUs /></>} />
+        <Route path="/aboutus" element={<><Navbar/><AboutUs /></>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
