@@ -1,0 +1,487 @@
+.hs-super-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.hs-bg-black {
+  position: relative;
+  width: 100%;
+  min-height: 75rem; /* Replaced max(100vh) to break Chrome layout loop */
+  background: #0a0a0a;
+  overflow: hidden;
+}
+
+.hs-bg-white {
+  width: 100%;
+  height: 100vh;
+  background: #ffffff;
+}
+
+.hs-sticky-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* Changed from height 100% to bottom 0 */
+  pointer-events: none;
+}
+
+.hs-description {
+  position: absolute;
+  top: 13rem;
+  left: 4rem;
+  max-width: 55rem;
+  font-family: 'Inter', serif;
+  font-size: 0.8rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.01em;
+  z-index: 10;
+}
+
+.hs-headline {
+  position: absolute;
+  top: 12rem;
+  right: 0;
+  padding-right: 6rem;
+  font-family: 'Gelasio', serif;
+  font-size: clamp(2rem, 3.8vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.05;
+  text-align: right;
+  color: #fff;
+  letter-spacing: -0.01em;
+  z-index: 10;
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.5);
+}
+
+
+
+/*card section*/
+
+/* We override the .sm, .md, .lg from the component 
+   and just rely on the positions for height and staggered offset */
+
+/* We will apply a unified 3D perspective to the container */
+.CardFrame {
+  height: 48.4rem;
+  width: 100%;
+  position: sticky;
+  top: calc(50vh - 24.2rem);
+  margin-top: calc(75rem - 48.4rem);
+  pointer-events: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  /* Crucial: Aligns from the top so margin-top works */
+  gap: calc(2rem + 20px);
+}
+
+.hs-card-wrapper {
+  position: relative;
+  transition: transform 0.4s ease, width 0.4s ease, height 0.4s ease;
+  width: 18.6rem;
+  opacity: 0;
+}
+
+.hs-card-bg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  transition: transform 0.4s ease;
+  backface-visibility: hidden;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.hs-card-slant {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5rem;
+  background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  /* Transform origin and skew will be applied dynamically based on position! */
+}
+
+.hs-card-main-body {
+  position: absolute;
+  top: 4.5rem;
+  /* Slight overlap with slant to hide the seam perfectly */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-radius: 0 0 24px 24px;
+}
+
+/* Image Layer stays perfectly flat */
+.hs-card-img-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0 0 24px 24px;
+  /* Only round the bottom */
+  overflow: hidden;
+  /* Clips the bottom so model doesn't spill out */
+  z-index: 10;
+}
+
+.hs-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Anchor to top so models' heads are always visible; body fills down */
+  object-position: top center;
+  /* Sync image transition with parent entrance animation */
+  transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 2nd Left & Right (Far outer) */
+.hs-card-wrapper.far-left,
+.hs-card-wrapper.far-right {
+  width: 16.85rem;
+  height: 31.6rem;
+  margin-top: 4.65rem;
+}
+
+.hs-card-wrapper.far-left {
+  z-index: 1;
+}
+
+.hs-card-wrapper.far-right {
+  z-index: 1;
+}
+
+/* 1st Left & Right */
+.hs-card-wrapper.left,
+.hs-card-wrapper.right {
+  height: 39rem;
+  margin-top: 0;
+}
+
+.hs-card-wrapper.left {
+  z-index: 3;
+}
+
+.hs-card-wrapper.right {
+  z-index: 3;
+}
+
+/* Center */
+.hs-card-wrapper.center {
+  width: 22.3rem;
+  height: 39rem;
+  margin-top: 7.4rem;
+  z-index: 5;
+}
+
+/* 2D Faux-3D Rotations on the background layer */
+.hs-card-wrapper.far-left .hs-card-bg-layer {
+  transform: scaleX(0.85);
+}
+
+.hs-card-wrapper.left .hs-card-bg-layer {
+  transform: scaleX(0.92);
+}
+
+.hs-card-wrapper.center .hs-card-bg-layer {
+  transform: scaleX(1);
+}
+
+.hs-card-wrapper.right .hs-card-bg-layer {
+  transform: scaleX(0.92);
+}
+
+.hs-card-wrapper.far-right .hs-card-bg-layer {
+  transform: scaleX(0.85);
+}
+
+/* Symmetrical Slants on the top of the cards */
+/* Left cards tilt INWARDS to the right */
+.hs-card-wrapper.far-left .hs-card-slant,
+.hs-card-wrapper.left .hs-card-slant {
+  transform-origin: bottom right;
+  transform: skewY(-3deg);
+}
+
+/* Center card is perfectly flat on top */
+.hs-card-wrapper.center .hs-card-slant {
+  transform: skewY(0deg);
+}
+
+/* Right cards tilt INWARDS to the left */
+.hs-card-wrapper.right .hs-card-slant,
+.hs-card-wrapper.far-right .hs-card-slant {
+  transform-origin: bottom left;
+  transform: skewY(3deg);
+}
+
+/* Hover effects */
+.hs-card-wrapper.far-left:hover {
+  transform: translateY(-0.5rem);
+}
+
+.hs-card-wrapper.left:hover {
+  transform: translateY(-0.5rem);
+}
+
+.hs-card-wrapper.center:hover {
+  transform: translateY(-0.5rem);
+}
+
+.hs-card-wrapper.right:hover {
+  transform: translateY(-0.5rem);
+}
+
+.hs-card-wrapper.far-right:hover {
+  transform: translateY(-0.5rem);
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-card-wrapper {
+    opacity: 1;
+    animation: none !important;
+    transform: none;
+  }
+}
+
+/* ===================================================
+   ENTRANCE ANIMATION: "DEAL FROM CENTER"
+   - Center rises from below
+   - Left/Right slide out from center — faster
+   - Far-Left/Far-Right slide out from behind Left/Right cards
+=================================================== */
+
+/* 1. Center card — rises from below (untouched) */
+.CardFrame.is-initial .hs-card-wrapper.center {
+  opacity: 0;
+  transform: translateY(100vh);
+}
+
+.CardFrame.is-initial .hs-card-wrapper.center .hs-card-bg-layer {
+  transform: scaleX(1);
+}
+
+/* 2a. Left/Right — start hidden behind the center card, same as before */
+.CardFrame.is-initial .hs-card-wrapper.left {
+  opacity: 0;
+  transform: translateX(calc(19.4rem + 10px)) translateY(7.4rem);
+}
+
+.CardFrame.is-initial .hs-card-wrapper.left .hs-card-bg-layer {
+  transform: scaleX(1);
+}
+
+.CardFrame.is-initial .hs-card-wrapper.right {
+  opacity: 0;
+  transform: translateX(calc(-19.4rem - 10px)) translateY(7.4rem);
+}
+
+.CardFrame.is-initial .hs-card-wrapper.right .hs-card-bg-layer {
+  transform: scaleX(1);
+}
+
+/* 2b. Far-Left/Far-Right — start hidden directly BEHIND the Left/Right cards.
+       translateX value = left card width + gap ≈ 21.5rem (one card over, not two) */
+.CardFrame.is-initial .hs-card-wrapper.far-left {
+  opacity: 0;
+  transform: translateX(calc(19.4rem + 10px));
+}
+
+.CardFrame.is-initial .hs-card-wrapper.far-left .hs-card-bg-layer {
+  transform: scaleX(1);
+}
+
+.CardFrame.is-initial .hs-card-wrapper.far-right {
+  opacity: 0;
+  transform: translateX(calc(-19.4rem - 10px));
+}
+
+.CardFrame.is-initial .hs-card-wrapper.far-right .hs-card-bg-layer {
+  transform: scaleX(1);
+}
+
+/* 3. Per-card transition durations — centre is untouched (6s default) */
+.CardFrame .hs-card-wrapper {
+  transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 3s ease-out;
+}
+
+.CardFrame .hs-card-bg-layer {
+  transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Left/Right — opacity finishes before far cards appear (delay 1.8s + 0.8s = 2.6s < 2.8s far delay) */
+.CardFrame .hs-card-wrapper.left,
+.CardFrame .hs-card-wrapper.right {
+  transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.8s ease-out;
+}
+
+.CardFrame .hs-card-wrapper.left .hs-card-bg-layer,
+.CardFrame .hs-card-wrapper.right .hs-card-bg-layer {
+  transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Far cards slide from behind left/right — give them a smooth medium duration */
+.CardFrame .hs-card-wrapper.far-left,
+.CardFrame .hs-card-wrapper.far-right {
+  transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 2s ease-out;
+}
+
+.CardFrame .hs-card-wrapper.far-left .hs-card-bg-layer,
+.CardFrame .hs-card-wrapper.far-right .hs-card-bg-layer {
+  transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Fast hover transitions once mounted */
+.CardFrame.is-mounted .hs-card-wrapper:hover {
+  transition: transform 0.4s ease;
+}
+
+/* 4. Final state opacity */
+.CardFrame.is-mounted .hs-card-wrapper {
+  opacity: 1;
+}
+
+/* 5. Stagger Sequence */
+
+/* Step 1: Center appears immediately (delay 0 — untouched) */
+.CardFrame.is-mounted .center {
+  transition-delay: 0s;
+}
+
+/* Step 2: Left/Right start earlier and finish faster */
+.CardFrame.is-mounted .left,
+.CardFrame.is-mounted .right {
+  transition-delay: 1.8s;
+}
+
+/* Step 3: Far cards wait for Left/Right to partially clear, then peel off */
+.CardFrame.is-mounted .far-left,
+.CardFrame.is-mounted .far-right {
+  transition-delay: 2.8s;
+}
+
+/* ===================================================
+   PRODUCT GRID (At the bottom of white section)
+=================================================== */
+
+.hs-bg-white {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #ffffff;
+}
+
+.hs-product-grid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 16rem;
+  /* Takes up smaller bottom portion */
+  display: flex;
+  z-index: 20;
+  /* Keep it above the floating cards */
+}
+
+.hs-grid-item {
+  flex: 1;
+  position: relative;
+  background: #A6A39C;
+  /* A warm grey/taupe matching the image */
+  overflow: hidden;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  /* optional divider */
+}
+
+.hs-grid-item:last-child {
+  border-right: none;
+}
+
+.hs-grid-item.empty {
+  background: #A6A39C;
+}
+
+.hs-grid-item-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Shows the full transparent PNG model natively without scaling hacks */
+  object-position: top center;
+  /* Anchors the top of the head to the top of the box */
+  transform: scale(1.45);
+  /* Zooms in a bit to find the sweet spot between contain and cover */
+  transform-origin: top center;
+}
+
+.hs-grid-heart {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 2;
+}
+
+.hs-grid-heart svg path {
+  fill: #fff;
+}
+
+.hs-grid-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  padding: 0.75rem 1rem;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-sizing: border-box;
+}
+
+.hs-grid-info-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.hs-grid-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  margin: 0;
+  font-style: italic;
+}
+
+.hs-grid-price {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin: 0;
+  font-style: italic;
+}
+
+.hs-grid-rating {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
