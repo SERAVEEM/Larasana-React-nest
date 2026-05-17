@@ -11,7 +11,6 @@ import HeroShowcasePage from './pages/HeroShowcasePage.tsx'
 import ImpactPages from "./pages/ImpactPages.tsx"
 import Story from './pages/Story.tsx'
 import AboutUs from './pages/AboutUs.tsx'
-
 import Navbar from './components/navbar.tsx'
 
 createRoot(document.getElementById('root')!).render(

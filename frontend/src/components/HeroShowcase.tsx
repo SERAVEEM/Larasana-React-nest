@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import firstImg from '../assets/images/product/first.png';
-import secondImg from '../assets/images/product/second.png';
-import thirdImg from '../assets/images/product/third.png';
-import fourthImg from '../assets/images/product/fourth.png';
-import fifthImg from '../assets/images/product/fifth.png';
+import farLeftImg from '../assets/images/product/far left.png';
+import leftImg from '../assets/images/product/left.png';
+import midImg from '../assets/images/product/MID.png';
+import rightImg from '../assets/images/product/right.png';
+import farRightImg from '../assets/images/product/far right.png';
 import '../style/HeroShowcase.css';
 
 const CARDS = [
-  { id: 'card-1', image: firstImg, gradient: null, alt: 'Look 1', size: 'sm', position: 'far-left', name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
-  { id: 'card-2', image: secondImg, gradient: null, alt: 'Look 2', size: 'md', position: 'left', name: 'Anchronic Vest', price: '$260', rating: '4.5' },
-  { id: 'card-3', image: thirdImg, gradient: null, alt: 'Center look', size: 'lg', position: 'center', name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
-  { id: 'card-4', image: fourthImg, gradient: null, alt: 'Look 4', size: 'md', position: 'right', name: 'Larasana Signature', price: '$350', rating: '4.8' },
-  { id: 'card-5', image: fifthImg, gradient: null, alt: 'Look 5', size: 'sm', position: 'far-right', name: 'Tenun Classic', price: '$200', rating: '4.2' },
+  { id: 'card-1', image: farLeftImg, gradient: null, alt: 'Look 1', size: 'sm', position: 'far-left', name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
+  { id: 'card-2', image: leftImg, gradient: null, alt: 'Look 2', size: 'md', position: 'left', name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
+  { id: 'card-3', image: midImg, gradient: null, alt: 'Center look', size: 'lg', position: 'center', name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
+  { id: 'card-4', image: rightImg, gradient: null, alt: 'Look 4', size: 'md', position: 'right', name: 'Anchronic Vest', price: '$260', rating: '4.5' },
+  { id: 'card-5', image: farRightImg, gradient: null, alt: 'Look 5', size: 'sm', position: 'far-right', name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
 ];
 
 const GRID_ITEMS: Array<{
@@ -23,11 +23,11 @@ const GRID_ITEMS: Array<{
   rating: string;
   empty?: boolean;
 }> = [
-    { id: 'grid-1', image: firstImg, name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
-    { id: 'grid-2', image: secondImg, name: 'Anchronic Vest', price: '$260', rating: '4.5' },
-    { id: 'grid-3', image: thirdImg, name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
-    { id: 'grid-4', image: fourthImg, name: 'Larasana Signature', price: '$350', rating: '4.8' },
-    { id: 'grid-5', image: fifthImg, name: 'Tenun Classic', price: '$200', rating: '4.2' },
+    { id: 'grid-1', image: farLeftImg, name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
+    { id: 'grid-2', image: leftImg, name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
+    { id: 'grid-3', image: midImg, name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
+    { id: 'grid-4', image: rightImg, name: 'Anchronic Vest', price: '$260', rating: '4.5' },
+    { id: 'grid-5', image: farRightImg, name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
   ];
 
 export default function HeroShowcase() {
@@ -141,26 +141,28 @@ export default function HeroShowcase() {
           {CARDS.map((card) => (
             <div
               key={card.id}
-              className={`hs-card ${card.position} ${card.size}`}
+              className={`hs-card-wrapper ${card.position} ${card.size}`}
             >
               <motion.div
-                className="hs-card-bg"
-                style={{
-                  opacity: bgOpacity,
-                  ...(card.gradient ? { background: card.gradient } : {})
-                }}
-              />
-              {card.position === 'center' && (
-                <motion.div
-                  className="hs-card-shadow"
-                  style={{ opacity: bgOpacity }}
+                className="hs-card-bg-layer"
+                style={{ opacity: bgOpacity }}
+              >
+                <div 
+                  className="hs-card-slant" 
+                  style={card.gradient ? { background: card.gradient } : {}}
                 />
-              )}
-              {card.image ? (
-                <img src={card.image} alt={card.alt} className="hs-card-img" style={{ position: 'relative', zIndex: 1 }} />
-              ) : (
-                <div className="hs-card-img placeholder" style={{ position: 'relative', zIndex: 1 }} />
-              )}
+                <div 
+                  className="hs-card-main-body" 
+                  style={card.gradient ? { background: card.gradient } : {}}
+                />
+              </motion.div>
+              <div className="hs-card-img-layer">
+                {card.image ? (
+                  <img src={card.image} alt={card.alt} className="hs-card-img" />
+                ) : (
+                  <div className="hs-card-img placeholder" />
+                )}
+              </div>
             </div>
           ))}
         </motion.div>

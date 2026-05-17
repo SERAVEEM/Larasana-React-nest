@@ -82,90 +82,60 @@
   color: linear(top top left);
 }
 
-.hs-card {
+.hs-card-wrapper {
   position: relative;
-  border-radius: 32px;
-  /* We remove overflow: hidden here if we want the image to not be clipped,
-     but we probably want to keep it so the image doesn't overflow the rounded corners.
-     Wait! If the box disappears, do we still want the image to be rounded?
-     Yes, the user just wants the 'box' (the visible background gradient) to disappear. */
-  overflow: hidden;
   transition: transform 0.4s ease, width 0.4s ease, height 0.4s ease;
-  transform-style: preserve-3d;
   width: 18.6rem;
-  /* Uniform base width */
   opacity: 0;
   will-change: transform, opacity, margin-top;
-  backface-visibility: hidden;
 }
 
-.hs-card-bg {
+.hs-card-bg-layer {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to top left, #ffffff 0%, #d0d0d0 100%);
-  border-radius: 32px;
   z-index: 0;
+  transition: transform 0.4s ease;
+  backface-visibility: hidden;
+  /* Use drop-shadow so the shadow perfectly wraps the asymmetrical shape */
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.4));
 }
 
-.hs-card-shadow {
+.hs-card-slant {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5rem;
+  background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  /* Transform origin and skew will be applied dynamically based on position! */
+}
+
+.hs-card-main-body {
+  position: absolute;
+  top: 4.5rem; /* Slight overlap with slant to hide the seam perfectly */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-radius: 0 0 24px 24px;
+}
+
+/* Image Layer stays perfectly flat */
+.hs-card-img-layer {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 32px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  z-index: -1;
+  border-radius: 0 0 24px 24px; /* Only round the bottom */
+  overflow: hidden; /* Clips the bottom so model doesn't spill out */
+  z-index: 10;
 }
 
-/* 2nd Left & Right (Far outer) */
-.hs-card.far-left,
-.hs-card.far-right {
-  width: 16.85rem;
-  height: 31.6rem;
-  margin-top: 4.65rem;
-}
-
-.hs-card.far-left {
-  transform: rotateY(30deg);
-  z-index: 1;
-}
-
-.hs-card.far-right {
-  transform: rotateY(-30deg);
-  z-index: 1;
-}
-
-/* 1st Left & Right */
-.hs-card.left,
-.hs-card.right {
-  height: 39rem;
-  margin-top: 0;
-}
-
-.hs-card.left {
-  transform: rotateY(20deg);
-  z-index: 3;
-}
-
-.hs-card.right {
-  transform: rotateY(-20deg);
-  z-index: 3;
-}
-
-/* Center */
-.hs-card.center {
-  width: 22.3rem;
-  height: 39rem;
-  margin-top: 7.4rem;
-  transform: rotateY(0deg);
-  z-index: 5;
-}
-
-/* Image / Placeholder styles */
 .hs-card-img {
   width: 100%;
   height: 100%;
@@ -176,26 +146,82 @@
   transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 2nd Left & Right (Far outer) */
+.hs-card-wrapper.far-left,
+.hs-card-wrapper.far-right {
+  width: 16.85rem;
+  height: 31.6rem;
+  margin-top: 4.65rem;
+}
+
+.hs-card-wrapper.far-left {
+  z-index: 1;
+}
+
+.hs-card-wrapper.far-right {
+  z-index: 1;
+}
+
+/* 1st Left & Right */
+.hs-card-wrapper.left,
+.hs-card-wrapper.right {
+  height: 39rem;
+  margin-top: 0;
+}
+
+.hs-card-wrapper.left {
+  z-index: 3;
+}
+
+.hs-card-wrapper.right {
+  z-index: 3;
+}
+
+/* Center */
+.hs-card-wrapper.center {
+  width: 22.3rem;
+  height: 39rem;
+  margin-top: 7.4rem;
+  z-index: 5;
+}
+
+/* Rotations on the background layer */
+.hs-card-wrapper.far-left .hs-card-bg-layer { transform: rotateY(-30deg); }
+
+.hs-card-wrapper.left .hs-card-bg-layer { transform: rotateY(-20deg); }
+
+.hs-card-wrapper.center .hs-card-bg-layer { transform: rotateY(0deg); }
+
+.hs-card-wrapper.right .hs-card-bg-layer { transform: rotateY(-20deg); }
+
+.hs-card-wrapper.far-right .hs-card-bg-layer { transform: rotateY(-30deg); }
+
+/* Symmetrical Slants on the top of the cards */
+/* Left cards tilt INWARDS to the right */
+.hs-card-wrapper.far-left .hs-card-slant,
+.hs-card-wrapper.left .hs-card-slant {
+  transform-origin: bottom right;
+  transform: skewY(-3deg);
+}
+
+/* Center card is perfectly flat on top */
+.hs-card-wrapper.center .hs-card-slant {
+  transform: skewY(0deg);
+}
+
+/* Right cards tilt INWARDS to the left */
+.hs-card-wrapper.right .hs-card-slant,
+.hs-card-wrapper.far-right .hs-card-slant {
+  transform-origin: bottom left;
+  transform: skewY(3deg);
+}
+
 /* Hover effects */
-.hs-card.far-left:hover {
-  transform: rotateY(30deg) translateY(-0.5rem);
-}
-
-.hs-card.left:hover {
-  transform: rotateY(20deg) translateY(-0.5rem);
-}
-
-.hs-card.center:hover {
-  transform: rotateY(0deg) translateY(-0.5rem);
-}
-
-.hs-card.right:hover {
-  transform: rotateY(-20deg) translateY(-0.5rem);
-}
-
-.hs-card.far-right:hover {
-  transform: rotateY(-30deg) translateY(-0.5rem);
-}
+.hs-card-wrapper.far-left:hover { transform: translateY(-0.5rem); }
+.hs-card-wrapper.left:hover { transform: translateY(-0.5rem); }
+.hs-card-wrapper.center:hover { transform: translateY(-0.5rem); }
+.hs-card-wrapper.right:hover { transform: translateY(-0.5rem); }
+.hs-card-wrapper.far-right:hover { transform: translateY(-0.5rem); }
 
 @keyframes hs-fan-center {
   0% {
@@ -268,30 +294,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hs-card {
+  .hs-card-wrapper {
     opacity: 1;
     animation: none !important;
     transform: none;
-  }
-
-  .hs-card.far-left {
-    transform: rotateY(30deg);
-  }
-
-  .hs-card.left {
-    transform: rotateY(20deg);
-  }
-
-  .hs-card.center {
-    transform: rotateY(0deg);
-  }
-
-  .hs-card.right {
-    transform: rotateY(-20deg);
-  }
-
-  .hs-card.far-right {
-    transform: rotateY(-30deg);
   }
 }
 
@@ -303,69 +309,95 @@
 =================================================== */
 
 /* 1. Center card — rises from below (untouched) */
-.CardFrame.is-initial .hs-card.center {
+.CardFrame.is-initial .hs-card-wrapper.center {
   opacity: 0;
-  transform: translateY(100vh) rotateY(0deg);
+  transform: translateY(100vh);
+}
+.CardFrame.is-initial .hs-card-wrapper.center .hs-card-bg-layer {
+  transform: rotateY(0deg);
 }
 
 /* 2a. Left/Right — start hidden behind the center card, same as before */
-.CardFrame.is-initial .hs-card.left {
+.CardFrame.is-initial .hs-card-wrapper.left {
   opacity: 0;
-  transform: translateX(calc(19.4rem + 10px)) rotateY(0deg);
+  transform: translateX(calc(19.4rem + 10px));
   margin-top: 7.4rem;
 }
+.CardFrame.is-initial .hs-card-wrapper.left .hs-card-bg-layer {
+  transform: rotateY(0deg);
+}
 
-.CardFrame.is-initial .hs-card.right {
+.CardFrame.is-initial .hs-card-wrapper.right {
   opacity: 0;
-  transform: translateX(calc(-19.4rem - 10px)) rotateY(0deg);
+  transform: translateX(calc(-19.4rem - 10px));
   margin-top: 7.4rem;
+}
+.CardFrame.is-initial .hs-card-wrapper.right .hs-card-bg-layer {
+  transform: rotateY(0deg);
 }
 
 /* 2b. Far-Left/Far-Right — start hidden directly BEHIND the Left/Right cards.
        translateX value = left card width + gap ≈ 21.5rem (one card over, not two) */
-.CardFrame.is-initial .hs-card.far-left {
+.CardFrame.is-initial .hs-card-wrapper.far-left {
   opacity: 0;
-  transform: translateX(calc(19.4rem + 10px)) rotateY(0deg);
+  transform: translateX(calc(19.4rem + 10px));
   margin-top: 4.65rem;
 }
+.CardFrame.is-initial .hs-card-wrapper.far-left .hs-card-bg-layer {
+  transform: rotateY(0deg);
+}
 
-.CardFrame.is-initial .hs-card.far-right {
+.CardFrame.is-initial .hs-card-wrapper.far-right {
   opacity: 0;
-  transform: translateX(calc(-19.4rem - 10px)) rotateY(0deg);
+  transform: translateX(calc(-19.4rem - 10px));
   margin-top: 4.65rem;
+}
+.CardFrame.is-initial .hs-card-wrapper.far-right .hs-card-bg-layer {
+  transform: rotateY(0deg);
 }
 
 /* 3. Per-card transition durations — centre is untouched (6s default) */
-.CardFrame .hs-card {
+.CardFrame .hs-card-wrapper {
   transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 3s ease-out,
     margin-top 6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.CardFrame .hs-card-bg-layer {
+  transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* Left/Right — opacity finishes before far cards appear (delay 1.8s + 0.8s = 2.6s < 2.8s far delay) */
-.CardFrame .hs-card.left,
-.CardFrame .hs-card.right {
+.CardFrame .hs-card-wrapper.left,
+.CardFrame .hs-card-wrapper.right {
   transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.8s ease-out,
     margin-top 3.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.CardFrame .hs-card-wrapper.left .hs-card-bg-layer,
+.CardFrame .hs-card-wrapper.right .hs-card-bg-layer {
+  transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 /* Far cards slide from behind left/right — give them a smooth medium duration */
-.CardFrame .hs-card.far-left,
-.CardFrame .hs-card.far-right {
+.CardFrame .hs-card-wrapper.far-left,
+.CardFrame .hs-card-wrapper.far-right {
   transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 2s ease-out,
     margin-top 3.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.CardFrame .hs-card-wrapper.far-left .hs-card-bg-layer,
+.CardFrame .hs-card-wrapper.far-right .hs-card-bg-layer {
+  transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 /* Fast hover transitions once mounted */
-.CardFrame.is-mounted .hs-card:hover,
-.CardFrame.is-mounted .hs-card:hover .hs-card-img {
+.CardFrame.is-mounted .hs-card-wrapper:hover {
   transition: transform 0.4s ease;
 }
 
 /* 4. Final state opacity */
-.CardFrame.is-mounted .hs-card {
+.CardFrame.is-mounted .hs-card-wrapper {
   opacity: 1;
 }
 
