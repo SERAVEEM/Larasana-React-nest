@@ -6,8 +6,6 @@ import impactImg from "../assets/images/storytelling/impact.png";
 export default function StoryTelling() {
   return (
     <div className="storytelling-page">
-      <Navbar />
-
       <div className="st-left-col">
         <h1 className="st-title">
           Preserving Culture, One <br />

@@ -63,7 +63,6 @@ export default function LandingPages() {
 
   return (
     <div id="landing-page">
-      <Navbar />
       <Hero />
     </div>
   );
