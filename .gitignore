@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+dist/
+
+# Environment — JANGAN pernah push file .env
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Build
+/dist
+/build
