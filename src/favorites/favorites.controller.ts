@@ -3,7 +3,7 @@ import {
   UseGuards, ParseIntPipe, HttpCode, HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
-import { FavoritesService } from './favorite.service';
+import { FavoritesService } from './favorites.service';
 import { FavoriteQueryDto } from './dto/favorite-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetUser } from '../common/decorators/get-user.decorator';
