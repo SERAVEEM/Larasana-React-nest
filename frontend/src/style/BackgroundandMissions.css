@@ -1,0 +1,332 @@
+.about-us-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 120px 80px;
+    font-family: 'Inter', sans-serif;
+    color: #000;
+}
+
+.serif-text {
+    font-family: 'GFS Didot', serif;
+    font-weight: 400;
+}
+
+.about-section,
+.missions-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 80px;
+    gap: 80px;
+}
+
+.about-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    flex: 1;
+}
+
+.about-title {
+    margin: 0;
+    color: #000000;
+    font-size: 48px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.about-desc-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.8s ease, margin 0.8s ease, opacity 0.8s ease;
+    margin-top: 0;
+    opacity: 0;
+}
+
+.about-desc-inner {
+    overflow: hidden;
+}
+
+.about-desc {
+    margin: 0;
+    margin-bottom: 1.2rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.6;
+    color: #111;
+    transform: translateY(-1.5rem);
+    transition: transform 0.8s ease-out;
+}
+
+.about-text:hover .about-desc-wrapper {
+    grid-template-rows: 1fr;
+    margin-top: 2rem;
+    opacity: 1;
+}
+
+.about-text:hover .about-desc {
+    transform: translateY(0);
+}
+
+.about-prompt {
+    margin: 0;
+    margin-top: 1.5rem;
+    color: #000000;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    opacity: 0.8;
+}
+
+.missions-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    flex: 1;
+}
+
+.missions-title {
+    margin: 0;
+    color: #000000;
+    font-size: 48px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.missions-desc-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.8s ease, margin 0.8s ease, opacity 0.8s ease;
+    margin-top: 0;
+    opacity: 0;
+}
+
+.missions-desc-inner {
+    overflow: hidden;
+}
+
+.missions-desc {
+    margin: 0;
+    margin-bottom: 1.2rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.6;
+    color: #111;
+    transform: translateY(-1.5rem);
+    transition: transform 0.8s ease-out;
+}
+
+.missions-text:hover .missions-desc-wrapper {
+    grid-template-rows: 1fr;
+    margin-top: 2rem;
+    opacity: 1;
+}
+
+.missions-text:hover .missions-desc {
+    transform: translateY(0);
+}
+
+.missions-prompt {
+    margin: 0;
+    margin-top: 1.5rem;
+    color: #000000;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    opacity: 0.8;
+}
+
+.about-image {
+    flex: 1.2;
+    position: relative;
+    border-radius: 40px;
+    overflow: hidden;
+}
+
+.about-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.about-overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'GFS Didot', serif;
+    font-size: 6vw;
+    color: #fff;
+    white-space: nowrap;
+    text-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.missions-image {
+    flex: 1.2;
+    border-radius: 40px;
+    overflow: hidden;
+}
+
+.missions-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.about-divider {
+    height: 1px;
+    background-color: #000;
+    margin: 80px 0;
+    width: 100%;
+}
+
+.team-intro-section {
+    margin-bottom: 80px;
+}
+
+.team-badges {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.team-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.team-badge {
+    border: 1px solid #000;
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.team-main-title {
+    font-size: 48px;
+    font-weight: 600;
+    margin-bottom: 60px;
+}
+
+.team-intro-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 80px;
+}
+
+.team-intro-left {
+    flex: 1;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.team-intro-right {
+    flex: 1;
+    font-size: 16px;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.team-members-section {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+}
+
+.category-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 40px;
+}
+
+.members-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.dev-grid {
+    /* Dev team 4 people: first 3 on top row, 1 on bottom */
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.member-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.member-image img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 40px;
+    object-fit: cover;
+    background-color: #f5f5f5;
+}
+
+.member-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.member-name {
+    border: 1px solid #000;
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.member-role {
+    font-size: 14px;
+    color: #666;
+    padding-left: 20px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+
+    .about-section,
+    .missions-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .team-intro-content {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .members-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .about-us-container {
+        padding: 80px 40px;
+    }
+
+    .about-overlay-text {
+        font-size: 12vw;
+    }
+
+    .members-grid {
+        grid-template-columns: 1fr;
+    }
+}
