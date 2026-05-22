@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import Lenis from 'lenis';
 import "../style/Story.css";
 
 
@@ -8,7 +7,6 @@ import firstHero from '../assets/images/Story/First.png';
 import legacyImg from '../assets/images/Story/Legacy.png';
 import historyImg from '../assets/images/Story/History.png';
 import storyImg from '../assets/images/Story/Story.png';
-import larasanaImg from '../assets/images/Story/LARASANA.png';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -18,30 +16,6 @@ const fadeInUp = {
 };
 
 const StoryPage: React.FC = () => {
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-      infinite: false,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
-
   return (
     <div className="story-page-container">
       <main className="story-main">

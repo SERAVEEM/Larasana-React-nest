@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import Lenis from 'lenis';
 import '../style/impactPages.css';
 import hhi from '../assets/images/impact/HHI.png';
 import socialImg from '../assets/images/impact/Social.png';
@@ -67,24 +65,6 @@ const programsData = [
 ];
 
 const ImpactPages = () => {
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
-
   return (
     <div className="impact-page">
       <main className="impact-hero">
