@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 
-const MENU_ITEMS = ['Login', 'Product', 'About Us', 'Story'];
+const MENU_ITEMS = [
+  { name: 'Home', path: '/' },
+  { name: 'Product', path: '/#hero-showcase' },
+  { name: 'About Us', path: '/aboutus' },
+  { name: 'Story', path: '/Story' },
+  { name: 'Impact', path: '/Impact' },
+  { name: 'Login', path: '/login' },
+];
 
 export default function Hamburger() {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,14 +61,14 @@ export default function Hamburger() {
 
             <nav className="hamburger-overlay__links">
               {MENU_ITEMS.map((item) => (
-                <a
-                  key={item}
+                <Link
+                  key={item.name}
                   className="hamburger-overlay__link"
-                  href={`#${item.toLowerCase()}`}
+                  to={item.path}
                   onClick={() => setIsOpen(false)}
                 >
-                  {item}
-                </a>
+                  {item.name}
+                </Link>
               ))}
             </nav>
           </div>

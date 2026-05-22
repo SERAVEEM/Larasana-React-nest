@@ -40,16 +40,27 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
 
   useEffect(() => {
     if (lenisRef.current) {
-      // Reset scroll position on route change
-      lenisRef.current.scrollTo(0, { immediate: true });
-      
-      // Recalculate container dimensions after rendering completes
-      const timer = setTimeout(() => {
-        lenisRef.current?.resize();
-      }, 50);
-      return () => clearTimeout(timer);
+      if (location.hash) {
+        // Wait a brief moment for the page to render and resize
+        const timer = setTimeout(() => {
+          const target = document.querySelector(location.hash);
+          if (target) {
+            lenisRef.current?.scrollTo(target as HTMLElement, { offset: 0, duration: 1.5 });
+          }
+        }, 100);
+        return () => clearTimeout(timer);
+      } else {
+        // Reset scroll position on route change
+        lenisRef.current.scrollTo(0, { immediate: true });
+        
+        // Recalculate container dimensions after rendering completes
+        const timer = setTimeout(() => {
+          lenisRef.current?.resize();
+        }, 50);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.hash]);
 
   return <>{children}</>;
 }

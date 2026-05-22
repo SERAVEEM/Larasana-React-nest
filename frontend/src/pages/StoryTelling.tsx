@@ -33,7 +33,7 @@ export default function StoryTelling() {
                   <br />
                   and style into your everyday life.
                 </p>
-                <a href="#" className="st-card__cta">
+                <a href="/Story" className="st-card__cta">
                   <span className="st-card__cta-line" />
                   STORY PAGES
                 </a>
@@ -57,7 +57,7 @@ export default function StoryTelling() {
                   <br />
                   for generations to come.
                 </p>
-                <a href="/impact" className="st-card__cta">
+                <a href="/Impact" className="st-card__cta">
                   <span className="st-card__cta-line" />
                   IMPACT PAGES
                 </a>

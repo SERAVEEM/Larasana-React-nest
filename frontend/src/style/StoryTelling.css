@@ -276,4 +276,129 @@
   flex-shrink: 0;
 }
 
-/* Removed arbitrary height media queries as layout is now fully vertically responsive */
+/* ===== Responsive Layouts ===== */
+@media (max-width: 64rem) { /* Tablet (1024px and below) */
+  .st-line {
+    display: none !important;
+  }
+
+  .storytelling-page {
+    height: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 8rem 2rem 4rem;
+  }
+
+  .st-left-col {
+    position: relative;
+    width: 100%;
+    left: auto;
+    top: auto;
+    bottom: auto;
+    padding-left: 0;
+    margin-bottom: 3.5rem;
+    text-align: center;
+  }
+
+  .st-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .st-description {
+    font-size: 1.1rem;
+    max-width: 37.5rem;
+    margin: 0 auto;
+    padding-left: 0;
+  }
+
+  .st-interactive {
+    position: relative;
+    width: 100%;
+    height: 31.25rem;
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+
+  .st-hover-zone {
+    position: relative;
+    flex: 1;
+    height: 100%;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+  }
+
+  .st-col-label {
+    display: none !important;
+  }
+
+  .st-card {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    border-radius: 1rem;
+    clip-path: inset(0 0 0 0) !important; /* Open by default on touch screens */
+  }
+
+  .st-card__title {
+    font-size: 2.5rem;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  .st-card__subtitle {
+    font-size: 0.875rem;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  .st-card__cta {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  .st-card__content {
+    right: 1.5rem;
+    bottom: 2rem;
+  }
+}
+
+@media (max-width: 48rem) { /* Mobile (768px and below) */
+  .storytelling-page {
+    padding: 6rem 1.5rem 3rem;
+  }
+
+  .st-title {
+    font-size: 2.25rem;
+  }
+
+  .st-interactive {
+    flex-direction: column;
+    height: auto;
+    gap: 1.5rem;
+  }
+
+  .st-hover-zone {
+    height: 25rem;
+    width: 100%;
+  }
+
+  .st-card__title {
+    font-size: 2rem;
+  }
+
+  .st-card__subtitle {
+    font-size: 0.8rem;
+  }
+  
+  .st-card__subtitle br {
+    display: none;
+  }
+}
