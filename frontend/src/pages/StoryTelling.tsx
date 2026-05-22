@@ -1,5 +1,4 @@
 import "../style/StoryTelling.css";
-import Navbar from "../components/navbar";
 import storyImg from "../assets/images/storytelling/story.png";
 import impactImg from "../assets/images/storytelling/impact.png";
 

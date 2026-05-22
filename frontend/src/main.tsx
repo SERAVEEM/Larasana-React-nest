@@ -12,18 +12,21 @@ import ImpactPages from "./pages/ImpactPages.tsx"
 import Story from './pages/Story.tsx'
 import AboutUs from './pages/AboutUs.tsx'
 import Navbar from './components/navbar.tsx'
+import SmoothScroll from './components/SmoothScroll.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<><Navbar /><LandingPages /><StoryTelling /><HeroShowcasePage /></>} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/Impact" element={<><Navbar/><ImpactPages /></>} />
-        <Route path="/Story" element={<><Navbar /><Story /></>} />
-        <Route path="/aboutus" element={<><Navbar/><AboutUs /></>} />
-      </Routes>
+      <SmoothScroll>
+        <Routes>
+          <Route path="/" element={<><Navbar /><LandingPages /><StoryTelling /><HeroShowcasePage /></>} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/Impact" element={<><Navbar/><ImpactPages /></>} />
+          <Route path="/Story" element={<><Navbar /><Story /></>} />
+          <Route path="/aboutus" element={<><Navbar/><AboutUs /></>} />
+        </Routes>
+      </SmoothScroll>
     </BrowserRouter>
   </StrictMode>
 )
