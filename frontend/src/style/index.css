@@ -97,7 +97,7 @@ ul {
   width: max-content;
   padding: 0.75rem 2rem;
   border-radius: 3.125rem;
-  gap: 34.375rem;
+  gap: clamp(15rem, 25vw, 34.375rem);
   /* No glass effect initially */
   background: transparent;
   border: 0.09375rem solid transparent;
@@ -108,7 +108,7 @@ ul {
 }
 
 .navbar--scrolled {
-  gap: 17.1875rem;
+  gap: clamp(8rem, 12vw, 17.1875rem);
   /* Glass effect border container */
   background: linear-gradient(-45deg,
       rgba(255, 255, 255, 0.80) 0%,
@@ -132,7 +132,7 @@ ul {
 .navbar__logo,
 .navbar__hamburger {
   display: flex;
-  justify-content: center;
+  align-items: center;
 }
 
 .navbar__logo {
@@ -242,7 +242,7 @@ ul {
 }
 
 .hamburger-btn__line2 {
-  width: 1.5625rem;
+  width: 3.125rem;
   height: 0.125rem;
   background: #555;
   border-radius: 0.125rem;
@@ -365,7 +365,7 @@ ul {
 }
 
 .hamburger-overlay__link:hover {
-  color: #efefef;
+  color: #b8860b;
   transform: translateX(0.625rem);
 }
 
@@ -409,21 +409,52 @@ ul {
   visibility: hidden;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 48rem) {
-  .navbar {
-    width: 95%;
-    padding: 0.625rem 1.25rem;
-  }
-
+@media (max-width: 75rem) {
   .navbar__links {
-    gap: 1.125rem;
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 60rem) {
+  .navbar__links {
+    gap: 1.5rem;
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 64rem) {
+
+  .navbar__logo,
+  .navbar__links {
+    display: none !important;
   }
 
-  .navbar__links li a {
-    font-size: 0.75rem;
+  .navbar {
+    width: max-content !important;
+    max-width: 90vw !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    padding: 0.5rem !important;
   }
 
+  .hamburger-btn {
+    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+
+  .hamburger-btn__line1,
+  .hamburger-btn__line3 {
+    width: 1.5rem !important;
+    height: 0.09375rem !important;
+  }
+
+  .hamburger-btn__line2 {
+    width: 0.75rem !important;
+    height: 0.09375rem !important;
+  }
+}
+
+@media (max-width: 48rem) {
   .hero-section__title {
     font-size: 6rem;
   }
@@ -453,9 +484,5 @@ ul {
 
   .hamburger-overlay__link {
     font-size: 1.5rem;
-  }
-
-  .navbar__links {
-    gap: 0.75rem;
   }
 }

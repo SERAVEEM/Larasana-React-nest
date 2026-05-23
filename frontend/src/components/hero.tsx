@@ -41,7 +41,7 @@ export default function Hero() {
         <h1 
           style={{
             fontFamily: "'Linotype Didot Bold', 'GFS Didot', serif",
-            fontSize: '16rem',
+            fontSize: 'clamp(3.5rem, 15vw, 16rem)',
             fontWeight: 'bold',
             color: 'black',
             margin: 0,
