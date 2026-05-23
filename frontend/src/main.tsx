@@ -13,6 +13,16 @@ import Story from './pages/Story.tsx'
 import AboutUs from './pages/AboutUs.tsx'
 import Navbar from './components/navbar.tsx'
 import SmoothScroll from './components/SmoothScroll.tsx'
+import ProductDetailPage from './pages/ProductDetailPage.tsx'
+
+// Admin Views
+import AdminLayout from './components/AdminLayout.tsx'
+import AdminDashboard from './pages/admin/AdminDashboard.tsx'
+import AdminProducts from './pages/admin/AdminProducts.tsx'
+import AdminAddProduct from './pages/admin/AdminAddProduct.tsx'
+import AdminEditProduct from './pages/admin/AdminEditProduct.tsx'
+import AdminOrders from './pages/admin/AdminOrders.tsx'
+import AdminOrderDetails from './pages/admin/AdminOrderDetails.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -25,8 +35,17 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/Impact" element={<><Navbar/><ImpactPages /></>} />
           <Route path="/Story" element={<><Navbar /><Story /></>} />
           <Route path="/aboutus" element={<><Navbar/><AboutUs /></>} />
+          <Route path="/product/:id" element={<><Navbar /><ProductDetailPage /></>} />
+          
+          {/* Admin Dashboards & Management Catalog */}
+          <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+          <Route path="/admin/products" element={<AdminLayout><AdminProducts /></AdminLayout>} />
+          <Route path="/admin/products/new" element={<AdminLayout><AdminAddProduct /></AdminLayout>} />
+          <Route path="/admin/products/edit/:id" element={<AdminLayout><AdminEditProduct /></AdminLayout>} />
+          <Route path="/admin/orders" element={<AdminLayout><AdminOrders /></AdminLayout>} />
+          <Route path="/admin/orders/:id" element={<AdminLayout><AdminOrderDetails /></AdminLayout>} />
         </Routes>
       </SmoothScroll>
     </BrowserRouter>
   </StrictMode>
-)
+)
