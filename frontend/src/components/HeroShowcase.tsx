@@ -46,12 +46,13 @@ export default function HeroShowcase() {
 
 
   useEffect(() => {
+    const node = sectionRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setHasScrolledIntoView(true);
-          if (sectionRef.current) {
-            observer.unobserve(sectionRef.current);
+          if (node) {
+            observer.unobserve(node);
           }
         }
       },
@@ -62,14 +63,14 @@ export default function HeroShowcase() {
       }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    if (node) {
+      observer.observe(node);
     }
 
     // Cleanup observer on unmount
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (node) {
+        observer.unobserve(node);
       }
     };
   }, []);

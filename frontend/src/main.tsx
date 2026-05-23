@@ -14,6 +14,9 @@ import AboutUs from './pages/AboutUs.tsx'
 import Navbar from './components/navbar.tsx'
 import SmoothScroll from './components/SmoothScroll.tsx'
 import ProductDetailPage from './pages/ProductDetailPage.tsx'
+import CheckoutPage from './pages/CheckoutPage.tsx'
+import PaymentPage from './pages/PaymentPage.tsx'
+import FinishPaymentPage from './pages/FinishPaymentPage.tsx'
 
 // Admin Views
 import AdminLayout from './components/AdminLayout.tsx'
@@ -36,6 +39,9 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/Story" element={<><Navbar /><Story /></>} />
           <Route path="/aboutus" element={<><Navbar/><AboutUs /></>} />
           <Route path="/product/:id" element={<><Navbar /><ProductDetailPage /></>} />
+          <Route path="/checkout" element={<><Navbar /><CheckoutPage /></>} />
+          <Route path="/payment" element={<><Navbar /><PaymentPage /></>} />
+          <Route path="/payment-success" element={<><Navbar /><FinishPaymentPage /></>} />
           
           {/* Admin Dashboards & Management Catalog */}
           <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />

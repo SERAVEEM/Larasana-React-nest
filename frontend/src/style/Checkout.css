@@ -1,0 +1,816 @@
+/* ===== Checkout Page Styles ===== */
+
+.co-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #1a1a1a;
+  box-sizing: border-box;
+}
+
+.co-header-space {
+  height: 8rem;
+}
+
+.co-container {
+  max-width: 85rem;
+  margin: 0 auto;
+  padding: 0 4rem 6rem;
+  position: relative;
+}
+
+/* Back Button */
+.co-back-button {
+  position: absolute;
+  top: -2rem;
+  left: 4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  transition: transform 0.2s ease, color 0.2s ease;
+  z-index: 100;
+}
+
+.co-back-button:hover {
+  transform: translateX(-4px);
+  color: #C2A353;
+}
+
+/* Dual Column Layout */
+.co-content-grid {
+  display: grid;
+  grid-template-columns: 4.5fr 5.5fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+/* Left Column: Image */
+.co-image-column {
+  width: 100%;
+  position: sticky;
+  top: 8rem;
+}
+
+.co-image-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 0.82;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e5e5e5 0%, #ffffff 100%);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+}
+
+.co-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  transform: scale(1.1);
+  transition: transform 0.5s ease;
+}
+
+.co-image-card:hover .co-product-img {
+  transform: scale(1.15);
+}
+
+/* Right Column: Checkout Details */
+.co-details-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+}
+
+/* Title Block */
+.co-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 1.5rem;
+  gap: 2rem;
+}
+
+.co-product-name {
+  font-family: 'Linotype Didot Bold', 'GFS Didot', serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.2;
+  margin: 0 0 0.5rem 0;
+}
+
+.co-product-price {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #C2A353;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.co-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.co-tag-handmade {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1.5px solid #C2A353;
+  color: #C2A353;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+
+.co-tag-handmade svg {
+  stroke-width: 3.5px;
+}
+
+.co-size-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  background: #1a1a1a;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Cards Sections */
+.co-card-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.co-section-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Clickable Selection Cards */
+.co-select-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #eaeaea;
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+}
+
+.co-select-card:hover {
+  border-color: #C2A353;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(194, 163, 83, 0.08);
+}
+
+.co-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+.co-card-label-badge {
+  align-self: flex-start;
+  background: rgba(194, 163, 83, 0.1);
+  color: #C2A353;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+.co-card-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #555555;
+  margin: 0;
+  max-width: 90%;
+}
+
+.co-card-edit-icon {
+  color: #a0a0a0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.co-select-card:hover .co-card-edit-icon {
+  color: #C2A353;
+  transform: scale(1.1);
+}
+
+/* Shipping and Payment Card Info Rows */
+.co-card-info-row {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.co-carrier-badge-wrapper,
+.co-payment-badge-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.co-carrier-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  width: 4rem;
+  height: 2.2rem;
+  border: 1px solid #e0e0e0;
+}
+
+.co-carrier-logo.jne {
+  color: #0b348f;
+  background: linear-gradient(135deg, #ffffff 0%, #eceff7 100%);
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.co-carrier-logo.dhl {
+  color: #d00000;
+  background: #ffcc00;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.co-carrier-logo.std {
+  color: #555555;
+  font-size: 0.75rem;
+}
+
+.co-carrier-details,
+.co-payment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.co-carrier-name,
+.co-payment-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.co-carrier-eta,
+.co-payment-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: #777777;
+  margin: 0;
+}
+
+.co-payment-logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a1a;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  width: 4rem;
+  height: 2.2rem;
+  letter-spacing: 0.05em;
+}
+
+/* Pricing Summary Panel */
+.co-price-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  background: #fafafa;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px dashed #e5e5e5;
+}
+
+.co-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.co-price-label {
+  color: #666666;
+}
+
+.co-price-val {
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.co-price-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #eaeaea;
+  padding-top: 1rem;
+  margin-top: 0.3rem;
+}
+
+.co-total-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.co-total-val {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #C2A353;
+}
+
+/* Checkout Button */
+.co-checkout-btn {
+  background: #C2A353;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  height: 3.5rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 20px rgba(194, 163, 83, 0.25);
+  margin-top: 0.5rem;
+}
+
+.co-checkout-btn:hover {
+  background: #b29142;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(194, 163, 83, 0.35);
+}
+
+.co-checkout-btn:active {
+  transform: translateY(0);
+}
+
+/* =======================================
+   MODAL / OVERLAY DIALOGS
+   ======================================= */
+.co-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.co-modal-content {
+  background: #ffffff;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 32rem;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.co-modal-header {
+  padding: 1.5rem 1.8rem;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.co-modal-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.co-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.co-modal-close:hover {
+  color: #C2A353;
+  transform: rotate(90deg);
+}
+
+.co-modal-body {
+  padding: 1.8rem;
+  overflow-y: auto;
+  flex-height: auto;
+  max-height: calc(85vh - 5rem);
+}
+
+/* Modal Option Cards */
+.co-modal-options-list,
+.co-modal-address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.co-modal-option-card {
+  background: #ffffff;
+  border: 1.5px solid #eaeaea;
+  border-radius: 14px;
+  padding: 1.1rem;
+  display: flex;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.25s ease;
+}
+
+.co-modal-option-card:hover {
+  border-color: #C2A353;
+  background: rgba(194, 163, 83, 0.02);
+}
+
+.co-modal-option-card.active {
+  border-color: #C2A353;
+  background: rgba(194, 163, 83, 0.04);
+}
+
+.co-modal-option-card.align-center {
+  align-items: center;
+}
+
+/* Radio Indicator */
+.co-option-radio {
+  margin-right: 1.1rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid #a0a0a0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.co-modal-option-card.active .co-option-radio {
+  border-color: #C2A353;
+}
+
+.co-radio-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  background: #C2A353;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.co-modal-option-card.active .co-radio-dot {
+  transform: scale(1);
+}
+
+/* Option Info structures */
+.co-option-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.co-option-info.flex-row {
+  flex-direction: row;
+  align-items: center;
+}
+
+.co-option-badge {
+  align-self: flex-start;
+  background: #f0f0f0;
+  color: #555555;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+}
+
+.co-modal-option-card.active .co-option-badge {
+  background: rgba(194, 163, 83, 0.2);
+  color: #b29142;
+}
+
+.co-option-address-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #555555;
+  margin: 0;
+}
+
+.co-option-carrier,
+.co-payment-option-block {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.co-carrier-desc-block,
+.co-payment-desc-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.co-carrier-name-bold,
+.co-payment-name-bold {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+}
+
+.co-carrier-eta-text,
+.co-payment-desc-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: #777777;
+}
+
+.co-option-price {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #C2A353;
+  margin-left: auto;
+}
+
+.co-add-address-btn {
+  background: none;
+  border: 1.5px dashed #C2A353;
+  color: #C2A353;
+  border-radius: 14px;
+  padding: 1.1rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  transition: all 0.25s ease;
+}
+
+.co-add-address-btn:hover {
+  background: rgba(194, 163, 83, 0.05);
+  border-style: solid;
+}
+
+/* Address form styling */
+.co-address-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.co-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.co-form-group label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.co-form-group input {
+  height: 2.6rem;
+  border-radius: 8px;
+  border: 1px solid #eaeaea;
+  padding: 0 0.8rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.co-form-group input:focus {
+  border-color: #C2A353;
+  box-shadow: 0 0 0 3px rgba(194, 163, 83, 0.15);
+}
+
+.co-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.co-form-actions {
+  display: flex;
+  gap: 0.9rem;
+  margin-top: 0.8rem;
+}
+
+.co-form-cancel,
+.co-form-submit {
+  flex: 1;
+  height: 2.8rem;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.co-form-cancel {
+  background: #f5f5f5;
+  color: #555555;
+  border: none;
+}
+
+.co-form-cancel:hover {
+  background: #eaeaea;
+}
+
+.co-form-submit {
+  background: #C2A353;
+  color: #ffffff;
+  border: none;
+}
+
+.co-form-submit:hover {
+  background: #b29142;
+}
+
+/* Helper flex layout */
+.justify-between {
+  justify-content: space-between;
+}
+
+/* =======================================
+   RESPONSIVE MEDIA BREAKPOINTS
+   ======================================= */
+@media (max-width: 64rem) {
+  .co-container {
+    padding: 0 2rem 4rem;
+  }
+
+  .co-back-button {
+    left: 2rem;
+    top: -1.5rem;
+  }
+
+  .co-content-grid {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+  }
+
+  .co-image-column {
+    position: relative;
+    top: 0;
+  }
+
+  .co-image-card {
+    aspect-ratio: 0.9;
+  }
+
+  .co-product-name {
+    font-size: 2.2rem;
+  }
+
+  .co-product-price {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .co-header-space {
+    height: 6rem;
+  }
+
+  .co-container {
+    padding: 0 1.25rem 3rem;
+  }
+
+  .co-back-button {
+    left: 1.25rem;
+    top: -1rem;
+  }
+
+  .co-image-card {
+    aspect-ratio: 0.85;
+  }
+
+  .co-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .co-product-name {
+    font-size: 1.8rem;
+  }
+
+  .co-product-price {
+    font-size: 1.6rem;
+  }
+
+  .co-select-card {
+    padding: 1rem;
+  }
+
+  .co-card-text {
+    max-width: 100%;
+  }
+
+  .co-carrier-badge-wrapper,
+  .co-payment-badge-wrapper {
+    gap: 0.8rem;
+  }
+
+  .co-carrier-logo,
+  .co-payment-logo-icon {
+    width: 3.2rem;
+    height: 2rem;
+    font-size: 0.7rem;
+  }
+
+  .co-carrier-logo.jne,
+  .co-carrier-logo.dhl {
+    font-size: 0.9rem;
+  }
+
+  .co-modal-content {
+    max-width: 90%;
+  }
+}

@@ -12,7 +12,7 @@ import weaverImg from '../assets/images/product/weaver_portrait.png';
 
 import '../style/ProductDetail.css';
 
-const PRODUCT_DETAILS: Record<string, {
+export const PRODUCT_DETAILS: Record<string, {
   name: string;
   price: string;
   images: string[];
@@ -228,7 +228,12 @@ export default function ProductDetailPage() {
 
             {/* Primary Action Buttons */}
             <div className="pd-action-row">
-              <button className="pd-buy-button">Buy Now</button>
+              <button 
+                className="pd-buy-button"
+                onClick={() => navigate('/checkout', { state: { productId, selectedSize } })}
+              >
+                Buy Now
+              </button>
               
               <button 
                 className={`pd-like-button ${isLiked ? 'active' : ''}`} 
