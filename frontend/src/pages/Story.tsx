@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import "../style/Story.css";
 
@@ -15,7 +14,7 @@ const fadeInUp = {
   transition: { duration: 1.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }
 };
 
-const StoryPage: React.FC = () => {
+const StoryPage = () => {
   return (
     <div className="story-page-container">
       <main className="story-main">
@@ -71,7 +70,7 @@ const StoryPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <a className="info-link">Click for more Information!</a>
+              <span className="info-link">Click for more Information!</span>
             </div>
           </motion.section>
 
@@ -100,7 +99,7 @@ const StoryPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <a className="info-link">Click for more Information!</a>
+              <span className="info-link">Click for more Information!</span>
             </div>
             <div className="section-image-container">
               <img src={historyImg} alt="The History" className="section-img" />
@@ -134,7 +133,7 @@ const StoryPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <a className="info-link">Click for more Information!</a>
+              <span className="info-link">Click for more Information!</span>
             </div>
           </motion.section>
         </div>

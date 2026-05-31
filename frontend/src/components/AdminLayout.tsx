@@ -14,7 +14,7 @@ const ADMIN_LINKS = [
   { name: 'Orders', path: '/admin/orders' }
 ];
 
-export const AdminLayout: FC<AdminLayoutProps> = ({ children }) => {
+const AdminLayout: FC<AdminLayoutProps> = ({ children }) => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -134,7 +134,7 @@ export const AdminLayout: FC<AdminLayoutProps> = ({ children }) => {
         color: '#666',
         fontFamily: "'Inter', sans-serif"
       }}>
-        <div>&copy; 2023 - Larasana Admin</div>
+        <div>&copy; {new Date().getFullYear()} - Larasana Admin</div>
         <div style={{ display: 'flex', gap: '2rem' }}>
           <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>About</a>
           <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Careers</a>

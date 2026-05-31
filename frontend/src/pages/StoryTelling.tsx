@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "../style/StoryTelling.css";
 import storyImg from "../assets/images/storytelling/story.png";
 import impactImg from "../assets/images/storytelling/impact.png";
@@ -33,10 +34,10 @@ export default function StoryTelling() {
                   <br />
                   and style into your everyday life.
                 </p>
-                <a href="/Story" className="st-card__cta">
+                <Link to="/Story" className="st-card__cta">
                   <span className="st-card__cta-line" />
                   STORY PAGES
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -57,10 +58,10 @@ export default function StoryTelling() {
                   <br />
                   for generations to come.
                 </p>
-                <a href="/Impact" className="st-card__cta">
+                <Link to="/Impact" className="st-card__cta">
                   <span className="st-card__cta-line" />
                   IMPACT PAGES
-                </a>
+                </Link>
               </div>
             </div>
           </div>

@@ -1,0 +1,357 @@
+/* ===== Payment Page Styles ===== */
+
+.pay-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #1a1a1a;
+  box-sizing: border-box;
+}
+
+.pay-header-space {
+  height: 8rem;
+}
+
+.pay-container {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 0 1.5rem 6rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Back Button */
+.pay-back-button {
+  position: absolute;
+  top: -2rem;
+  left: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  transition: transform 0.2s ease, color 0.2s ease;
+  z-index: 100;
+}
+
+.pay-back-button:hover {
+  transform: translateX(-4px);
+  color: #C2A353;
+}
+
+/* Main Payment Card Container */
+.pay-main-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #eaeaea;
+  border-radius: 24px;
+  padding: 2.2rem;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.pay-main-card:hover {
+  transform: translateY(-2px);
+}
+
+/* QRIS Brand Header */
+.pay-qris-brand {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.pay-qris-svg {
+  height: 2.2rem;
+  width: auto;
+}
+
+/* QR Code Outer Box */
+.pay-qrcode-box {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid #eaeaea;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.02), 0 8px 24px rgba(0, 0, 0, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.pay-qrcode-box:hover {
+  transform: scale(1.02);
+}
+
+.pay-qr-svg {
+  display: block;
+}
+
+/* Timer Section */
+.pay-timer-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+}
+
+.pay-timer-label {
+  font-size: 0.8rem;
+  color: #666666;
+  font-weight: 500;
+}
+
+.pay-timer-countdown {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #C2A353;
+  letter-spacing: 0.05em;
+  transition: color 0.3s ease;
+}
+
+.pay-timer-countdown.critical {
+  color: #d00000;
+  animation: pulseTimer 1s infinite alternate;
+}
+
+@keyframes pulseTimer {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+/* Product & Price Info */
+.pay-info-section {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.pay-item-name {
+  font-family: 'Linotype Didot Bold', 'GFS Didot', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.pay-item-price {
+  font-family: 'Inter', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #C2A353;
+  margin: 0;
+}
+
+/* Collapsible Integration Details Panel */
+.pay-integration-meta {
+  width: 100%;
+  background: #fbfbfb;
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid #f0f0f0;
+}
+
+.pay-meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.pay-meta-row span:first-child {
+  color: #777777;
+}
+
+.pay-meta-row span:last-child {
+  font-weight: 600;
+  color: #333333;
+}
+
+/* Alert Notice Box */
+.pay-notice-alert {
+  display: flex;
+  gap: 0.8rem;
+  background: rgba(194, 163, 83, 0.08);
+  border: 1px solid rgba(194, 163, 83, 0.2);
+  border-radius: 14px;
+  padding: 0.9rem 1.1rem;
+  align-items: flex-start;
+}
+
+.pay-notice-icon {
+  color: #b29142;
+  flex-shrink: 0;
+  display: flex;
+  margin-top: 0.1rem;
+}
+
+.pay-notice-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #b29142;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Buy Button */
+.pay-buy-btn {
+  width: 100%;
+  background: #C2A353;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  height: 3.5rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 20px rgba(194, 163, 83, 0.25);
+  margin-top: 1.8rem;
+}
+
+.pay-buy-btn:hover {
+  background: #b29142;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(194, 163, 83, 0.35);
+}
+
+.pay-buy-btn:active {
+  transform: translateY(0);
+}
+
+/* =======================================
+   PAYMENT VERIFICATION OVERLAY (SPINNER)
+   ======================================= */
+.pay-verify-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInOverlay 0.3s ease;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pay-verify-card {
+  background: #ffffff;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 26rem;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
+  animation: scaleVerifyCard 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scaleVerifyCard {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Custom CSS Spinner */
+.pay-spinner {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 2rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pay-spinner-inner {
+  width: 100%;
+  height: 100%;
+  border: 4px solid rgba(194, 163, 83, 0.15);
+  border-top-color: #C2A353;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pay-verify-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.8rem 0;
+}
+
+.pay-verify-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #666666;
+  margin: 0;
+}
+
+/* =======================================
+   RESPONSIVE MEDIA BREAKPOINTS
+   ======================================= */
+@media (max-width: 48rem) {
+  .pay-header-space {
+    height: 6rem;
+  }
+
+  .pay-container {
+    padding: 0 1.25rem 4rem;
+  }
+
+  .pay-back-button {
+    left: 1.25rem;
+    top: -1rem;
+  }
+
+  .pay-main-card {
+    padding: 1.5rem;
+  }
+
+  .pay-item-name {
+    font-size: 1.4rem;
+  }
+
+  .pay-item-price {
+    font-size: 1.7rem;
+  }
+}
