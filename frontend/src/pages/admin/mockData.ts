@@ -364,6 +364,44 @@ export const updateOrderStatus = (id: string, status: 'Delivered' | 'Canceled' |
   return false;
 };
 
+// Simulated network delay helper for mock async calls
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const getProductsAsync = async (): Promise<Product[]> => {
+  await delay(400);
+  return getProducts();
+};
+
+export const getProductByIdAsync = async (id: string): Promise<Product | undefined> => {
+  await delay(300);
+  return getProductById(id);
+};
+
+export const saveProductAsync = async (product: Omit<Product, 'id' | 'price'> & { id?: string }): Promise<Product> => {
+  await delay(500);
+  return saveProduct(product);
+};
+
+export const deleteProductAsync = async (id: string): Promise<boolean> => {
+  await delay(400);
+  return deleteProduct(id);
+};
+
+export const getOrdersAsync = async (): Promise<Order[]> => {
+  await delay(400);
+  return getOrders();
+};
+
+export const getOrderByIdAsync = async (id: string): Promise<Order | undefined> => {
+  await delay(300);
+  return getOrderById(id);
+};
+
+export const updateOrderStatusAsync = async (id: string, status: Order['status']): Promise<boolean> => {
+  await delay(400);
+  return updateOrderStatus(id, status);
+};
+
 /*
 ===========================================================================
 BACKEND INTEGRATION GUIDANCE (As requested by the USER)
