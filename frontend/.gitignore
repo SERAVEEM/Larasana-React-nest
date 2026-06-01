@@ -26,3 +26,6 @@ dist-ssr
 Figma Design/*
 
 frontend/src/assets/video/
+
+skills/SKILL.md
+.agent/

@@ -443,15 +443,13 @@ ul {
   }
 
   .hamburger-btn__line1,
-  .hamburger-btn__line3 {
+  .hamburger-btn__line3,
+  .hamburger-btn__line2 {
     width: 1.5rem !important;
     height: 0.09375rem !important;
   }
 
-  .hamburger-btn__line2 {
-    width: 0.75rem !important;
-    height: 0.09375rem !important;
-  }
+ 
 }
 
 @media (max-width: 48rem) {
