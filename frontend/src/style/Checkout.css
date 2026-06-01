@@ -22,8 +22,8 @@
 /* Back Button */
 .co-back-button {
   position: absolute;
-  top: -2rem;
-  left: 4rem;
+  top: 0rem;
+  left: -4rem;
   background: none;
   border: none;
   cursor: pointer;
