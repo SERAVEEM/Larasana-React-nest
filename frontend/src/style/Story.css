@@ -264,6 +264,16 @@
     font-size: 2.5rem;
   }
 
+  .section-desc-wrapper {
+    grid-template-rows: 1fr;
+    margin-top: 1.5rem;
+    opacity: 1;
+  }
+
+  .section-description {
+    transform: translateY(0);
+  }
+
   .content-wrapper {
     gap: 8rem;
   }

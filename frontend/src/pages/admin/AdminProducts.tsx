@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProducts } from './mockData';
+import { getProductsAsync } from './mockData';
 import type { Product } from './mockData';
 import '../../style/admin.css';
 
@@ -11,13 +11,25 @@ export default function AdminProducts() {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
 
-  // Fetch products with a mock delay to simulate an API request
+  // Fetch products asynchronously
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setProducts(getProducts());
-      setLoading(false);
-    }, 600); // 600ms delay for visual feedback of loading skeleton
-    return () => clearTimeout(timer);
+    let active = true;
+    getProductsAsync()
+      .then(data => {
+        if (active) {
+          setProducts(data);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch products:', err);
+        if (active) {
+          setLoading(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Pagination Logic

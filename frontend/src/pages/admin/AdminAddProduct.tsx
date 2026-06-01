@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { saveProduct } from './mockData';
+import { saveProductAsync } from './mockData';
 import '../../style/admin.css';
 
 export default function AdminAddProduct() {
@@ -66,7 +66,7 @@ export default function AdminAddProduct() {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !price || !stock) {
       alert('Please fill out Name, Price, and Stock fields.');
@@ -75,9 +75,8 @@ export default function AdminAddProduct() {
 
     setSubmitting(true);
 
-    // Mock API saving delay
-    setTimeout(() => {
-      saveProduct({
+    try {
+      await saveProductAsync({
         name,
         category,
         description,
@@ -89,9 +88,13 @@ export default function AdminAddProduct() {
         qrCode: qrImage || undefined,
         sales: 0
       });
-      setSubmitting(false);
       navigate('/admin/products');
-    }, 800);
+    } catch (err) {
+      console.error('Failed to create product:', err);
+      alert('Failed to create product.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

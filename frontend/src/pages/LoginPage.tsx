@@ -22,7 +22,7 @@ export default function LoginPage() {
 
           {/* Title */}
           <h1 className="auth-heading">Welcome Back</h1>
-          <p className="auth-subheading">Sign in to your Larasana account</p>
+          <p className="auth-subheading">Sign in to your profile where your curated collection is waiting for you</p>
 
   
           <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
