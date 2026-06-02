@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getOrderById, updateOrderStatus } from './mockData';
+import { getOrderByIdAsync, updateOrderStatusAsync } from './mockData';
 import type { Order } from './mockData';
 import '../../style/admin.css';
 
@@ -10,27 +10,52 @@ export default function AdminOrderDetails() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<Order['status']>('Pending');
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
-  // Load order data from local storage
+  // Load order data from local storage asynchronously
   useEffect(() => {
     if (!id) return;
-    const timer = setTimeout(() => {
-      const data = getOrderById(id);
-      if (data) {
-        setOrder(data);
-        setStatus(data.status);
-      }
-      setLoading(false);
-    }, 450);
-    return () => clearTimeout(timer);
+    let active = true;
+    setLoading(true);
+    getOrderByIdAsync(id)
+      .then(data => {
+        if (active) {
+          if (data) {
+            setOrder(data);
+            setStatus(data.status);
+          }
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load order details:', err);
+        if (active) {
+          setLoading(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   const handleStatusChange = (newStatus: Order['status']) => {
     if (!order) return;
-    updateOrderStatus(order.id, newStatus);
-    setStatus(newStatus);
-    // Visual user feedback
-    alert(`Order status updated to ${newStatus}`);
+    setUpdatingStatus(true);
+    updateOrderStatusAsync(order.id, newStatus)
+      .then(success => {
+        setUpdatingStatus(false);
+        if (success) {
+          setStatus(newStatus);
+          alert(`Order status updated to ${newStatus}`);
+        } else {
+          alert('Failed to update order status.');
+        }
+      })
+      .catch(err => {
+        console.error('Failed to update order status:', err);
+        setUpdatingStatus(false);
+        alert('An error occurred while updating order status.');
+      });
   };
 
   if (loading) {
@@ -98,8 +123,11 @@ export default function AdminOrderDetails() {
             <select 
               className="admin-status-select" 
               value={status} 
+              disabled={updatingStatus}
               onChange={e => handleStatusChange(e.target.value as Order['status'])}
               style={{
+                opacity: updatingStatus ? 0.7 : 1,
+                cursor: updatingStatus ? 'not-allowed' : 'pointer',
                 backgroundColor: status === 'Delivered' ? '#b8860b' : status === 'Canceled' ? '#d32f2f' : '#fff',
                 color: status === 'Pending' ? '#333' : '#fff',
                 borderColor: status === 'Pending' ? '#ddd' : 'transparent',

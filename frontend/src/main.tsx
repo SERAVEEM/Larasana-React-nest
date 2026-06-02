@@ -43,7 +43,6 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/payment" element={<><Navbar /><PaymentPage /></>} />
           <Route path="/payment-success" element={<><Navbar /><FinishPaymentPage /></>} />
           
-          {/* Admin Dashboards & Management Catalog */}
           <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
           <Route path="/admin/products" element={<AdminLayout><AdminProducts /></AdminLayout>} />
           <Route path="/admin/products/new" element={<AdminLayout><AdminAddProduct /></AdminLayout>} />
@@ -54,4 +53,4 @@ createRoot(document.getElementById('root')!).render(
       </SmoothScroll>
     </BrowserRouter>
   </StrictMode>
-)
+)
