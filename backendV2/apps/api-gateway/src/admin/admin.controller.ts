@@ -73,7 +73,6 @@ export class AdminGatewayController {
   toggleProduct(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
     return this.client.send(ADMIN_PATTERNS.TOGGLE_PRODUCT, { productId: id, isActive: body.isActive });
   }
-
   @Post('products')
   @ApiOperation({ summary: 'Tambah produk baru' })
   createProduct(@Body() body: any) {

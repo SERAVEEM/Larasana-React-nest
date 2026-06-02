@@ -28,7 +28,6 @@ export class Product {
 
   @Column({ unsigned: true, default: 0 })
   stock: number;
-
   @Column({ length: 50, nullable: true })
   sku: string | null;
 

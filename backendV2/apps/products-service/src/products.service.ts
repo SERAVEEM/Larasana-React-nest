@@ -26,7 +26,6 @@ export class ProductsService {
     if (!product) throw new NotFoundException('Produk tidak ditemukan');
     return product;
   }
-
   async create(data: any) {
     const product = new Product();
     product.name = data.name;

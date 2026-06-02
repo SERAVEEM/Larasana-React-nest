@@ -573,6 +573,7 @@ ALTER TABLE `refresh_tokens`
 ALTER TABLE `seller_profiles`
   ADD CONSTRAINT `fk_sp_reviewer` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_sp_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
 --
 -- Dumping data untuk tabel `products`
 --
