@@ -8,6 +8,7 @@ import { AddressesGatewayModule } from './addresses/addresses.module';
 import { ShippingGatewayModule }  from './shipping/shipping.module';
 import { CheckoutGatewayModule }  from './checkout/checkout.module';
 import { AdminGatewayModule }     from './admin/admin.module';
+import { ProductsGatewayModule }  from './products/products.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AdminGatewayModule }     from './admin/admin.module';
     ShippingGatewayModule,
     CheckoutGatewayModule,
     AdminGatewayModule,
+    ProductsGatewayModule,
   ],
 })
 export class GatewayAppModule {}

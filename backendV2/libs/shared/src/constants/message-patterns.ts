@@ -27,6 +27,9 @@ export const ORDERS_PATTERNS = {
 export const PRODUCTS_PATTERNS = {
   FIND_ALL:         'products.find_all',
   FIND_BY_ID:       'products.find_by_id',
+  CREATE:           'products.create',
+  UPDATE:           'products.update',
+  DELETE:           'products.delete',
 };
 
 export const FAVORITES_PATTERNS = {

@@ -170,6 +170,10 @@ CREATE TABLE `products` (
   `description` text DEFAULT NULL,
   `price` decimal(12,2) NOT NULL,
   `stock` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `sku` varchar(50) DEFAULT NULL,
+  `sizes` text DEFAULT NULL,
+  `qr_code_url` varchar(500) DEFAULT NULL,
+  `sales` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `category` varchar(100) DEFAULT NULL,
   `motif` varchar(100) DEFAULT NULL,
   `material` varchar(100) DEFAULT NULL,
@@ -569,6 +573,49 @@ ALTER TABLE `refresh_tokens`
 ALTER TABLE `seller_profiles`
   ADD CONSTRAINT `fk_sp_reviewer` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_sp_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Dumping data untuk tabel `products`
+--
+
+INSERT INTO `products` (`id`, `seller_id`, `name`, `slug`, `description`, `price`, `stock`, `sku`, `sizes`, `qr_code_url`, `sales`, `category`, `motif`, `material`, `thumbnail_url`, `is_active`, `average_rating`, `total_reviews`) VALUES
+(1, 1, 'Noir Enchanted Vest', 'noir-enchanted-vest', 'Noir Enchanted Vest by Yulia Andirtia is inspired by Lombok\'s culture, folklore, and starlit nights. Luminous embroidery symbolizes strength, elegance, and the blend of heritage with modern style. More than a garment, it carries the soul and story of Lombok into today\'s world.', 1700000.00, 1269, '#32A53', '["S", "M", "L", "XL", "XXL"]', '/images/product/authenticity_qr.png', 1269, 'Authentic Handmade', 'Enchanted', 'Sasak Tenun', '/images/product/far left.png', 1, 5.00, 1),
+(2, 1, 'Anchronic Vest', 'anchronic-vest', 'A striking fusion of traditional Lombok weave and structured contemporary silhouettes. The Anchronic Vest is built to stand out with comfort and architectural details.', 1200000.00, 890, '#32A54', '["M", "L", "XL"]', '/images/product/authenticity_qr.png', 852, 'Modern Fit', 'Anchronic', 'Sasak Tenun', '/images/product/left.png', 1, 4.50, 1),
+(3, 1, 'Larasana Signature', 'larasana-signature', 'The pinnacle of Larasana craft. Handwoven over three months by master artisans, combining traditional golden threadwork with premium organic cotton panels.', 2400000.00, 24, '#32A55', '["S", "M", "L"]', '/images/product/authenticity_qr.png', 45, 'Exclusive Collection', 'Signature', 'Premium Tenun & Cotton', '/images/product/MID.png', 1, 5.00, 1),
+(4, 1, 'Tenun Classic Vest', 'tenun-classic-vest', 'An elegant day-wear vest made using heritage techniques. Perfect for layering and bringing a piece of genuine culture to your everyday outfits.', 950000.00, 450, '#32A56', '["S", "M", "L", "XL"]', '/images/product/authenticity_qr.png', 320, 'Traditional Craft', 'Classic', 'Sasak Tenun', '/images/product/right.png', 1, 4.80, 1),
+(5, 1, 'Heritage Indigo Coat', 'heritage-indigo-coat', 'Dyed naturally with organic indigo plants in East Lombok, this longline coat has dynamic shades of blue and intricate symbols representing water and longevity.', 3100000.00, 12, '#32A57', '["M", "L", "XL", "XXL"]', '/images/product/authenticity_qr.png', 18, 'Premium Outerwear', 'Indigo', 'Natural Dyed Tenun', '/images/product/far right.png', 1, 4.20, 1);
+
+--
+-- Dumping data untuk tabel `product_images`
+--
+
+INSERT INTO `product_images` (`id`, `product_id`, `url`, `sort_order`) VALUES
+(1, 1, '/images/product/far left.png', 0),
+(2, 1, '/images/product/left.png', 1),
+(3, 1, '/images/product/MID.png', 2),
+(4, 1, '/images/product/right.png', 3),
+(5, 1, '/images/product/far right.png', 4),
+(6, 2, '/images/product/left.png', 0),
+(7, 2, '/images/product/far left.png', 1),
+(8, 2, '/images/product/MID.png', 2),
+(9, 2, '/images/product/right.png', 3),
+(10, 2, '/images/product/far right.png', 4),
+(11, 3, '/images/product/MID.png', 0),
+(12, 3, '/images/product/far left.png', 1),
+(13, 3, '/images/product/left.png', 2),
+(14, 3, '/images/product/right.png', 3),
+(15, 3, '/images/product/far right.png', 4),
+(16, 4, '/images/product/right.png', 0),
+(17, 4, '/images/product/far left.png', 1),
+(18, 4, '/images/product/left.png', 2),
+(19, 4, '/images/product/MID.png', 3),
+(20, 4, '/images/product/far right.png', 4),
+(21, 5, '/images/product/far right.png', 0),
+(22, 5, '/images/product/far left.png', 1),
+(23, 5, '/images/product/left.png', 2),
+(24, 5, '/images/product/MID.png', 3),
+(25, 5, '/images/product/right.png', 4);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

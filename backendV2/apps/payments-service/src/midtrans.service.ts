@@ -10,7 +10,7 @@
 // 4. Isi di .env
 
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { PaymentMethod } from './entities/payment.entity';
+import { PaymentMethod } from '@app/shared';
 
 export interface MidtransChargeRequest {
   orderId: string;         // unik per transaksi

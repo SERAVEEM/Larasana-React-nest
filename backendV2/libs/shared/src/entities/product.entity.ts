@@ -28,6 +28,17 @@ export class Product {
 
   @Column({ unsigned: true, default: 0 })
   stock: number;
+  @Column({ length: 50, nullable: true })
+  sku: string | null;
+
+  @Column({ type: 'simple-json', nullable: true })
+  sizes: string[] | null;
+
+  @Column({ name: 'qr_code_url', length: 500, nullable: true })
+  qrCodeUrl: string | null;
+
+  @Column({ unsigned: true, default: 0 })
+  sales: number;
 
   @Column({ length: 100, nullable: true })
   category: string | null;
@@ -63,6 +74,6 @@ export class Product {
   @JoinColumn({ name: 'seller_id' })
   seller: User;
 
-  @OneToMany(() => ProductImage, (img) => img.product)
+  @OneToMany(() => ProductImage, (img) => img.product, { cascade: true })
   images: ProductImage[];
 }

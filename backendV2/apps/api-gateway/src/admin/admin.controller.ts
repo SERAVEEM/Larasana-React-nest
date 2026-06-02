@@ -1,7 +1,7 @@
-import { Controller, Get, Patch, Param, Query, Body, UseGuards, Inject, ParseIntPipe, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Query, Body, UseGuards, Inject, ParseIntPipe, HttpCode, HttpStatus, Post, Put, Delete } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
-import { SERVICES, ADMIN_PATTERNS } from '../../../../libs/shared/src';
+import { SERVICES, ADMIN_PATTERNS, PRODUCTS_PATTERNS } from '../../../../libs/shared/src';
 import { JwtAuthGuard } from '../common/guards';
 import { AdminGuard } from '../common/admin.guards';
 import { GetUser } from '../common/get-user.decorator';
@@ -11,7 +11,10 @@ import { GetUser } from '../common/get-user.decorator';
 @UseGuards(JwtAuthGuard, AdminGuard)
 @ApiBearerAuth('access-token')
 export class AdminGatewayController {
-  constructor(@Inject(SERVICES.ADMIN) private client: ClientProxy) {}
+  constructor(
+    @Inject(SERVICES.ADMIN) private client: ClientProxy,
+    @Inject(SERVICES.PRODUCTS) private productsClient: ClientProxy,
+  ) {}
 
   @Get('dashboard')
   @ApiOperation({ summary: 'Statistik dashboard admin' })
@@ -69,5 +72,24 @@ export class AdminGatewayController {
   @ApiOperation({ summary: 'Aktifkan / nonaktifkan produk' })
   toggleProduct(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
     return this.client.send(ADMIN_PATTERNS.TOGGLE_PRODUCT, { productId: id, isActive: body.isActive });
+  }
+  @Post('products')
+  @ApiOperation({ summary: 'Tambah produk baru' })
+  createProduct(@Body() body: any) {
+    return this.productsClient.send(PRODUCTS_PATTERNS.CREATE, body);
+  }
+
+  @Put('products/:id')
+  @ApiParam({ name: 'id' })
+  @ApiOperation({ summary: 'Edit produk' })
+  updateProduct(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
+    return this.productsClient.send(PRODUCTS_PATTERNS.UPDATE, { productId: id, productData: body });
+  }
+
+  @Delete('products/:id')
+  @ApiParam({ name: 'id' })
+  @ApiOperation({ summary: 'Hapus produk' })
+  deleteProduct(@Param('id', ParseIntPipe) id: number) {
+    return this.productsClient.send(PRODUCTS_PATTERNS.DELETE, { productId: id });
   }
 }

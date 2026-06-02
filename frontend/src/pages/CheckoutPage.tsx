@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { PRODUCT_DETAILS } from './ProductDetailPage';
+import { client } from '../api/client';
 import '../style/Checkout.css';
 
 interface Address {
@@ -59,21 +59,21 @@ const SHIPPING_OPTIONS: ShippingOption[] = [
   {
     id: 'ship-1',
     name: 'JNE Express',
-    price: 15.00,
+    price: 25000,
     eta: '2-3 business days',
     logo: 'JNE'
   },
   {
     id: 'ship-2',
     name: 'DHL Express',
-    price: 30.00,
+    price: 150000,
     eta: '1-2 business days',
     logo: 'DHL'
   },
   {
     id: 'ship-3',
     name: 'Standard Shipping',
-    price: 8.00,
+    price: 15000,
     eta: '5-7 business days',
     logo: 'STD'
   }
@@ -100,18 +100,22 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   }
 ];
 
+const formatPrice = (value: number): string => {
+  return 'IDR ' + value.toLocaleString('id-ID');
+};
+
 export default function CheckoutPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
   // Retrieve state passed from Product Detail page
-  const { productId = 'grid-3', selectedSize = 'XL' } = (location.state || {}) as {
+  const { productId = '1', selectedSize = 'XL' } = (location.state || {}) as {
     productId?: string;
     selectedSize?: string;
   };
 
-  const product = PRODUCT_DETAILS[productId] || PRODUCT_DETAILS['grid-3'];
-  const basePrice = parseFloat(product.price.replace('$', ''));
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   // Component States for Checkout Selection
   const [addresses, setAddresses] = useState<Address[]>(ADDRESS_BOOK);
@@ -135,10 +139,57 @@ export default function CheckoutPage() {
     country: 'ID'
   });
 
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+
+    let apiId = productId;
+    if (productId.startsWith('grid-')) {
+      apiId = productId.replace('grid-', '');
+    } else if (productId.startsWith('p')) {
+      apiId = productId.replace('p', '');
+    }
+
+    client.get(`/products/${apiId}`)
+      .then((res) => {
+        if (active) {
+          const p = res.data;
+          const imageList = p.images && p.images.length > 0
+            ? p.images.map((img: any) => img.url)
+            : [p.thumbnailUrl || '/images/product/far left.png'];
+
+          setProduct({
+            id: p.id.toString(),
+            name: p.name,
+            price: Number(p.price),
+            images: imageList,
+          });
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch checkout product details:', err);
+        if (active) {
+          setProduct({
+            id: productId,
+            name: 'Noir Enchanted Vest',
+            price: 1700000,
+            images: ['/images/product/far left.png']
+          });
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [productId]);
+
   const selectedAddress = addresses.find(a => a.id === selectedAddressId) || addresses[0];
   const selectedShipping = SHIPPING_OPTIONS.find(s => s.id === selectedShippingId) || SHIPPING_OPTIONS[0];
   const selectedPayment = PAYMENT_METHODS.find(p => p.id === selectedPaymentId) || PAYMENT_METHODS[0];
 
+  const basePrice = product ? product.price : 1700000;
   const shippingFee = selectedShipping.price;
   const totalPrice = basePrice + shippingFee;
 
@@ -192,6 +243,14 @@ export default function CheckoutPage() {
     navigate(`/product/${productId}`);
   };
 
+  if (loading || !product) {
+    return (
+      <div className="co-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div style={{ fontSize: '1.2rem', color: '#666', fontFamily: "'Inter', sans-serif" }}>Loading Checkout Details...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="co-wrapper">
       <div className="co-header-space" />
@@ -234,7 +293,7 @@ export default function CheckoutPage() {
                   <span className="co-size-badge">{selectedSize}</span>
                 </div>
               </div>
-              <span className="co-product-price">${basePrice.toFixed(2)}</span>
+              <span className="co-product-price">{formatPrice(basePrice)}</span>
             </div>
 
             {/* Address Selection Card */}
@@ -318,15 +377,15 @@ export default function CheckoutPage() {
             <div className="co-price-summary">
               <div className="co-price-row">
                 <span className="co-price-label">Product {product.name}</span>
-                <span className="co-price-val">${basePrice.toFixed(2)}</span>
+                <span className="co-price-val">{formatPrice(basePrice)}</span>
               </div>
               <div className="co-price-row">
                 <span className="co-price-label">Shipping</span>
-                <span className="co-price-val">${shippingFee.toFixed(2)}</span>
+                <span className="co-price-val">{formatPrice(shippingFee)}</span>
               </div>
               <div className="co-price-total-row">
                 <span className="co-total-label">Total Price</span>
-                <span className="co-total-val">${totalPrice.toFixed(2)}</span>
+                <span className="co-total-val">{formatPrice(totalPrice)}</span>
               </div>
             </div>
 
@@ -524,7 +583,7 @@ export default function CheckoutPage() {
                             <span className="co-carrier-eta-text">{ship.eta}</span>
                           </div>
                         </div>
-                        <span className="co-option-price">${ship.price.toFixed(2)}</span>
+                        <span className="co-option-price">{formatPrice(ship.price)}</span>
                       </div>
                     </button>
                   ))}

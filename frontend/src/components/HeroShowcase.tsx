@@ -6,6 +6,7 @@ import leftImg from '../assets/images/product/left.png';
 import midImg from '../assets/images/product/MID.png';
 import rightImg from '../assets/images/product/right.png';
 import farRightImg from '../assets/images/product/far right.png';
+import { client } from '../api/client';
 import '../style/HeroShowcase.css';
 
 const CARDS = [
@@ -33,6 +34,7 @@ const GRID_ITEMS: Array<{
 
 export default function HeroShowcase() {
   const [hasScrolledIntoView, setHasScrolledIntoView] = useState(false);
+  const [gridItems, setGridItems] = useState<any[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
   const whiteBgRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: fadeProgress } = useScroll({
@@ -46,6 +48,29 @@ export default function HeroShowcase() {
 
 
   useEffect(() => {
+    let active = true;
+    client.get('/products')
+      .then((res) => {
+        if (active) {
+          const rawList = res.data.data || [];
+          const formatted = rawList.map((p: any) => ({
+            id: `grid-${p.id}`,
+            image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '/images/product/far left.png',
+            name: p.name,
+            price: 'IDR ' + Number(p.price).toLocaleString('id-ID'),
+            rating: p.averageRating ? Number(p.averageRating).toFixed(1) : '5.0',
+          }));
+          const padded = [...formatted];
+          while (padded.length < 5) {
+            padded.push({ id: `empty-${padded.length}`, empty: true } as any);
+          }
+          setGridItems(padded.slice(0, 5));
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load showcase products:', err);
+      });
+
     const node = sectionRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -69,6 +94,7 @@ export default function HeroShowcase() {
 
     // Cleanup observer on unmount
     return () => {
+      active = false;
       if (node) {
         observer.unobserve(node);
       }
@@ -107,7 +133,7 @@ export default function HeroShowcase() {
           className="hs-product-grid"
           style={{ opacity: gridOpacity, y: gridY }}
         >
-          {GRID_ITEMS.map((item) => (
+          {(gridItems.length > 0 ? gridItems : GRID_ITEMS).map((item) => (
             item.empty ? (
               <div key={item.id} className="hs-grid-item empty" />
             ) : (
