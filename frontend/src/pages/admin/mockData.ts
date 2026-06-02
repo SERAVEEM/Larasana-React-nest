@@ -4,6 +4,7 @@ import thirdImg from '../../assets/images/product/MID.png';
 import fourthImg from '../../assets/images/product/right.png';
 import fifthImg from '../../assets/images/product/far right.png';
 import qrImg from '../../assets/images/product/authenticity_qr.png';
+import { client } from '../../api/client';
 
 export interface Product {
   id: string;
@@ -364,98 +365,155 @@ export const updateOrderStatus = (id: string, status: 'Delivered' | 'Canceled' |
   return false;
 };
 
-// Simulated network delay helper for mock async calls
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 export const getProductsAsync = async (): Promise<Product[]> => {
-  await delay(400);
-  return getProducts();
+  const response = await client.get('/admin/products');
+  const rawProducts = response.data.data || [];
+  return rawProducts.map((p: any) => ({
+    id: p.id.toString(),
+    name: p.name,
+    category: p.category || '',
+    price: formatIDR(p.price),
+    numericPrice: Number(p.price),
+    description: p.description || '',
+    sku: p.sku || '',
+    stock: Number(p.stock),
+    sizes: p.sizes ? (typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes) : [],
+    image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '',
+    qrCode: p.qrCodeUrl || undefined,
+    sales: Number(p.sales || 0)
+  }));
 };
 
 export const getProductByIdAsync = async (id: string): Promise<Product | undefined> => {
-  await delay(300);
-  return getProductById(id);
+  const numericId = parseInt(id.replace(/\D/g, ''));
+  if (isNaN(numericId)) return undefined;
+  const response = await client.get(`/products/${numericId}`);
+  const p = response.data;
+  if (!p) return undefined;
+  return {
+    id: p.id.toString(),
+    name: p.name,
+    category: p.category || '',
+    price: formatIDR(p.price),
+    numericPrice: Number(p.price),
+    description: p.description || '',
+    sku: p.sku || '',
+    stock: Number(p.stock),
+    sizes: p.sizes ? (typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes) : [],
+    image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '',
+    qrCode: p.qrCodeUrl || undefined,
+    sales: Number(p.sales || 0)
+  };
 };
 
 export const saveProductAsync = async (product: Omit<Product, 'id' | 'price'> & { id?: string }): Promise<Product> => {
-  await delay(500);
-  return saveProduct(product);
+  const isEdit = !!product.id && !product.id.startsWith('p_') && !isNaN(Number(product.id));
+  const payload = {
+    name: product.name,
+    category: product.category,
+    description: product.description,
+    sku: product.sku,
+    stock: Number(product.stock),
+    numericPrice: Number(product.numericPrice),
+    sizes: product.sizes,
+    image: product.image,
+    qrCode: product.qrCode,
+    sales: Number(product.sales || 0)
+  };
+
+  let response;
+  if (isEdit) {
+    response = await client.put(`/admin/products/${product.id}`, payload);
+  } else {
+    response = await client.post('/admin/products', payload);
+  }
+  
+  const p = response.data;
+  return {
+    id: p.id.toString(),
+    name: p.name,
+    category: p.category || '',
+    price: formatIDR(p.price),
+    numericPrice: Number(p.price),
+    description: p.description || '',
+    sku: p.sku || '',
+    stock: Number(p.stock),
+    sizes: p.sizes ? (typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes) : [],
+    image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '',
+    qrCode: p.qrCodeUrl || undefined,
+    sales: Number(p.sales || 0)
+  };
 };
 
 export const deleteProductAsync = async (id: string): Promise<boolean> => {
-  await delay(400);
-  return deleteProduct(id);
+  const numericId = parseInt(id);
+  if (isNaN(numericId)) return false;
+  await client.delete(`/admin/products/${numericId}`);
+  return true;
 };
 
 export const getOrdersAsync = async (): Promise<Order[]> => {
-  await delay(400);
-  return getOrders();
+  const response = await client.get('/admin/orders');
+  const rawOrders = response.data.data || [];
+  return rawOrders.map((o: any) => ({
+    id: o.orderCode || `#${o.id}`,
+    date: new Date(o.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    customerName: o.buyer?.name || o.shippingName || 'Guest',
+    customerEmail: o.buyer?.email || '',
+    customerPhone: o.shippingPhone || '',
+    shippingMethod: o.shippingMethod?.label || 'JNE Express',
+    paymentMethod: o.paymentMethod || 'Bank Transfer',
+    address: o.shippingAddress,
+    status: o.status === 'delivered' ? 'Delivered' : (o.status === 'cancelled' ? 'Canceled' : 'Pending'),
+    amount: formatIDR(o.totalAmount),
+    numericAmount: Number(o.totalAmount),
+    note: o.notes || undefined,
+    items: (o.items || []).map((item: any) => ({
+      productId: item.productId.toString(),
+      name: item.product?.name || 'Noir Enchanted Vest',
+      image: item.product?.thumbnailUrl || '/images/product/far left.png',
+      quantity: Number(item.quantity),
+      price: formatIDR(item.unitPrice),
+      numericPrice: Number(item.unitPrice)
+    }))
+  }));
 };
 
 export const getOrderByIdAsync = async (id: string): Promise<Order | undefined> => {
-  await delay(300);
-  return getOrderById(id);
+  const numericId = parseInt(id.replace(/\D/g, ''));
+  if (isNaN(numericId)) return undefined;
+  const response = await client.get(`/admin/orders/${numericId}`);
+  const { order, payment } = response.data;
+  if (!order) return undefined;
+  return {
+    id: order.orderCode || `#${order.id}`,
+    date: new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    customerName: order.buyer?.name || order.shippingName || 'Guest',
+    customerEmail: order.buyer?.email || '',
+    customerPhone: order.shippingPhone || '',
+    shippingMethod: order.shippingMethod?.label || 'JNE Express',
+    paymentMethod: payment?.paymentMethod || order.paymentMethod || 'Bank Transfer',
+    address: order.shippingAddress,
+    status: order.status === 'delivered' ? 'Delivered' : (order.status === 'cancelled' ? 'Canceled' : 'Pending'),
+    amount: formatIDR(order.totalAmount),
+    numericAmount: Number(order.totalAmount),
+    note: order.notes || undefined,
+    items: (order.items || []).map((item: any) => ({
+      productId: item.productId.toString(),
+      name: item.product?.name || 'Noir Enchanted Vest',
+      image: item.product?.thumbnailUrl || '/images/product/far left.png',
+      quantity: Number(item.quantity),
+      price: formatIDR(item.unitPrice),
+      numericPrice: Number(item.unitPrice)
+    }))
+  };
 };
 
 export const updateOrderStatusAsync = async (id: string, status: Order['status']): Promise<boolean> => {
-  await delay(400);
-  return updateOrderStatus(id, status);
+  const numericId = parseInt(id.replace(/\D/g, ''));
+  if (isNaN(numericId)) return false;
+  const backendStatus = status === 'Delivered' ? 'delivered' : (status === 'Canceled' ? 'cancelled' : 'pending');
+  await client.patch(`/admin/orders/${numericId}/status`, { status: backendStatus });
+  return true;
 };
-
-/*
-===========================================================================
-BACKEND INTEGRATION GUIDANCE (As requested by the USER)
-===========================================================================
-To connect the admin interface to a live Node.js / Express backend in the future:
-1. Install an HTTP client (e.g. axios): `npm install axios`
-2. Replace local storage calls with asynchronous fetch/axios requests.
-3. Update components to await the Promise returned by the API services.
-
-Here is a template of how the asynchronous service functions would look:
-
-```typescript
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:5000/api/admin'; // adjust as needed
-
-export const getProductsAsync = async (): Promise<Product[]> => {
-  const response = await axios.get<Product[]>(`${API_BASE_URL}/products`);
-  return response.data;
-};
-
-export const getProductByIdAsync = async (id: string): Promise<Product> => {
-  const response = await axios.get<Product>(`${API_BASE_URL}/products/${id}`);
-  return response.data;
-};
-
-export const saveProductAsync = async (product: Omit<Product, 'price'> & { id?: string }): Promise<Product> => {
-  if (product.id) {
-    const response = await axios.put<Product>(`${API_BASE_URL}/products/${product.id}`, product);
-    return response.data;
-  } else {
-    const response = await axios.post<Product>(`${API_BASE_URL}/products`, product);
-    return response.data;
-  }
-};
-
-export const deleteProductAsync = async (id: string): Promise<void> => {
-  await axios.delete(`${API_BASE_URL}/products/${id}`);
-};
-
-export const getOrdersAsync = async (): Promise<Order[]> => {
-  const response = await axios.get<Order[]>(`${API_BASE_URL}/orders`);
-  return response.data;
-};
-
-export const getOrderByIdAsync = async (id: string): Promise<Order> => {
-  const response = await axios.get<Order>(`${API_BASE_URL}/orders/${id}`);
-  return response.data;
-};
-
-export const updateOrderStatusAsync = async (id: string, status: Order['status']): Promise<Order> => {
-  const response = await axios.patch<Order>(`${API_BASE_URL}/orders/${id}/status`, { status });
-  return response.data;
-};
-```
-*/
 

@@ -15,8 +15,12 @@ export default function FinishPaymentPage() {
   // Retrieve state passed from Payment page
   const successDetails = location.state as PaymentSuccessDetails || {
     orderId: '#BTR-89231',
-    amountPaid: 415.00,
+    amountPaid: 1725000,
     productName: 'Noir Enchanted Vest'
+  };
+
+  const formatPrice = (value: number): string => {
+    return 'IDR ' + value.toLocaleString('id-ID');
   };
 
   const [showStatusModal, setShowStatusModal] = useState(false);
@@ -99,7 +103,7 @@ export default function FinishPaymentPage() {
 
           {/* PAID AMOUNT */}
           <div className="fp-price-row">
-            <span className="fp-price-val">${successDetails.amountPaid.toFixed(2)}</span>
+            <span className="fp-price-val">{formatPrice(successDetails.amountPaid)}</span>
           </div>
 
           <div className="fp-divider" />
@@ -158,7 +162,7 @@ export default function FinishPaymentPage() {
                 </div>
                 <div className="fp-meta-item">
                   <span>Amount Paid:</span>
-                  <span>${successDetails.amountPaid.toFixed(2)}</span>
+                  <span>{formatPrice(successDetails.amountPaid)}</span>
                 </div>
               </div>
 

@@ -14,18 +14,20 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch products & orders asynchronously from backend on mount
   useEffect(() => {
     let active = true;
+    setLoading(true);
     Promise.all([getProductsAsync(), getOrdersAsync()])
-      .then(([prodData, orderData]) => {
+      .then(([productsData, ordersData]) => {
         if (active) {
-          setProducts(prodData);
-          setOrders(orderData);
+          setProducts(productsData);
+          setOrders(ordersData);
           setLoading(false);
         }
       })
-      .catch(err => {
-        console.error('Failed to load dashboard data:', err);
+      .catch((err) => {
+        console.error('Failed to load dashboard metrics:', err);
         if (active) {
           setLoading(false);
         }

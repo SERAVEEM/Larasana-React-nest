@@ -13,18 +13,18 @@ export default function AdminOrders() {
   
   const ordersPerPage = 6;
 
-  // Fetch orders asynchronously
+  // Fetch orders asynchronously from backend
   useEffect(() => {
     let active = true;
     setLoading(true);
     getOrdersAsync()
-      .then(data => {
+      .then((data) => {
         if (active) {
           setOrders(data);
           setLoading(false);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to load orders:', err);
         if (active) {
           setLoading(false);

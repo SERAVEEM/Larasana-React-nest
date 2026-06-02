@@ -36,17 +36,21 @@ export default function PaymentPage() {
   // Retrieve state passed from Checkout page
   const orderDetails = location.state as OrderDetails || {
     product: {
-      id: 'grid-3',
+      id: '1',
       name: 'Noir Enchanted Vest',
-      price: 400.00,
+      price: 1700000,
       image: '',
       size: 'XL'
     },
     pricing: {
-      subtotal: 400.00,
-      shipping: 15.00,
-      total: 415.00
+      subtotal: 1700000,
+      shipping: 25000,
+      total: 1725000
     }
+  };
+
+  const formatPrice = (value: number): string => {
+    return 'IDR ' + value.toLocaleString('id-ID');
   };
 
   const totalAmount = orderDetails.pricing.total;
@@ -191,7 +195,7 @@ export default function PaymentPage() {
           {/* PRODUCT & PRICE INFO */}
           <div className="pay-info-section">
             <h2 className="pay-item-name">{orderDetails.product.name}</h2>
-            <p className="pay-item-price">${totalAmount.toFixed(2)}</p>
+            <p className="pay-item-price">{formatPrice(totalAmount)}</p>
           </div>
 
           {/* DYNAMIC BACKEND INTEGRATION DETAILS (COLLAPSIBLE / MINI CARD) */}

@@ -1,12 +1,8 @@
+import { useState, useEffect } from 'react';
 import type { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-
-import firstImg from '../assets/images/product/far left.png';
-import secondImg from '../assets/images/product/left.png';
-import thirdImg from '../assets/images/product/MID.png';
-import fourthImg from '../assets/images/product/right.png';
-import fifthImg from '../assets/images/product/far right.png';
+import { client } from '../api/client';
 
 import '../style/HeroShowcase.css';
 
@@ -18,20 +14,38 @@ type ProductCard = {
   rating: string;
 };
 
-const PRODUCTS: ProductCard[] = [
-  { id: 'p1', image: firstImg, name: 'Noir Enchanted Vest', price: '$250', rating: '4.5' },
-  { id: 'p2', image: secondImg, name: 'Anchronic Vest', price: '$260', rating: '4.5' },
-  { id: 'p3', image: thirdImg, name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
-  { id: 'p4', image: fourthImg, name: 'Larasana Signature', price: '$350', rating: '4.8' },
-  { id: 'p5', image: fifthImg, name: 'Tenun Classic', price: '$200', rating: '4.2' }
-];
-
 const cardVariants = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0 },
 };
 
 const Product: FC = () => {
+  const [products, setProducts] = useState<ProductCard[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    client.get('/products')
+      .then((res) => {
+        if (active) {
+          const rawList = res.data.data || [];
+          const formatted = rawList.map((p: any) => ({
+            id: p.id.toString(),
+            image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '/images/product/far left.png',
+            name: p.name,
+            price: 'IDR ' + Number(p.price).toLocaleString('id-ID'),
+            rating: p.averageRating ? Number(p.averageRating).toFixed(1) : '5.0',
+          }));
+          setProducts(formatted);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load products for catalog:', err);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
   return (
     <section className="hs-product-grid" aria-labelledby="product-heading">
       <div className="hs-bg-black">
@@ -58,7 +72,7 @@ const Product: FC = () => {
 
       <div className="hs-bg-white">
         <div className="hs-product-grid-inner">
-          {PRODUCTS.map((product, index) => (
+          {products.map((product, index) => (
             <motion.article
               key={product.id}
               className="hs-grid-item"

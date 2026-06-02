@@ -11,18 +11,19 @@ export default function AdminProducts() {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
 
-  // Fetch products asynchronously
+  // Fetch products asynchronously from backend
   useEffect(() => {
     let active = true;
+    setLoading(true);
     getProductsAsync()
-      .then(data => {
+      .then((data) => {
         if (active) {
           setProducts(data);
           setLoading(false);
         }
       })
-      .catch(err => {
-        console.error('Failed to fetch products:', err);
+      .catch((err) => {
+        console.error('Failed to load products:', err);
         if (active) {
           setLoading(false);
         }

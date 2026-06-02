@@ -2,114 +2,108 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import farLeftImg from '../assets/images/product/far left.png';
-import leftImg from '../assets/images/product/left.png';
-import midImg from '../assets/images/product/MID.png';
-import rightImg from '../assets/images/product/right.png';
-import farRightImg from '../assets/images/product/far right.png';
-import qrImg from '../assets/images/product/authenticity_qr.png';
 import weaverImg from '../assets/images/product/weaver_portrait.png';
 
+import { client } from '../api/client';
 import '../style/ProductDetail.css';
-
-export const PRODUCT_DETAILS: Record<string, {
-  name: string;
-  price: string;
-  images: string[];
-  description: string;
-  weaver: {
-    name: string;
-    bio: string;
-  };
-}> = {
-  'grid-1': {
-    name: 'Noir Enchanted Vest',
-    price: '$400',
-    images: [farLeftImg, leftImg, midImg, rightImg, farRightImg],
-    description: "Noir Enchanted Vest by Yulia Andirtia is inspired by Lombok's culture, folklore, and starlit nights. Its luminous embroidery symbolizes strength, elegance, and the blend of heritage with modern style. More than a garment, it carries the soul and story of Lombok into today's world.",
-    weaver: {
-      name: 'Yulia Andirtia',
-      bio: 'Crafted by Yulia Andirtia from the edge of Lombok, the Noir Enchanted Vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.'
-    }
-  },
-  'grid-2': {
-    name: 'Noir Enchanted Vest',
-    price: '$400',
-    images: [leftImg, farLeftImg, midImg, rightImg, farRightImg],
-    description: "Noir Enchanted Vest by Yulia Andirtia is inspired by Lombok's culture, folklore, and starlit nights. Its luminous embroidery symbolizes strength, elegance, and the blend of heritage with modern style. More than a garment, it carries the soul and story of Lombok into today's world.",
-    weaver: {
-      name: 'Yulia Andirtia',
-      bio: 'Crafted by Yulia Andirtia from the edge of Lombok, the Noir Enchanted Vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.'
-    }
-  },
-  'grid-3': {
-    name: 'Noir Enchanted Vest',
-    price: '$250',
-    images: [midImg, farLeftImg, leftImg, rightImg, farRightImg],
-    description: "Noir Enchanted Vest by Yulia Andirtia is inspired by Lombok's culture, folklore, and starlit nights. Its luminous embroidery symbolizes strength, elegance, and the blend of heritage with modern style. More than a garment, it carries the soul and story of Lombok into today's world.",
-    weaver: {
-      name: 'Yulia Andirtia',
-      bio: 'Crafted by Yulia Andirtia from the edge of Lombok, the Noir Enchanted Vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.'
-    }
-  },
-  'grid-4': {
-    name: 'Anchronic Vest',
-    price: '$260',
-    images: [rightImg, farLeftImg, leftImg, midImg, farRightImg],
-    description: "The Anchronic Vest fuses structured lines with the rich texture of heritage Sasak tenun. Designed by Yulia Andirtia, this piece features bold geometries and high-contrast embroidery that captures the raw power of Lombok's volcanic peaks and legendary myths.",
-    weaver: {
-      name: 'Yulia Andirtia',
-      bio: 'Crafted by Yulia Andirtia from the edge of Lombok, the Anchronic Vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.'
-    }
-  },
-  'grid-5': {
-    name: 'Noir Enchanted Vest',
-    price: '$250',
-    images: [farRightImg, farLeftImg, leftImg, midImg, rightImg],
-    description: "Noir Enchanted Vest by Yulia Andirtia is inspired by Lombok's culture, folklore, and starlit nights. Its luminous embroidery symbolizes strength, elegance, and the blend of heritage with modern style. More than a garment, it carries the soul and story of Lombok into today's world.",
-    weaver: {
-      name: 'Yulia Andirtia',
-      bio: 'Crafted by Yulia Andirtia from the edge of Lombok, the Noir Enchanted Vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.'
-    }
-  }
-};
-
-const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const productId = id && PRODUCT_DETAILS[id] ? id : 'grid-3';
-  const product = PRODUCT_DETAILS[productId];
-
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('XL');
   const [isLiked, setIsLiked] = useState(false);
 
-  // Reset states on product change
   useEffect(() => {
-    setActiveImageIndex(0);
-    setSelectedSize('XL');
-    setIsLiked(false);
-  }, [productId]);
+    if (!id) return;
+    let active = true;
+    setLoading(true);
+
+    // Resolve string IDs to numbers for database integration compatibility
+    let apiId = id;
+    if (id.startsWith('grid-')) {
+      apiId = id.replace('grid-', '');
+    } else if (id.startsWith('p')) {
+      apiId = id.replace('p', '');
+    }
+
+    client.get(`/products/${apiId}`)
+      .then((res) => {
+        if (active) {
+          const p = res.data;
+          const formattedPrice = 'IDR ' + Number(p.price).toLocaleString('id-ID');
+          const sizeList = p.sizes ? (typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes) : ['S', 'M', 'L', 'XL', 'XXL'];
+          const imageList = p.images && p.images.length > 0
+            ? p.images.map((img: any) => img.url)
+            : [p.thumbnailUrl || '/images/product/far left.png'];
+
+          setProduct({
+            id: p.id.toString(),
+            name: p.name,
+            price: formattedPrice,
+            description: p.description,
+            images: imageList,
+            sizes: sizeList,
+            qrCode: p.qrCodeUrl || '/images/product/authenticity_qr.png',
+            weaver: {
+              name: p.seller?.name || 'Yulia Andirtia',
+              bio: p.seller?.bio || 'Crafted by Yulia Andirtia from the edge of Lombok, this vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.'
+            }
+          });
+          setActiveImageIndex(0);
+          if (sizeList.length > 0) {
+            setSelectedSize(sizeList[0]);
+          }
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch product details:', err);
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
   const handlePrevImage = () => {
+    if (!product) return;
     setActiveImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
   };
 
   const handleNextImage = () => {
+    if (!product) return;
     setActiveImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
   };
 
   const handleBack = () => {
-    // If there is history, navigate back, otherwise go home
     if (window.history.state && window.history.state.idx > 0) {
       navigate(-1);
     } else {
       navigate('/');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="pd-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div style={{ fontSize: '1.2rem', color: '#666', fontFamily: "'Inter', sans-serif" }}>Loading Product Details...</div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="pd-wrapper" style={{ textAlign: 'center', padding: '10rem 2rem' }}>
+        <h2 style={{ fontSize: '1.75rem', fontWeight: 600, color: '#333', marginBottom: '1rem' }}>Product Not Found</h2>
+        <button className="pd-buy-button" style={{ maxWidth: '200px', margin: '0 auto' }} onClick={() => navigate('/')}>Back to Catalog</button>
+      </div>
+    );
+  }
 
   return (
     <div className="pd-wrapper">
@@ -157,7 +151,7 @@ export default function ProductDetailPage() {
 
               {/* Dots Indicator */}
               <div className="pd-carousel-dots">
-                {product.images.map((_, idx) => (
+                {product.images.map((_img: string, idx: number) => (
                   <span
                     key={idx}
                     className={`pd-carousel-dot ${idx === activeImageIndex ? 'active' : ''}`}
@@ -178,20 +172,22 @@ export default function ProductDetailPage() {
             <p className="pd-product-description">{product.description}</p>
 
             {/* Size Selector */}
-            <div className="pd-size-section">
-              <h2 className="pd-section-title">Select Size</h2>
-              <div className="pd-size-grid">
-                {SIZES.map((size) => (
-                  <button
-                    key={size}
-                    className={`pd-size-badge ${selectedSize === size ? 'active' : ''}`}
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {product.sizes && product.sizes.length > 0 && (
+              <div className="pd-size-section">
+                <h2 className="pd-section-title">Select Size</h2>
+                <div className="pd-size-grid">
+                  {product.sizes.map((size: string) => (
+                    <button
+                      key={size}
+                      className={`pd-size-badge ${selectedSize === size ? 'active' : ''}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* More Details Cards */}
             <div className="pd-more-details-section">
@@ -202,7 +198,7 @@ export default function ProductDetailPage() {
                 {/* Card 1: Authenticity QR */}
                 <div className="pd-detail-card">
                   <div className="pd-card-media qr-media">
-                    <img src={qrImg} alt="Authenticity QR Code" className="pd-qr-img" />
+                    <img src={product.qrCode} alt="Verify Authenticity" className="pd-qr-img" />
                   </div>
                   <div className="pd-card-content">
                     <h3 className="pd-card-title">Verify Authenticity</h3>
@@ -230,7 +226,7 @@ export default function ProductDetailPage() {
             <div className="pd-action-row">
               <button 
                 className="pd-buy-button"
-                onClick={() => navigate('/checkout', { state: { productId, selectedSize } })}
+                onClick={() => navigate('/checkout', { state: { productId: product.id, selectedSize } })}
               >
                 Buy Now
               </button>
