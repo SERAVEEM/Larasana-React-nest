@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getOrders } from './mockData';
+import { getOrdersAsync } from './mockData';
 import type { Order } from './mockData';
 import '../../style/admin.css';
 
@@ -13,13 +13,26 @@ export default function AdminOrders() {
   
   const ordersPerPage = 6;
 
-  // Fetch orders with a simulated network delay
+  // Fetch orders asynchronously
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setOrders(getOrders());
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
+    let active = true;
+    setLoading(true);
+    getOrdersAsync()
+      .then(data => {
+        if (active) {
+          setOrders(data);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load orders:', err);
+        if (active) {
+          setLoading(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Filter orders by search term (customer name or order ID)

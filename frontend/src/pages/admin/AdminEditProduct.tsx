@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getProductById, saveProduct, deleteProduct } from './mockData';
+import { getProductByIdAsync, saveProductAsync, deleteProductAsync } from './mockData';
 import type { Product } from './mockData';
 import '../../style/admin.css';
 
@@ -31,23 +31,35 @@ export default function AdminEditProduct() {
   // Async load product data from local database
   useEffect(() => {
     if (!id) return;
-    const timer = setTimeout(() => {
-      const data = getProductById(id);
-      if (data) {
-        setProduct(data);
-        setName(data.name);
-        setCategory(data.category);
-        setDescription(data.description);
-        setSku(data.sku);
-        setStock(data.stock.toString());
-        setPrice(data.numericPrice.toString());
-        setSelectedSizes(data.sizes);
-        setProductImage(data.image);
-        if (data.qrCode) setQrImage(data.qrCode);
-      }
-      setLoading(false);
-    }, 400);
-    return () => clearTimeout(timer);
+    let active = true;
+    setLoading(true);
+    getProductByIdAsync(id)
+      .then(data => {
+        if (active) {
+          if (data) {
+            setProduct(data);
+            setName(data.name);
+            setCategory(data.category);
+            setDescription(data.description);
+            setSku(data.sku);
+            setStock(data.stock.toString());
+            setPrice(data.numericPrice.toString());
+            setSelectedSizes(data.sizes);
+            setProductImage(data.image);
+            if (data.qrCode) setQrImage(data.qrCode);
+          }
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load product details:', err);
+        if (active) {
+          setLoading(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   const toggleSize = (size: string) => {
@@ -100,23 +112,28 @@ export default function AdminEditProduct() {
     }
 
     setSaving(true);
-    setTimeout(() => {
-      saveProduct({
-        id,
-        name,
-        category,
-        description,
-        sku,
-        stock: parseInt(stock) || 0,
-        numericPrice: parseInt(price) || 0,
-        sizes: selectedSizes,
-        image: productImage || '',
-        qrCode: qrImage || undefined,
-        sales: product?.sales || 0
+    saveProductAsync({
+      id,
+      name,
+      category,
+      description,
+      sku,
+      stock: parseInt(stock) || 0,
+      numericPrice: parseInt(price) || 0,
+      sizes: selectedSizes,
+      image: productImage || '',
+      qrCode: qrImage || undefined,
+      sales: product?.sales || 0
+    })
+      .then(() => {
+        setSaving(false);
+        navigate('/admin/products');
+      })
+      .catch(err => {
+        console.error('Failed to save product:', err);
+        setSaving(false);
+        alert('Failed to save product. Please try again.');
       });
-      setSaving(false);
-      navigate('/admin/products');
-    }, 700);
   };
 
   const handleDelete = () => {
@@ -124,11 +141,16 @@ export default function AdminEditProduct() {
     if (!window.confirm(`Are you sure you want to delete "${name}"?`)) return;
 
     setDeleting(true);
-    setTimeout(() => {
-      deleteProduct(id);
-      setDeleting(false);
-      navigate('/admin/products');
-    }, 600);
+    deleteProductAsync(id)
+      .then(() => {
+        setDeleting(false);
+        navigate('/admin/products');
+      })
+      .catch(err => {
+        console.error('Failed to delete product:', err);
+        setDeleting(false);
+        alert('Failed to delete product. Please try again.');
+      });
   };
 
   if (loading) {

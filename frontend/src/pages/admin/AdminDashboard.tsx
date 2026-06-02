@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
-import { getProducts, getOrders, formatIDR } from './mockData';
+import { useState, useMemo, useEffect } from 'react';
+import { getProductsAsync, getOrdersAsync, formatIDR } from './mockData';
+import type { Product, Order } from './mockData';
 import '../../style/admin.css';
 
 type FilterType = 'Daily' | 'Weekly' | 'Monthly' | 'Yearly';
@@ -8,9 +9,31 @@ export default function AdminDashboard() {
   const [timeFilter, setTimeFilter] = useState<FilterType>('Monthly');
   const [graphFilter, setGraphFilter] = useState<'Weekly' | 'Monthly' | 'Yearly'>('Monthly');
 
-  // Load products & orders from state
-  const products = useMemo(() => getProducts(), []);
-  const orders = useMemo(() => getOrders(), []);
+  // Load products & orders asynchronously
+  const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([getProductsAsync(), getOrdersAsync()])
+      .then(([prodData, orderData]) => {
+        if (active) {
+          setProducts(prodData);
+          setOrders(orderData);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load dashboard data:', err);
+        if (active) {
+          setLoading(false);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Compute metrics dynamically based on mock database state
   const totalRevenue = useMemo(() => {
@@ -131,7 +154,13 @@ export default function AdminDashboard() {
               </svg>
             </span>
           </div>
-          <div className="admin-metric-value">{formatIDR(totalRevenue)}</div>
+          <div className="admin-metric-value">
+            {loading ? (
+              <div style={{ width: '70%', height: '24px', backgroundColor: '#333', borderRadius: '4px', margin: '0.25rem 0', animation: 'pulse 1.5s infinite alternate' }} />
+            ) : (
+              formatIDR(totalRevenue)
+            )}
+          </div>
           <div className="admin-metric-change">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
@@ -156,7 +185,13 @@ export default function AdminDashboard() {
               </svg>
             </span>
           </div>
-          <div className="admin-metric-value">{totalOrders}</div>
+          <div className="admin-metric-value">
+            {loading ? (
+              <div style={{ width: '40%', height: '24px', backgroundColor: '#333', borderRadius: '4px', margin: '0.25rem 0', animation: 'pulse 1.5s infinite alternate' }} />
+            ) : (
+              totalOrders
+            )}
+          </div>
           <div className="admin-metric-change">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
@@ -180,7 +215,13 @@ export default function AdminDashboard() {
               </svg>
             </span>
           </div>
-          <div className="admin-metric-value">{totalProductCount}</div>
+          <div className="admin-metric-value">
+            {loading ? (
+              <div style={{ width: '40%', height: '24px', backgroundColor: '#333', borderRadius: '4px', margin: '0.25rem 0', animation: 'pulse 1.5s infinite alternate' }} />
+            ) : (
+              totalProductCount
+            )}
+          </div>
           <div className="admin-metric-change" style={{ color: '#aaa' }}>
             Steady inventory
           </div>
@@ -200,7 +241,13 @@ export default function AdminDashboard() {
               </svg>
             </span>
           </div>
-          <div className="admin-metric-value">{totalCustomers.toLocaleString()}</div>
+          <div className="admin-metric-value">
+            {loading ? (
+              <div style={{ width: '50%', height: '24px', backgroundColor: '#333', borderRadius: '4px', margin: '0.25rem 0', animation: 'pulse 1.5s infinite alternate' }} />
+            ) : (
+              totalCustomers.toLocaleString()
+            )}
+          </div>
           <div className="admin-metric-change">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
@@ -243,61 +290,71 @@ export default function AdminDashboard() {
 
           {/* SVG line chart */}
           <div className="admin-graph-container">
-            {/* Y Axis Labels */}
-            <div className="admin-graph-y-axis">
-              {graphData.yLabels.map((lbl, idx) => (
-                <div key={idx}>{lbl}</div>
-              ))}
-            </div>
+            {loading ? (
+              <div style={{ display: 'flex', width: '100%', height: '200px', flexDirection: 'column', justifyContent: 'center', gap: '12px', padding: '0 2rem' }}>
+                <div style={{ width: '80%', height: '12px', backgroundColor: '#222', borderRadius: '6px', animation: 'pulse 1.5s infinite alternate' }} />
+                <div style={{ width: '60%', height: '12px', backgroundColor: '#222', borderRadius: '6px', animation: 'pulse 1.5s infinite alternate' }} />
+                <div style={{ width: '70%', height: '12px', backgroundColor: '#222', borderRadius: '6px', animation: 'pulse 1.5s infinite alternate' }} />
+              </div>
+            ) : (
+              <>
+                {/* Y Axis Labels */}
+                <div className="admin-graph-y-axis">
+                  {graphData.yLabels.map((lbl, idx) => (
+                    <div key={idx}>{lbl}</div>
+                  ))}
+                </div>
 
-            {/* SVG Canvas */}
-            <svg className="admin-graph-svg" viewBox="0 0 500 200" preserveAspectRatio="none">
-              <defs>
-                {/* Gold gradient fill for area under line */}
-                <linearGradient id="graph-grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#cda45e" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="#cda45e" stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
+                {/* SVG Canvas */}
+                <svg className="admin-graph-svg" viewBox="0 0 500 200" preserveAspectRatio="none">
+                  <defs>
+                    {/* Gold gradient fill for area under line */}
+                    <linearGradient id="graph-grad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#cda45e" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="#cda45e" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
 
-              {/* Horizontal Grid lines */}
-              <line x1="30" y1="35" x2="470" y2="35" className="admin-graph-grid-line" />
-              <line x1="30" y1="75" x2="470" y2="75" className="admin-graph-grid-line" />
-              <line x1="30" y1="115" x2="470" y2="115" className="admin-graph-grid-line" />
-              <line x1="30" y1="150" x2="470" y2="150" className="admin-graph-grid-line" />
-              <line x1="30" y1="185" x2="470" y2="185" className="admin-graph-grid-line" />
+                  {/* Horizontal Grid lines */}
+                  <line x1="30" y1="35" x2="470" y2="35" className="admin-graph-grid-line" />
+                  <line x1="30" y1="75" x2="470" y2="75" className="admin-graph-grid-line" />
+                  <line x1="30" y1="115" x2="470" y2="115" className="admin-graph-grid-line" />
+                  <line x1="30" y1="150" x2="470" y2="150" className="admin-graph-grid-line" />
+                  <line x1="30" y1="185" x2="470" y2="185" className="admin-graph-grid-line" />
 
-              {/* Shaded Area Under Line */}
-              <path key={`area-${graphFilter}`} d={graphData.areaPath} className="admin-graph-gradient" />
+                  {/* Shaded Area Under Line */}
+                  <path key={`area-${graphFilter}`} d={graphData.areaPath} className="admin-graph-gradient" />
 
-              {/* Curved Line Path */}
-              <path key={`line-${graphFilter}`} d={graphData.path} className="admin-graph-path" />
+                  {/* Curved Line Path */}
+                  <path key={`line-${graphFilter}`} d={graphData.path} className="admin-graph-path" />
 
-              {/* Individual point nodes */}
-              {graphData.points.map((pt, idx) => (
-                <g key={idx}>
-                  <circle
-                    cx={pt.x}
-                    cy={pt.y}
-                    r="5"
-                    fill="#000"
-                    stroke="#cda45e"
-                    strokeWidth="2.5"
-                    style={{ transition: 'all 0.5s ease' }}
-                  />
-                  <circle
-                    cx={pt.x}
-                    cy={pt.y}
-                    r="8"
-                    fill="transparent"
-                    stroke="transparent"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <title>Value Point {idx + 1}</title>
-                  </circle>
-                </g>
-              ))}
-            </svg>
+                  {/* Individual point nodes */}
+                  {graphData.points.map((pt, idx) => (
+                    <g key={idx}>
+                      <circle
+                        cx={pt.x}
+                        cy={pt.y}
+                        r="5"
+                        fill="#000"
+                        stroke="#cda45e"
+                        strokeWidth="2.5"
+                        style={{ transition: 'all 0.5s ease' }}
+                      />
+                      <circle
+                        cx={pt.x}
+                        cy={pt.y}
+                        r="8"
+                        fill="transparent"
+                        stroke="transparent"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <title>Value Point {idx + 1}</title>
+                      </circle>
+                    </g>
+                  ))}
+                </svg>
+              </>
+            )}
           </div>
 
           {/* X Axis Labels */}
@@ -325,32 +382,56 @@ export default function AdminDashboard() {
           </div>
 
           <div className="admin-best-list">
-            {bestProducts.map((p) => {
-              // Format a simplified total revenue
-              // E.g. 1269 sales * 1.700.000 price could be truncated or shown nicely
-              // The design displays Noir Enchanted Vest | IDR 1.700.000 | IDR 45.900.000 | 27 sales
-              // Let's display it elegantly based on mock data.
-              // We can use a base mock multiplier if sales numbers are huge or show exact numbers.
-              const salesToShow = p.sales > 100 ? Math.floor(p.sales / 30) : p.sales;
-              const revToShow = salesToShow * p.numericPrice;
-
-              return (
-                <div key={p.id} className="admin-best-item">
-                  <img src={p.image} alt={p.name} className="admin-best-img" />
-                  <div className="admin-best-info">
-                    <span className="admin-best-name">{p.name}</span>
-                    <span className="admin-best-price">IDR {p.numericPrice.toLocaleString('id-ID')}</span>
+            {loading ? (
+              Array.from({ length: 3 }).map((_, idx) => (
+                <div key={idx} className="admin-best-item" style={{ cursor: 'default' }}>
+                  <div style={{ width: '45px', height: '45px', borderRadius: '4px', backgroundColor: '#222', animation: 'pulse 1.5s infinite alternate' }} />
+                  <div className="admin-best-info" style={{ flex: 1 }}>
+                    <div style={{ width: '70%', height: '12px', backgroundColor: '#222', marginBottom: '6px', animation: 'pulse 1.5s infinite alternate' }} />
+                    <div style={{ width: '40%', height: '10px', backgroundColor: '#222', animation: 'pulse 1.5s infinite alternate' }} />
                   </div>
                   <div className="admin-best-meta">
-                    <span className="admin-best-revenue">IDR {revToShow.toLocaleString('id-ID')}</span>
-                    <span className="admin-best-sales">{salesToShow} sales</span>
+                    <div style={{ width: '60px', height: '12px', backgroundColor: '#222', marginBottom: '6px', animation: 'pulse 1.5s infinite alternate' }} />
+                    <div style={{ width: '30px', height: '10px', backgroundColor: '#222', animation: 'pulse 1.5s infinite alternate' }} />
                   </div>
                 </div>
-              );
-            })}
+              ))
+            ) : (
+              bestProducts.map((p) => {
+                // Format a simplified total revenue
+                // E.g. 1269 sales * 1.700.000 price could be truncated or shown nicely
+                // The design displays Noir Enchanted Vest | IDR 1.700.000 | IDR 45.900.000 | 27 sales
+                // Let's display it elegantly based on mock data.
+                // We can use a base mock multiplier if sales numbers are huge or show exact numbers.
+                const salesToShow = p.sales > 100 ? Math.floor(p.sales / 30) : p.sales;
+                const revToShow = salesToShow * p.numericPrice;
+
+                return (
+                  <div key={p.id} className="admin-best-item">
+                    <img src={p.image} alt={p.name} className="admin-best-img" />
+                    <div className="admin-best-info">
+                      <span className="admin-best-name">{p.name}</span>
+                      <span className="admin-best-price">IDR {p.numericPrice.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div className="admin-best-meta">
+                      <span className="admin-best-revenue">IDR {revToShow.toLocaleString('id-ID')}</span>
+                      <span className="admin-best-sales">{salesToShow} sales</span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>
+
+      {/* CSS Pulse Animation Keyframe */}
+      <style>{`
+        @keyframes pulse {
+          0% { opacity: 0.6; }
+          100% { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
