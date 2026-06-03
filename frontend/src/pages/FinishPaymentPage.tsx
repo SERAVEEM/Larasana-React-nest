@@ -20,7 +20,7 @@ export default function FinishPaymentPage() {
   };
 
   const formatPrice = (value: number): string => {
-    return 'IDR ' + value.toLocaleString('id-ID');
+    return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   const [showStatusModal, setShowStatusModal] = useState(false);

@@ -19,6 +19,9 @@ export interface Product {
   image: string;
   qrCode?: string;
   sales: number;
+  weaverName?: string;
+  weaverBio?: string;
+  weaverImageUrl?: string;
 }
 
 export interface OrderItem {
@@ -52,11 +55,11 @@ const DEFAULT_PRODUCTS: Product[] = [
     id: 'p1',
     name: 'Noir Enchanted Vest',
     category: 'Authentic Handmade',
-    price: 'IDR 1.700.000',
-    numericPrice: 1700000,
-    description: "Noir Enchanted Vest by Yulia Andirtia is inspired by Lombok's culture, folklore, and starlit nights. Luminous embroidery symbolizes strength, elegance, and the blend of heritage with modern style. More than a garment, it carries the soul and story of Lombok into today's world.",
+    price: '$120.00',
+    numericPrice: 120,
+    description: "Noir Enchanted Vest is inspired by Lombok's culture, folklore, and starlit nights. Luminous embroidery symbolizes strength, elegance, and the blend of heritage with modern style. More than a garment, it carries the soul and story of Lombok into today's world.",
     sku: '#32A53',
-    stock: 1269,
+    stock: 9999,
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     image: firstImg,
     qrCode: qrImg,
@@ -66,11 +69,11 @@ const DEFAULT_PRODUCTS: Product[] = [
     id: 'p2',
     name: 'Anchronic Vest',
     category: 'Modern Fit',
-    price: 'IDR 1.200.000',
-    numericPrice: 1200000,
+    price: '$85.00',
+    numericPrice: 85,
     description: 'A striking fusion of traditional Lombok weave and structured contemporary silhouettes. The Anchronic Vest is built to stand out with comfort and architectural details.',
     sku: '#32A54',
-    stock: 890,
+    stock: 9999,
     sizes: ['M', 'L', 'XL'],
     image: secondImg,
     qrCode: qrImg,
@@ -80,11 +83,11 @@ const DEFAULT_PRODUCTS: Product[] = [
     id: 'p3',
     name: 'Larasana Signature',
     category: 'Exclusive Collection',
-    price: 'IDR 2.400.000',
-    numericPrice: 2400000,
+    price: '$170.00',
+    numericPrice: 170,
     description: 'The pinnacle of Larasana craft. Handwoven over three months by master artisans, combining traditional golden threadwork with premium organic cotton panels.',
     sku: '#32A55',
-    stock: 24,
+    stock: 9999,
     sizes: ['S', 'M', 'L'],
     image: thirdImg,
     qrCode: qrImg,
@@ -94,11 +97,11 @@ const DEFAULT_PRODUCTS: Product[] = [
     id: 'p4',
     name: 'Tenun Classic Vest',
     category: 'Traditional Craft',
-    price: 'IDR 950.000',
-    numericPrice: 950000,
+    price: '$65.00',
+    numericPrice: 65,
     description: 'An elegant day-wear vest made using heritage techniques. Perfect for layering and bringing a piece of genuine culture to your everyday outfits.',
     sku: '#32A56',
-    stock: 450,
+    stock: 9999,
     sizes: ['S', 'M', 'L', 'XL'],
     image: fourthImg,
     qrCode: qrImg,
@@ -108,11 +111,11 @@ const DEFAULT_PRODUCTS: Product[] = [
     id: 'p5',
     name: 'Heritage Indigo Coat',
     category: 'Premium Outerwear',
-    price: 'IDR 3.100.000',
-    numericPrice: 3100000,
+    price: '$220.00',
+    numericPrice: 220,
     description: 'Dyed naturally with organic indigo plants in East Lombok, this longline coat has dynamic shades of blue and intricate symbols representing water and longevity.',
     sku: '#32A57',
-    stock: 12,
+    stock: 9999,
     sizes: ['M', 'L', 'XL', 'XXL'],
     image: fifthImg,
     qrCode: qrImg,
@@ -279,8 +282,8 @@ const initializeStorage = () => {
 };
 
 // Helper format function for currency
-export const formatIDR = (value: number): string => {
-  return 'IDR ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+export const formatUSD = (value: number): string => {
+  return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 export const getProducts = (): Product[] => {
@@ -300,7 +303,7 @@ export const saveProduct = (product: Omit<Product, 'id' | 'price'> & { id?: stri
   initializeStorage();
   const products = getProducts();
   const isEdit = !!product.id;
-  const formattedPrice = formatIDR(product.numericPrice);
+  const formattedPrice = formatUSD(product.numericPrice);
   
   let savedProduct: Product;
   if (isEdit) {
@@ -372,7 +375,7 @@ export const getProductsAsync = async (): Promise<Product[]> => {
     id: p.id.toString(),
     name: p.name,
     category: p.category || '',
-    price: formatIDR(p.price),
+    price: formatUSD(p.price),
     numericPrice: Number(p.price),
     description: p.description || '',
     sku: p.sku || '',
@@ -380,7 +383,10 @@ export const getProductsAsync = async (): Promise<Product[]> => {
     sizes: p.sizes ? (typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes) : [],
     image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '',
     qrCode: p.qrCodeUrl || undefined,
-    sales: Number(p.sales || 0)
+    sales: Number(p.sales || 0),
+    weaverName: p.weaverName || '',
+    weaverBio: p.weaverBio || '',
+    weaverImageUrl: p.weaverImageUrl || ''
   }));
 };
 
@@ -394,7 +400,7 @@ export const getProductByIdAsync = async (id: string): Promise<Product | undefin
     id: p.id.toString(),
     name: p.name,
     category: p.category || '',
-    price: formatIDR(p.price),
+    price: formatUSD(p.price),
     numericPrice: Number(p.price),
     description: p.description || '',
     sku: p.sku || '',
@@ -402,7 +408,10 @@ export const getProductByIdAsync = async (id: string): Promise<Product | undefin
     sizes: p.sizes ? (typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes) : [],
     image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '',
     qrCode: p.qrCodeUrl || undefined,
-    sales: Number(p.sales || 0)
+    sales: Number(p.sales || 0),
+    weaverName: p.weaverName || '',
+    weaverBio: p.weaverBio || '',
+    weaverImageUrl: p.weaverImageUrl || ''
   };
 };
 
@@ -418,7 +427,10 @@ export const saveProductAsync = async (product: Omit<Product, 'id' | 'price'> & 
     sizes: product.sizes,
     image: product.image,
     qrCode: product.qrCode,
-    sales: Number(product.sales || 0)
+    sales: Number(product.sales || 0),
+    weaverName: product.weaverName,
+    weaverBio: product.weaverBio,
+    weaverImageUrl: product.weaverImageUrl
   };
 
   let response;
@@ -433,7 +445,7 @@ export const saveProductAsync = async (product: Omit<Product, 'id' | 'price'> & 
     id: p.id.toString(),
     name: p.name,
     category: p.category || '',
-    price: formatIDR(p.price),
+    price: formatUSD(p.price),
     numericPrice: Number(p.price),
     description: p.description || '',
     sku: p.sku || '',
@@ -441,7 +453,10 @@ export const saveProductAsync = async (product: Omit<Product, 'id' | 'price'> & 
     sizes: p.sizes ? (typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes) : [],
     image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '',
     qrCode: p.qrCodeUrl || undefined,
-    sales: Number(p.sales || 0)
+    sales: Number(p.sales || 0),
+    weaverName: p.weaverName || '',
+    weaverBio: p.weaverBio || '',
+    weaverImageUrl: p.weaverImageUrl || ''
   };
 };
 
@@ -465,7 +480,7 @@ export const getOrdersAsync = async (): Promise<Order[]> => {
     paymentMethod: o.paymentMethod || 'Bank Transfer',
     address: o.shippingAddress,
     status: o.status === 'delivered' ? 'Delivered' : (o.status === 'cancelled' ? 'Canceled' : 'Pending'),
-    amount: formatIDR(o.totalAmount),
+    amount: formatUSD(o.totalAmount),
     numericAmount: Number(o.totalAmount),
     note: o.notes || undefined,
     items: (o.items || []).map((item: any) => ({
@@ -473,7 +488,7 @@ export const getOrdersAsync = async (): Promise<Order[]> => {
       name: item.product?.name || 'Noir Enchanted Vest',
       image: item.product?.thumbnailUrl || '/images/product/far left.png',
       quantity: Number(item.quantity),
-      price: formatIDR(item.unitPrice),
+      price: formatUSD(item.unitPrice),
       numericPrice: Number(item.unitPrice)
     }))
   }));
@@ -495,7 +510,7 @@ export const getOrderByIdAsync = async (id: string): Promise<Order | undefined> 
     paymentMethod: payment?.paymentMethod || order.paymentMethod || 'Bank Transfer',
     address: order.shippingAddress,
     status: order.status === 'delivered' ? 'Delivered' : (order.status === 'cancelled' ? 'Canceled' : 'Pending'),
-    amount: formatIDR(order.totalAmount),
+    amount: formatUSD(order.totalAmount),
     numericAmount: Number(order.totalAmount),
     note: order.notes || undefined,
     items: (order.items || []).map((item: any) => ({
@@ -503,7 +518,7 @@ export const getOrderByIdAsync = async (id: string): Promise<Order | undefined> 
       name: item.product?.name || 'Noir Enchanted Vest',
       image: item.product?.thumbnailUrl || '/images/product/far left.png',
       quantity: Number(item.quantity),
-      price: formatIDR(item.unitPrice),
+      price: formatUSD(item.unitPrice),
       numericPrice: Number(item.unitPrice)
     }))
   };

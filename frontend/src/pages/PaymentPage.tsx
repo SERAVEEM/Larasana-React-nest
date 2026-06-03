@@ -62,7 +62,7 @@ export default function PaymentPage() {
   } as OrderDetails);
 
   const formatPrice = (value: number): string => {
-    return 'IDR ' + value.toLocaleString('id-ID');
+    return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   const totalAmount = orderDetails.pricing.total;

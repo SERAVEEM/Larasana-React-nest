@@ -10,11 +10,13 @@ export default function AdminAddProduct() {
   const [name, setName] = useState('Noir Enchanted Vest');
   const [category, setCategory] = useState('Authentic Handmade');
   const [description, setDescription] = useState(
-    "Noir Enchanted Vest by Yulia Andirtia is inspired by Lombok's culture, folklore, and starlit nights. Luminous embroidery symbolizes strength, elegance, and the blend of heritage with modern style. More than a garment, it carries the soul and story of Lombok into today's world."
+    "Noir Enchanted Vest is inspired by Lombok's culture, folklore, and starlit nights. Luminous embroidery symbolizes strength, elegance, and the blend of heritage with modern style. More than a garment, it carries the soul and story of Lombok into today's world."
   );
   const [sku, setSku] = useState('#32A53');
-  const [stock, setStock] = useState('21');
-  const [price, setPrice] = useState('1700000');
+  const [price, setPrice] = useState('120');
+  const [weaverName, setWeaverName] = useState('Yulia Andirtia');
+  const [weaverBio, setWeaverBio] = useState('Crafted by Yulia Andirtia from the edge of Lombok, this vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.');
+  const [weaverImageUrl, setWeaverImageUrl] = useState('/images/weaver/yulia.png');
   const [selectedSizes, setSelectedSizes] = useState<string[]>(['XL']);
   
   // Base64 images
@@ -68,8 +70,8 @@ export default function AdminAddProduct() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !price || !stock) {
-      alert('Please fill out Name, Price, and Stock fields.');
+    if (!name || !price) {
+      alert('Please fill out Name and Price fields.');
       return;
     }
 
@@ -81,13 +83,16 @@ export default function AdminAddProduct() {
         category,
         description,
         sku,
-        stock: parseInt(stock) || 0,
-        numericPrice: parseInt(price) || 0,
+        stock: 9999,
+        numericPrice: parseFloat(price) || 0,
         sizes: selectedSizes,
         image: productImage || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500', // placeholder fallback if none uploaded
         qrCode: qrImage || undefined,
-        sales: 0
-      });
+        sales: 0,
+        weaverName,
+        weaverBio,
+        weaverImageUrl,
+      } as any);
       navigate('/admin/products');
     } catch (err) {
       console.error('Failed to create product:', err);
@@ -151,7 +156,7 @@ export default function AdminAddProduct() {
             />
           </div>
 
-          {/* SKU & Stock */}
+          {/* SKU & Price */}
           <div className="admin-form-grid-2">
             <div className="admin-form-group">
               <label className="admin-label" htmlFor="prod-sku">SKU</label>
@@ -165,30 +170,53 @@ export default function AdminAddProduct() {
               />
             </div>
             <div className="admin-form-group">
-              <label className="admin-label" htmlFor="prod-stock">Stock Quantity</label>
+              <label className="admin-label" htmlFor="prod-price">Sale Price (USD Numerical)</label>
               <input 
-                id="prod-stock"
+                id="prod-price"
                 type="number" 
+                step="0.01"
                 className="admin-input" 
-                value={stock} 
-                onChange={e => setStock(e.target.value)} 
-                placeholder="21"
+                value={price} 
+                onChange={e => setPrice(e.target.value)} 
+                placeholder="e.g. 120.00"
                 required
               />
             </div>
           </div>
 
-          {/* Sale Price */}
+          {/* Weaver Details */}
           <div className="admin-form-group">
-            <label className="admin-label" htmlFor="prod-price">Sale Price (IDR Numerical)</label>
+            <label className="admin-label" htmlFor="prod-weaver-name">Weaver's Name</label>
             <input 
-              id="prod-price"
-              type="number" 
+              id="prod-weaver-name"
+              type="text" 
               className="admin-input" 
-              value={price} 
-              onChange={e => setPrice(e.target.value)} 
-              placeholder="e.g. 1700000 for IDR 1.700.000"
-              required
+              value={weaverName} 
+              onChange={e => setWeaverName(e.target.value)} 
+              placeholder="e.g. Yulia Andirtia"
+            />
+          </div>
+
+          <div className="admin-form-group">
+            <label className="admin-label" htmlFor="prod-weaver-image">Weaver's Portrait Image URL</label>
+            <input 
+              id="prod-weaver-image"
+              type="text" 
+              className="admin-input" 
+              value={weaverImageUrl} 
+              onChange={e => setWeaverImageUrl(e.target.value)} 
+              placeholder="e.g. /images/weaver/yulia.png"
+            />
+          </div>
+
+          <div className="admin-form-group">
+            <label className="admin-label" htmlFor="prod-weaver-bio">Weaver's Biography</label>
+            <textarea 
+              id="prod-weaver-bio"
+              className="admin-textarea" 
+              value={weaverBio} 
+              onChange={e => setWeaverBio(e.target.value)} 
+              placeholder="Describe the weaver's story..."
             />
           </div>
 
