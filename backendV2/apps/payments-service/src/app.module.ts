@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
   createDatabaseModule,
-  Order, OrderItem, Payment, Product, Address, ShippingMethod,
+  Order, OrderItem, Payment, Product, Address, ShippingMethod, User, ProductImage,
   SERVICES,
 } from '../../../libs/shared/src';
 import { PaymentsController } from './payments.controller';
@@ -12,8 +12,8 @@ import { MidtransService } from './midtrans.service';
 
 @Module({
   imports: [
-    createDatabaseModule([Order, OrderItem, Payment, Product, Address, ShippingMethod]),
-    TypeOrmModule.forFeature([Order, OrderItem, Payment, Product, Address, ShippingMethod]),
+    createDatabaseModule([Order, OrderItem, Payment, Product, Address, ShippingMethod, User, ProductImage]),
+    TypeOrmModule.forFeature([Order, OrderItem, Payment, Product, Address, ShippingMethod, User, ProductImage]),
     // Payments service perlu akses ke addresses dan shipping service
     ClientsModule.register([
       {

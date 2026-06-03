@@ -42,7 +42,6 @@ export class PaymentsService {
     for (const item of items) {
       const product = await this.productRepo.findOne({ where: { id: item.productId, isActive: true } });
       if (!product) throw new NotFoundException(`Produk ID ${item.productId} tidak ditemukan`);
-      if (product.stock < item.quantity) throw new BadRequestException(`Stok "${product.name}" tidak cukup`);
 
       const subtotal = Number(product.price) * item.quantity;
       productTotal += subtotal;
@@ -74,7 +73,6 @@ export class PaymentsService {
           unitPrice: item.unitPrice, subtotal: item.subtotal,
           productSnapshot: { name: item.product.name, thumbnailUrl: item.product.thumbnailUrl, motif: item.product.motif },
         }));
-        await manager.decrement(Product, { id: item.product.id }, 'stock', item.quantity);
       }
       return saved;
     });
