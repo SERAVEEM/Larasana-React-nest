@@ -39,6 +39,9 @@ export class ProductsService {
     product.sales = Number(data.sales || 0);
     product.category = data.category || null;
     product.thumbnailUrl = data.image || null;
+    product.weaverName = data.weaverName || null;
+    product.weaverBio = data.weaverBio || null;
+    product.weaverImageUrl = data.weaverImageUrl || null;
     product.sellerId = 1; // Default Admin user
 
     if (data.image) {
@@ -72,6 +75,9 @@ export class ProductsService {
     product.sales = Number(data.sales || 0);
     product.category = data.category || null;
     product.thumbnailUrl = data.image || null;
+    product.weaverName = data.weaverName || null;
+    product.weaverBio = data.weaverBio || null;
+    product.weaverImageUrl = data.weaverImageUrl || null;
 
     if (data.image) {
       const img = {
