@@ -1,17 +1,40 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import registerImg from '../assets/images/Login Regsiter/33d7e2776de4144419b5c6d0a2dc6544-Photoroom.png';
 import '../style/auth.css';
+import { client } from '../api/client';
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !email || !password) return;
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await client.post('/auth/register', { name, email, password });
+      localStorage.setItem('larasana_auth_token', res.data.tokens.accessToken);
+      localStorage.setItem('larasana_user', JSON.stringify(res.data.user));
+      navigate('/');
+    } catch (err: any) {
+      const errMsg = err.response?.data?.message || 'Registrasi gagal. Silakan coba lagi.';
+      setError(Array.isArray(errMsg) ? errMsg[0] : errMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-page">
-
-    
       <div className="auth-panel auth-panel--form">
-
         <Link to="/" className="auth-back">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -19,13 +42,12 @@ export default function RegisterPage() {
         </Link>
 
         <div className="auth-form-container">
-
           <h1 className="auth-heading auth-heading--join">Join the Circle</h1>
           <p className="auth-subheading">Create an account for a more personalized shopping experience</p>
 
-        
-          <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+          {error && <div className="auth-error-banner" style={{ color: '#ff6b6b', marginBottom: '1.5rem', fontFamily: "'Inter', sans-serif", fontSize: '0.9rem' }}>{error}</div>}
 
+          <form className="auth-form" onSubmit={handleRegister}>
             <div className="auth-field">
               <label className="auth-label" htmlFor="register-name">Name</label>
               <input
@@ -34,6 +56,9 @@ export default function RegisterPage() {
                 className="auth-input"
                 placeholder="Enter your name"
                 autoComplete="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
               />
             </div>
 
@@ -45,6 +70,9 @@ export default function RegisterPage() {
                 className="auth-input"
                 placeholder="Enter your email"
                 autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
 
@@ -57,6 +85,9 @@ export default function RegisterPage() {
                   className="auth-input"
                   placeholder="Enter your password"
                   autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
                 <button
                   type="button"
@@ -78,8 +109,8 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <button type="submit" className="auth-btn" id="register-submit">
-              Sign Up
+            <button type="submit" className="auth-btn" id="register-submit" disabled={loading}>
+              {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
           </form>
 
@@ -87,17 +118,9 @@ export default function RegisterPage() {
             Already have an account?{' '}
             <Link to="/login" className="auth-switch__link">Login</Link>
           </p>
-
-       
-          <div className="auth-divider">
-          </div>
-
-         
-
         </div>
       </div>
 
-    
       <div className="auth-panel auth-panel--image">
         <img src={registerImg} alt="Larasana fashion" className="auth-image" />
         <div className="auth-image-overlay">

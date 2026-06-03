@@ -13,6 +13,7 @@ interface Address {
   province: string;
   postalCode: string;
   country: string;
+  phone: string;
 }
 
 interface ShippingOption {
@@ -118,9 +119,10 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
 
   // Component States for Checkout Selection
-  const [addresses, setAddresses] = useState<Address[]>(ADDRESS_BOOK);
-  const [selectedAddressId, setSelectedAddressId] = useState(ADDRESS_BOOK[0].id);
-  const [selectedShippingId, setSelectedShippingId] = useState(SHIPPING_OPTIONS[0].id);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState('');
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedShippingId, setSelectedShippingId] = useState('');
   const [selectedPaymentId, setSelectedPaymentId] = useState(PAYMENT_METHODS[0].id);
 
   // Modal visibility states
@@ -136,13 +138,22 @@ export default function CheckoutPage() {
     city: '',
     province: '',
     postalCode: '',
-    country: 'ID'
+    country: 'ID',
+    phone: ''
   });
 
   useEffect(() => {
     let active = true;
     setLoading(true);
 
+    // Check auth
+    const token = localStorage.getItem('larasana_auth_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    // Fetch product details
     let apiId = productId;
     if (productId.startsWith('grid-')) {
       apiId = productId.replace('grid-', '');
@@ -180,13 +191,52 @@ export default function CheckoutPage() {
         }
       });
 
+    // Fetch user addresses
+    client.get('/addresses')
+      .then((res) => {
+        if (active && res.data && res.data.length > 0) {
+          const mapped = res.data.map((addr: any) => ({
+            id: String(addr.id),
+            label: addr.label,
+            name: addr.recipientName,
+            street: addr.fullAddress,
+            district: addr.district,
+            city: addr.city,
+            province: addr.province,
+            postalCode: addr.postalCode,
+            country: 'ID',
+            phone: addr.phone
+          }));
+          setAddresses(mapped);
+          setSelectedAddressId(mapped[0].id);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch addresses:', err));
+
+    // Fetch shipping options
+    client.get('/shipping')
+      .then((res) => {
+        if (active && res.data && res.data.length > 0) {
+          const mapped = res.data.map((ship: any) => ({
+            id: String(ship.id),
+            name: ship.label,
+            price: Number(ship.baseCost),
+            eta: ship.estimatedDays,
+            logo: ship.courier.toUpperCase()
+          }));
+          setShippingOptions(mapped);
+          setSelectedShippingId(mapped[0].id);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch shipping methods:', err));
+
     return () => {
       active = false;
     };
-  }, [productId]);
+  }, [productId, navigate]);
 
-  const selectedAddress = addresses.find(a => a.id === selectedAddressId) || addresses[0];
-  const selectedShipping = SHIPPING_OPTIONS.find(s => s.id === selectedShippingId) || SHIPPING_OPTIONS[0];
+  const selectedAddress = addresses.find(a => a.id === selectedAddressId) || { id: '', label: 'No Address', name: '', street: 'Please add a shipping address', district: '', city: '', province: '', postalCode: '', country: 'ID', phone: '' };
+  const selectedShipping = shippingOptions.find(s => s.id === selectedShippingId) || { id: '', name: 'No Carrier', price: 0, eta: '', logo: '' };
   const selectedPayment = PAYMENT_METHODS.find(p => p.id === selectedPaymentId) || PAYMENT_METHODS[0];
 
   const basePrice = product ? product.price : 1700000;
@@ -202,41 +252,90 @@ export default function CheckoutPage() {
     setActiveModal(null);
   };
 
-  const handleAddAddress = (e: React.FormEvent) => {
+  const handleAddAddress = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newAddress.label || !newAddress.name || !newAddress.street) return;
+    if (!newAddress.label || !newAddress.name || !newAddress.street || !newAddress.phone) return;
 
-    const added: Address = {
-      ...newAddress,
-      id: `addr-${Date.now()}`
-    };
+    try {
+      const payload = {
+        label: newAddress.label,
+        recipientName: newAddress.name,
+        phone: newAddress.phone,
+        fullAddress: newAddress.street,
+        district: newAddress.district || '-',
+        city: newAddress.city || '-',
+        province: newAddress.province || '-',
+        postalCode: newAddress.postalCode || '00000'
+      };
 
-    setAddresses([...addresses, added]);
-    setSelectedAddressId(added.id);
-    setShowAddAddressForm(false);
-    setNewAddress({ label: '', name: '', street: '', district: '', city: '', province: '', postalCode: '', country: 'ID' });
+      const res = await client.post('/addresses', payload);
+
+      const added: Address = {
+        id: String(res.data.id),
+        label: res.data.label,
+        name: res.data.recipientName,
+        street: res.data.fullAddress,
+        district: res.data.district,
+        city: res.data.city,
+        province: res.data.province,
+        postalCode: res.data.postalCode,
+        country: 'ID',
+        phone: res.data.phone
+      };
+
+      setAddresses([...addresses, added]);
+      setSelectedAddressId(added.id);
+      setShowAddAddressForm(false);
+      setNewAddress({ label: '', name: '', street: '', district: '', city: '', province: '', postalCode: '', country: 'ID', phone: '' });
+    } catch (err) {
+      console.error('Failed to save address:', err);
+      alert('Gagal menyimpan alamat baru');
+    }
   };
 
-  const handleCheckout = () => {
-    navigate('/payment', {
-      state: {
-        product: {
-          id: productId,
-          name: product.name,
-          price: basePrice,
-          image: product.images[0],
-          size: selectedSize
-        },
-        address: selectedAddress,
-        shipping: selectedShipping,
-        payment: selectedPayment,
-        pricing: {
-          subtotal: basePrice,
-          shipping: shippingFee,
-          total: totalPrice
+  const handleCheckout = async () => {
+    if (!selectedAddressId) {
+      alert('Silakan pilih atau tambahkan alamat terlebih dahulu.');
+      return;
+    }
+    if (!selectedShippingId) {
+      alert('Silakan pilih kurir pengiriman terlebih dahulu.');
+      return;
+    }
+
+    try {
+      // Map payment methods to backend expectations: e.g. QRIS -> 'qris'
+      const payMethod = selectedPayment.name === 'QRIS' ? 'qris' : 'bank_transfer';
+      const res = await client.post('/checkout', {
+        items: [{ productId: Number(product.id), quantity: 1 }],
+        addressId: Number(selectedAddressId),
+        shippingMethodId: Number(selectedShippingId),
+        paymentMethod: payMethod
+      });
+
+      navigate('/payment', {
+        state: {
+          order: res.data.order,
+          payment: res.data.payment,
+          product: {
+            id: productId,
+            name: product.name,
+            price: basePrice,
+            image: product.images[0],
+            size: selectedSize
+          },
+          pricing: {
+            subtotal: basePrice,
+            shipping: shippingFee,
+            total: totalPrice
+          }
         }
-      }
-    });
+      });
+    } catch (err: any) {
+      console.error('Checkout creation failed:', err);
+      const errMsg = err.response?.data?.message || 'Gagal memproses checkout';
+      alert(Array.isArray(errMsg) ? errMsg[0] : errMsg);
+    }
   };
 
   const handleBack = () => {
@@ -488,6 +587,16 @@ export default function CheckoutPage() {
                         />
                       </div>
                       <div className="co-form-group">
+                        <label>Recipient Phone Number</label>
+                        <input 
+                          type="text" 
+                          required 
+                          value={newAddress.phone}
+                          onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
+                          placeholder="e.g. 08123456789"
+                        />
+                      </div>
+                      <div className="co-form-group">
                         <label>Street Address</label>
                         <input 
                           type="text" 
@@ -561,7 +670,7 @@ export default function CheckoutPage() {
               {/* SHIPPING SELECTION MODAL */}
               {activeModal === 'shipping' && (
                 <div className="co-modal-options-list">
-                  {SHIPPING_OPTIONS.map((ship) => (
+                  {shippingOptions.map((ship) => (
                     <button
                       key={ship.id}
                       className={`co-modal-option-card align-center ${selectedShippingId === ship.id ? 'active' : ''}`}

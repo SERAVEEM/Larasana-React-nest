@@ -41,6 +41,11 @@ export interface MidtransChargeResult {
 export class MidtransService {
   private readonly logger = new Logger(MidtransService.name);
 
+  private get isMockMode(): boolean {
+    const key = this.serverKey;
+    return !key || key.includes('xxxxxxxx') || key.trim() === '' || !key.startsWith('SB-');
+  }
+
   private get serverKey(): string {
     return process.env.MIDTRANS_SERVER_KEY ?? '';
   }
@@ -66,6 +71,32 @@ export class MidtransService {
   // ── CHARGE PAYMENT ─────────────────────────────────────────
   async charge(req: MidtransChargeRequest): Promise<MidtransChargeResult> {
     const expiryTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 jam
+
+    if (this.isMockMode) {
+      this.logger.log(`Running in mock mode. Simulating Midtrans response for ${req.paymentMethod}`);
+      const mockTransId = 'mock-trans-' + Math.floor(Math.random() * 1000000).toString();
+      const mockSnapToken = 'mock-token-' + Math.floor(Math.random() * 1000000).toString();
+      const qrImageUrl = req.paymentMethod === 'qris'
+        ? 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://localhost:5173/payment-success'
+        : null;
+      const vaNumber = req.paymentMethod !== 'qris'
+        ? '8806' + Math.floor(1000000000 + Math.random() * 9000000000).toString()
+        : null;
+      const paymentUrl = req.paymentMethod === 'qris'
+        ? `https://app.sandbox.midtrans.com/snap/v2/vtweb/${mockSnapToken}`
+        : null;
+
+      return {
+        midtransOrderId: req.orderId,
+        midtransTransactionId: mockTransId,
+        paymentUrl,
+        qrString: req.paymentMethod === 'qris' ? 'MOCK_QRIS_STRING' : null,
+        qrImageUrl,
+        vaNumber,
+        expiryTime,
+        rawResponse: { mock: true },
+      };
+    }
 
     let body: any;
     let endpoint: string;
@@ -109,6 +140,14 @@ export class MidtransService {
 
   // ── GET TRANSACTION STATUS ─────────────────────────────────
   async getStatus(midtransOrderId: string): Promise<any> {
+    if (this.isMockMode) {
+      return {
+        transaction_status: 'settlement',
+        fraud_status: 'accept',
+        transaction_id: 'mock-trans-id-999',
+        gross_amount: '1725000.00'
+      };
+    }
     const res = await fetch(`${this.baseUrl}/${midtransOrderId}/status`, {
       headers: { Authorization: this.authHeader },
     });
@@ -117,6 +156,9 @@ export class MidtransService {
 
   // ── CANCEL TRANSACTION ─────────────────────────────────────
   async cancel(midtransOrderId: string): Promise<any> {
+    if (this.isMockMode) {
+      return { transaction_status: 'cancel' };
+    }
     const res = await fetch(`${this.baseUrl}/${midtransOrderId}/cancel`, {
       method: 'POST',
       headers: { Authorization: this.authHeader },
