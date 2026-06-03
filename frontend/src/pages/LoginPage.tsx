@@ -1,17 +1,39 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import loginImg from '../assets/images/Login Regsiter/33d7e2776de4144419b5c6d0a2dc6544-Photoroom.png';
 import '../style/auth.css';
+import { client } from '../api/client';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await client.post('/auth/login', { email, password });
+      localStorage.setItem('larasana_auth_token', res.data.tokens.accessToken);
+      localStorage.setItem('larasana_user', JSON.stringify(res.data.user));
+      navigate('/');
+    } catch (err: any) {
+      const errMsg = err.response?.data?.message || 'Email atau password salah';
+      setError(Array.isArray(errMsg) ? errMsg[0] : errMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-page">
-
-
       <div className="auth-panel auth-panel--form">
-
         <Link to="/" className="auth-back">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -19,14 +41,13 @@ export default function LoginPage() {
         </Link>
 
         <div className="auth-form-container">
-
           {/* Title */}
           <h1 className="auth-heading">Welcome Back</h1>
           <p className="auth-subheading">Sign in to your profile where your curated collection is waiting for you</p>
 
-  
-          <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+          {error && <div className="auth-error-banner" style={{ color: '#ff6b6b', marginBottom: '1.5rem', fontFamily: "'Inter', sans-serif", fontSize: '0.9rem' }}>{error}</div>}
 
+          <form className="auth-form" onSubmit={handleLogin}>
             <div className="auth-field">
               <label className="auth-label" htmlFor="login-email">Email</label>
               <input
@@ -35,6 +56,9 @@ export default function LoginPage() {
                 className="auth-input"
                 placeholder="Enter your email"
                 autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
 
@@ -47,6 +71,9 @@ export default function LoginPage() {
                   className="auth-input"
                   placeholder="Enter your password"
                   autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
                 <button
                   type="button"
@@ -66,11 +93,10 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
-              <a href="#" className="auth-forgot">Forgot password?</a>
             </div>
 
-            <button type="submit" className="auth-btn" id="login-submit">
-              Sign In
+            <button type="submit" className="auth-btn" id="login-submit" disabled={loading}>
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 
@@ -103,12 +129,8 @@ export default function LoginPage() {
               Continue with Apple
             </button>
           </div>
-
         </div>
       </div>
-
- 
-
 
       <div className="auth-panel auth-panel--image">
         <img src={loginImg} alt="Larasana fashion" className="auth-image" />
@@ -120,7 +142,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
+

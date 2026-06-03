@@ -14,6 +14,7 @@
     "start:favorites": "nest start favorites-service --watch -r tsconfig-paths/register",
     "start:addresses": "nest start addresses-service --watch -r tsconfig-paths/register",
     "start:shipping": "nest start shipping-service --watch -r tsconfig-paths/register",
+    "dev": "concurrently -n gateway,auth,users,orders,products,payments,admin,notification,favorites,addresses,shipping -c \"cyan,blue,magenta,green,yellow,red,bgBlue,bgGreen,bgMagenta,bgCyan,bgRed\" \"npm run start:gateway\" \"npm run start:auth\" \"npm run start:users\" \"npm run start:orders\" \"npm run start:products\" \"npm run start:payments\" \"npm run start:admin\" \"npm run start:notification\" \"npm run start:favorites\" \"npm run start:addresses\" \"npm run start:shipping\"",
 
     "build": "nest build"
   },
@@ -49,6 +50,7 @@
     "@types/node": "^20.0.0",
     "@types/nodemailer": "^6.4.15",
     "@types/passport-jwt": "^4.0.1",
+    "concurrently": "^8.2.2",
     "typescript": "^5.1.3"
   }
 }
