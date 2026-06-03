@@ -34,7 +34,7 @@ export default function PaymentPage() {
   const navigate = useNavigate();
 
   // Retrieve state passed from Checkout page
-  const orderDetails = location.state as OrderDetails || {
+  const orderDetails = (location.state as OrderDetails) || ({
     product: {
       id: '1',
       name: 'Noir Enchanted Vest',
@@ -42,15 +42,27 @@ export default function PaymentPage() {
       image: '',
       size: 'XL'
     },
+    address: {
+      name: 'Alvin Cihuy',
+      street: 'Jalan Sandang No D5B',
+      city: 'West Jakarta'
+    },
+    shipping: {
+      name: 'JNE Express',
+      price: 25000
+    },
+    payment: {
+      name: 'QRIS'
+    },
     pricing: {
       subtotal: 1700000,
       shipping: 25000,
       total: 1725000
     }
-  };
+  } as OrderDetails);
 
   const formatPrice = (value: number): string => {
-    return 'IDR ' + value.toLocaleString('id-ID');
+    return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   const totalAmount = orderDetails.pricing.total;

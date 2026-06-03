@@ -57,7 +57,7 @@ export default function HeroShowcase() {
             id: `grid-${p.id}`,
             image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '/images/product/far left.png',
             name: p.name,
-            price: 'IDR ' + Number(p.price).toLocaleString('id-ID'),
+            price: '$' + Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
             rating: p.averageRating ? Number(p.averageRating).toFixed(1) : '5.0',
           }));
           const padded = [...formatted];

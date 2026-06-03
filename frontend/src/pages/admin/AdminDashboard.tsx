@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { getProductsAsync, getOrdersAsync, formatIDR } from './mockData';
+import { getProductsAsync, getOrdersAsync, formatUSD } from './mockData';
 import type { Product, Order } from './mockData';
 import '../../style/admin.css';
 
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
             {loading ? (
               <div style={{ width: '70%', height: '24px', backgroundColor: '#333', borderRadius: '4px', margin: '0.25rem 0', animation: 'pulse 1.5s infinite alternate' }} />
             ) : (
-              formatIDR(totalRevenue)
+              formatUSD(totalRevenue)
             )}
           </div>
           <div className="admin-metric-change">
@@ -413,10 +413,10 @@ export default function AdminDashboard() {
                     <img src={p.image} alt={p.name} className="admin-best-img" />
                     <div className="admin-best-info">
                       <span className="admin-best-name">{p.name}</span>
-                      <span className="admin-best-price">IDR {p.numericPrice.toLocaleString('id-ID')}</span>
+                      <span className="admin-best-price">${p.numericPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                     <div className="admin-best-meta">
-                      <span className="admin-best-revenue">IDR {revToShow.toLocaleString('id-ID')}</span>
+                      <span className="admin-best-revenue">${revToShow.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       <span className="admin-best-sales">{salesToShow} sales</span>
                     </div>
                   </div>

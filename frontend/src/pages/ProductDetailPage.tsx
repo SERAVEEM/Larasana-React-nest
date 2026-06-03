@@ -34,7 +34,7 @@ export default function ProductDetailPage() {
       .then((res) => {
         if (active) {
           const p = res.data;
-          const formattedPrice = 'IDR ' + Number(p.price).toLocaleString('id-ID');
+          const formattedPrice = '$' + Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
           const sizeList = p.sizes ? (typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes) : ['S', 'M', 'L', 'XL', 'XXL'];
           const imageList = p.images && p.images.length > 0
             ? p.images.map((img: any) => img.url)
@@ -49,8 +49,9 @@ export default function ProductDetailPage() {
             sizes: sizeList,
             qrCode: p.qrCodeUrl || '/images/product/authenticity_qr.png',
             weaver: {
-              name: p.seller?.name || 'Yulia Andirtia',
-              bio: p.seller?.bio || 'Crafted by Yulia Andirtia from the edge of Lombok, this vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.'
+              name: p.weaverName || 'Yulia Andirtia',
+              bio: p.weaverBio || 'Crafted by Yulia Andirtia from the edge of Lombok, this vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.',
+              image: p.weaverImageUrl || weaverImg
             }
           });
           setActiveImageIndex(0);
@@ -211,7 +212,7 @@ export default function ProductDetailPage() {
                 {/* Card 2: Weaver Info */}
                 <div className="pd-detail-card">
                   <div className="pd-card-media weaver-media">
-                    <img src={weaverImg} alt={product.weaver.name} className="pd-weaver-img" />
+                    <img src={product.weaver.image} alt={product.weaver.name} className="pd-weaver-img" />
                   </div>
                   <div className="pd-card-content">
                     <h3 className="pd-card-title">About The Weaver</h3>

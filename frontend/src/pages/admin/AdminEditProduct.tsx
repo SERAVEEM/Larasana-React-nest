@@ -17,8 +17,10 @@ export default function AdminEditProduct() {
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [sku, setSku] = useState('');
-  const [stock, setStock] = useState('');
   const [price, setPrice] = useState('');
+  const [weaverName, setWeaverName] = useState('');
+  const [weaverBio, setWeaverBio] = useState('');
+  const [weaverImageUrl, setWeaverImageUrl] = useState('');
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [productImage, setProductImage] = useState<string | null>(null);
   const [qrImage, setQrImage] = useState<string | null>(null);
@@ -42,8 +44,10 @@ export default function AdminEditProduct() {
             setCategory(data.category);
             setDescription(data.description);
             setSku(data.sku);
-            setStock(data.stock.toString());
             setPrice(data.numericPrice.toString());
+            setWeaverName(data.weaverName || '');
+            setWeaverBio(data.weaverBio || '');
+            setWeaverImageUrl(data.weaverImageUrl || '');
             setSelectedSizes(data.sizes);
             setProductImage(data.image);
             if (data.qrCode) setQrImage(data.qrCode);
@@ -106,8 +110,8 @@ export default function AdminEditProduct() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
-    if (!name || !price || !stock) {
-      alert('Please fill out Name, Price, and Stock fields.');
+    if (!name || !price) {
+      alert('Please fill out Name and Price fields.');
       return;
     }
 
@@ -118,13 +122,16 @@ export default function AdminEditProduct() {
       category,
       description,
       sku,
-      stock: parseInt(stock) || 0,
-      numericPrice: parseInt(price) || 0,
+      stock: 9999,
+      numericPrice: parseFloat(price) || 0,
       sizes: selectedSizes,
       image: productImage || '',
       qrCode: qrImage || undefined,
-      sales: product?.sales || 0
-    })
+      sales: product?.sales || 0,
+      weaverName,
+      weaverBio,
+      weaverImageUrl,
+    } as any)
       .then(() => {
         setSaving(false);
         navigate('/admin/products');
@@ -222,7 +229,7 @@ export default function AdminEditProduct() {
             />
           </div>
 
-          {/* SKU & Stock */}
+          {/* SKU & Price */}
           <div className="admin-form-grid-2">
             <div className="admin-form-group">
               <label className="admin-label" htmlFor="edit-sku">SKU</label>
@@ -235,28 +242,52 @@ export default function AdminEditProduct() {
               />
             </div>
             <div className="admin-form-group">
-              <label className="admin-label" htmlFor="edit-stock">Stock Quantity</label>
+              <label className="admin-label" htmlFor="edit-price">Sale Price (USD Numerical)</label>
               <input 
-                id="edit-stock"
+                id="edit-price"
                 type="number" 
+                step="0.01"
                 className="admin-input" 
-                value={stock} 
-                onChange={e => setStock(e.target.value)} 
+                value={price} 
+                onChange={e => setPrice(e.target.value)} 
                 required
               />
             </div>
           </div>
 
-          {/* Sale Price */}
+          {/* Weaver Details */}
           <div className="admin-form-group">
-            <label className="admin-label" htmlFor="edit-price">Sale Price (IDR Numerical)</label>
+            <label className="admin-label" htmlFor="edit-weaver-name">Weaver's Name</label>
             <input 
-              id="edit-price"
-              type="number" 
+              id="edit-weaver-name"
+              type="text" 
               className="admin-input" 
-              value={price} 
-              onChange={e => setPrice(e.target.value)} 
-              required
+              value={weaverName} 
+              onChange={e => setWeaverName(e.target.value)} 
+              placeholder="e.g. Yulia Andirtia"
+            />
+          </div>
+
+          <div className="admin-form-group">
+            <label className="admin-label" htmlFor="edit-weaver-image">Weaver's Portrait Image URL</label>
+            <input 
+              id="edit-weaver-image"
+              type="text" 
+              className="admin-input" 
+              value={weaverImageUrl} 
+              onChange={e => setWeaverImageUrl(e.target.value)} 
+              placeholder="e.g. /images/weaver/yulia.png"
+            />
+          </div>
+
+          <div className="admin-form-group">
+            <label className="admin-label" htmlFor="edit-weaver-bio">Weaver's Biography</label>
+            <textarea 
+              id="edit-weaver-bio"
+              className="admin-textarea" 
+              value={weaverBio} 
+              onChange={e => setWeaverBio(e.target.value)} 
+              placeholder="Describe the weaver's story..."
             />
           </div>
 

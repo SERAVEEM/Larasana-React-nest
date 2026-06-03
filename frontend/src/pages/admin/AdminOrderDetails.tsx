@@ -77,8 +77,8 @@ export default function AdminOrderDetails() {
 
   // Calculate totals
   const subtotal = order.items.reduce((sum, item) => sum + (item.numericPrice * item.quantity), 0);
-  const tax = Math.round(subtotal * 0.20); // 20% Tax
-  const shipping = 25000; // static shipping cost
+  const tax = Number((subtotal * 0.20).toFixed(2)); // 20% Tax
+  const shipping = 15.00; // static shipping cost
   const grandTotal = subtotal + tax + shipping;
 
   return (
@@ -258,19 +258,19 @@ export default function AdminOrderDetails() {
           <div className="admin-details-totals">
             <div className="admin-details-totals-row">
               <span>Subtotal</span>
-              <span style={{ fontWeight: 600 }}>IDR {subtotal.toLocaleString('id-ID')}</span>
+              <span style={{ fontWeight: 600 }}>${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <div className="admin-details-totals-row">
               <span>Tax (20%)</span>
-              <span style={{ fontWeight: 600 }}>IDR {tax.toLocaleString('id-ID')}</span>
+              <span style={{ fontWeight: 600 }}>${tax.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <div className="admin-details-totals-row">
               <span>Shipping</span>
-              <span style={{ fontWeight: 600 }}>IDR {shipping.toLocaleString('id-ID')}</span>
+              <span style={{ fontWeight: 600 }}>${shipping.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <div className="admin-details-totals-row admin-details-totals-row--grand">
               <span>Total</span>
-              <span>Rp {grandTotal.toLocaleString('id-ID')}</span>
+              <span>${grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
         </div>

@@ -110,10 +110,6 @@ export default function AdminProducts() {
         <>
           <div className="admin-products-grid">
             {currentProducts.map((p) => {
-              // Calculate a simulated stock percent based on a max capacity of 2000
-              const maxStockCapacity = 2000;
-              const stockPercent = Math.min((p.stock / maxStockCapacity) * 100, 100);
-
               return (
                 <div 
                   key={p.id} 
@@ -144,15 +140,6 @@ export default function AdminProducts() {
                         </svg>
                         {p.sales}
                       </span>
-                    </div>
-                    <div className="admin-stat-row">
-                      <span className="admin-stat-label">Remaining Products</span>
-                      <div className="admin-stat-val" style={{ width: '60%' }}>
-                        <div className="admin-progress-bar-bg" style={{ flex: 1, margin: 0, marginRight: '0.5rem' }}>
-                          <div className="admin-progress-bar-fill" style={{ width: `${stockPercent}%` }} />
-                        </div>
-                        <span>{p.stock}</span>
-                      </div>
                     </div>
                   </div>
                 </div>
