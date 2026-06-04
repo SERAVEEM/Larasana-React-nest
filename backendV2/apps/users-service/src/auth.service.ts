@@ -41,7 +41,7 @@ export class AuthService {
   async login(data: { email: string; password: string; meta: any }) {
     const user = await this.userRepo
       .createQueryBuilder('u')
-      .addSelect('u.password_hash')
+      .addSelect('u.passwordHash')
       .where('u.email = :email', { email: data.email })
       .getOne();
 

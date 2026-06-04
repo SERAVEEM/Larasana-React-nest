@@ -3,11 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { GatewayAppModule } from './app.module';
+import { RpcExceptionFilter } from './common/rpc-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(GatewayAppModule);
 
   app.setGlobalPrefix('api/v1');
+
+  app.useGlobalFilters(new RpcExceptionFilter());
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, forbidNonWhitelisted: true,

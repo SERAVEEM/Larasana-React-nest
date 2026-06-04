@@ -18,15 +18,6 @@
         "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
       }
     },
-    "auth-service": {
-      "type": "application",
-      "root": "apps/auth-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/auth-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/auth-service/tsconfig.app.json"
-      }
-    },
     "users-service": {
       "type": "application",
       "root": "apps/users-service",
@@ -36,40 +27,13 @@
         "tsConfigPath": "apps/users-service/tsconfig.app.json"
       }
     },
-    "orders-service": {
+    "commerce-service": {
       "type": "application",
-      "root": "apps/orders-service",
+      "root": "apps/commerce-service",
       "entryFile": "main",
-      "sourceRoot": "apps/orders-service/src",
+      "sourceRoot": "apps/commerce-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/orders-service/tsconfig.app.json"
-      }
-    },
-    "products-service": {
-      "type": "application",
-      "root": "apps/products-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/products-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/products-service/tsconfig.app.json"
-      }
-    },
-    "payments-service": {
-      "type": "application",
-      "root": "apps/payments-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/payments-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/payments-service/tsconfig.app.json"
-      }
-    },
-    "admin-service": {
-      "type": "application",
-      "root": "apps/admin-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/admin-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/admin-service/tsconfig.app.json"
+        "tsConfigPath": "apps/commerce-service/tsconfig.app.json"
       }
     },
     "notification-service": {
@@ -79,33 +43,6 @@
       "sourceRoot": "apps/notification-service/src",
       "compilerOptions": {
         "tsConfigPath": "apps/notification-service/tsconfig.app.json"
-      }
-    },
-    "favorites-service": {
-      "type": "application",
-      "root": "apps/favorites-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/favorites-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/favorites-service/tsconfig.app.json"
-      }
-    },
-    "addresses-service": {
-      "type": "application",
-      "root": "apps/addresses-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/addresses-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/addresses-service/tsconfig.app.json"
-      }
-    },
-    "shipping-service": {
-      "type": "application",
-      "root": "apps/shipping-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/shipping-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/shipping-service/tsconfig.app.json"
       }
     }
   },

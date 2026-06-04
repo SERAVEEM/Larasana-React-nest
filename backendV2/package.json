@@ -4,17 +4,10 @@
   "private": true,
   "scripts": {
     "start:gateway": "nest start api-gateway --watch -r tsconfig-paths/register",
-    "start:auth": "nest start auth-service --watch -r tsconfig-paths/register",
     "start:users": "nest start users-service --watch -r tsconfig-paths/register",
-    "start:orders": "nest start orders-service --watch -r tsconfig-paths/register",
-    "start:products": "nest start products-service --watch -r tsconfig-paths/register",
-    "start:payments": "nest start payments-service --watch -r tsconfig-paths/register",
-    "start:admin": "nest start admin-service --watch -r tsconfig-paths/register",
+    "start:commerce": "nest start commerce-service --watch -r tsconfig-paths/register",
     "start:notification": "nest start notification-service --watch -r tsconfig-paths/register",
-    "start:favorites": "nest start favorites-service --watch -r tsconfig-paths/register",
-    "start:addresses": "nest start addresses-service --watch -r tsconfig-paths/register",
-    "start:shipping": "nest start shipping-service --watch -r tsconfig-paths/register",
-    "dev": "concurrently -n gateway,auth,users,orders,products,payments,admin,notification,favorites,addresses,shipping -c \"cyan,blue,magenta,green,yellow,red,bgBlue,bgGreen,bgMagenta,bgCyan,bgRed\" \"npm run start:gateway\" \"npm run start:auth\" \"npm run start:users\" \"npm run start:orders\" \"npm run start:products\" \"npm run start:payments\" \"npm run start:admin\" \"npm run start:notification\" \"npm run start:favorites\" \"npm run start:addresses\" \"npm run start:shipping\"",
+    "dev": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"npm run start:gateway\" \"npm run start:users\" \"npm run start:commerce\" \"npm run start:notification\"",
 
     "build": "nest build"
   },

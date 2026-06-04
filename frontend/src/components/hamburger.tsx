@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
-
-const MENU_ITEMS = [
-  { name: 'Home', path: '/' },
-  { name: 'Product', path: '/#hero-showcase' },
-  { name: 'About Us', path: '/aboutus' },
-  { name: 'Story', path: '/Story' },
-  { name: 'Impact', path: '/Impact' },
-  { name: 'Login', path: '/login' },
-];
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Hamburger() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('larasana_auth_token'));
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -24,6 +21,21 @@ export default function Hamburger() {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  const menuItems = [
+    { name: 'Home', path: '/' },
+    { name: 'Product', path: '/#hero-showcase' },
+    { name: 'About Us', path: '/aboutus' },
+    { name: 'Story', path: '/Story' },
+    { name: 'Impact', path: '/Impact' },
+  ];
+
+  const handleLogout = () => {
+    localStorage.removeItem('larasana_auth_token');
+    setIsLoggedIn(false);
+    setIsOpen(false);
+    navigate('/login');
+  };
 
   return (
     <>
@@ -60,7 +72,7 @@ export default function Hamburger() {
             </button>
 
             <nav className="hamburger-overlay__links">
-              {MENU_ITEMS.map((item) => (
+              {menuItems.map((item) => (
                 <Link
                   key={item.name}
                   className="hamburger-overlay__link"
@@ -70,6 +82,40 @@ export default function Hamburger() {
                   {item.name}
                 </Link>
               ))}
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    className="hamburger-overlay__link"
+                    to="/my-orders"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    My Orders
+                  </Link>
+                  <button
+                    className="hamburger-overlay__link hamburger-logout-btn"
+                    onClick={handleLogout}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      textAlign: 'left',
+                      fontFamily: 'inherit',
+                      cursor: 'pointer',
+                      width: '100%',
+                      padding: 0
+                    }}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link
+                  className="hamburger-overlay__link"
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
             </nav>
           </div>
         </>,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { client } from '../api/client';
 
@@ -21,6 +21,8 @@ const cardVariants = {
 
 const Product: FC = () => {
   const [products, setProducts] = useState<ProductCard[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
+  const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
@@ -42,10 +44,52 @@ const Product: FC = () => {
         console.error('Failed to load products for catalog:', err);
       });
 
+    const token = localStorage.getItem('larasana_auth_token');
+    if (token) {
+      client.get('/favorites')
+        .then((res) => {
+          if (active) {
+            const favs = res.data.data || [];
+            const ids = new Set<number>(favs.map((f: any) => Number(f.productId)));
+            setFavoriteIds(ids);
+          }
+        })
+        .catch((err) => console.error('Failed to load favorites:', err));
+    }
+
     return () => {
       active = false;
     };
   }, []);
+
+  const handleFavoriteToggle = async (productId: number) => {
+    const token = localStorage.getItem('larasana_auth_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const isFav = favoriteIds.has(productId);
+      if (isFav) {
+        await client.delete(`/favorites/${productId}`);
+        setFavoriteIds(prev => {
+          const next = new Set(prev);
+          next.delete(productId);
+          return next;
+        });
+      } else {
+        await client.post(`/favorites/${productId}`);
+        setFavoriteIds(prev => {
+          const next = new Set(prev);
+          next.add(productId);
+          return next;
+        });
+      }
+    } catch (err) {
+      console.error('Failed to toggle favorite:', err);
+    }
+  };
   return (
     <section className="hs-product-grid" aria-labelledby="product-heading">
       <div className="hs-bg-black">
@@ -85,14 +129,16 @@ const Product: FC = () => {
               <Link to={`/product/${product.id}`} style={{ display: 'block', width: '100%', height: '100%', color: 'inherit' }}>
                 <img src={product.image} alt={product.name} className="hs-grid-item-img" />
                 <div 
-                  className="hs-grid-heart"
+                  className={`hs-grid-heart ${favoriteIds.has(Number(product.id)) ? 'active' : ''}`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    handleFavoriteToggle(Number(product.id));
                   }}
+                  style={{ color: favoriteIds.has(Number(product.id)) ? '#C2A353' : '#ffffff' }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" />
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill={favoriteIds.has(Number(product.id)) ? '#C2A353' : 'none'} stroke="#C2A353" strokeWidth="2" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                   </svg>
                 </div>
                 <div className="hs-grid-info">

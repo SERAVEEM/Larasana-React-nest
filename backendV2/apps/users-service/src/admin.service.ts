@@ -8,8 +8,6 @@ import { Order } from '../../../libs/shared/src';
 import { Payment } from '../../../libs/shared/src';
 import { Product } from '../../../libs/shared/src';
 
-// Seller profile masih pakai interface sederhana
-// karena SellerProfile entity belum dibuat — sesuai scope project
 interface SellerApplication {
   userId: number;
   user: User;
@@ -33,7 +31,6 @@ export class AdminService {
   ) {}
 
   // ── DASHBOARD STATS ────────────────────────────────────────
-  // Overview singkat untuk halaman utama admin
   async getDashboardStats() {
     const [
       totalUsers,
@@ -98,7 +95,6 @@ export class AdminService {
     return user;
   }
 
-  // Nonaktifkan / aktifkan akun user
   async toggleUserActive(userId: number, isActive: boolean) {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User tidak ditemukan');
@@ -116,15 +112,10 @@ export class AdminService {
   }
 
   // ── SELLER APPLICATIONS ────────────────────────────────────
-  // Ambil semua user dengan role buyer yang pernah apply seller
-  // (dalam implementasi penuh ini pakai tabel seller_profiles)
-  // Untuk sekarang: tampilkan user dengan role buyer sebagai pending list
   async getSellerApplications(query: any) {
     const { page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
 
-    // Ambil semua seller yang sudah approved (role = seller)
-    // dan buyer yang belum (simulasi pending)
     const [data, total] = await this.userRepo.findAndCount({
       where: { role: 'seller' },
       order: { createdAt: 'DESC' },
@@ -135,7 +126,6 @@ export class AdminService {
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
-  // Approve seller — upgrade role dari buyer ke seller
   async reviewSeller(userId: number, decision: 'approved' | 'rejected', reason: string | undefined, adminId: number) {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User tidak ditemukan');
@@ -151,7 +141,6 @@ export class AdminService {
 
     if (decision === 'rejected') {
       if (!reason) throw new BadRequestException('Alasan penolakan wajib diisi');
-      // Bisa kirim email notifikasi reject di sini
       return { message: `Pengajuan ${user.name} ditolak`, reason: reason };
     }
   }
@@ -193,31 +182,28 @@ export class AdminService {
     return { order, payment };
   }
 
+  async updateOrderStatus(
+    orderId: number,
+    status: string,
+    adminId: number,
+  ) {
+    const order = await this.orderRepo.findOne({
+      where: { id: orderId },
+    });
 
-async updateOrderStatus(
-  orderId: number,
-  status: string,
-  adminId: number,
-) {
-  const order = await this.orderRepo.findOne({
-    where: { id: orderId },
-  });
+    if (!order) {
+      throw new NotFoundException('Order tidak ditemukan');
+    }
 
-  if (!order) {
-    throw new NotFoundException('Order tidak ditemukan');
+    const prevStatus = order.status;
+    order.status = status as any;
+    await this.orderRepo.save(order);
+
+    return {
+      message: `Status order ${order.orderCode} diubah dari ${prevStatus} ke ${status}`,
+      order,
+    };
   }
-
-  const prevStatus = order.status;
-
-  order.status = status as any;
-
-  await this.orderRepo.save(order);
-
-  return {
-    message: `Status order ${order.orderCode} diubah dari ${prevStatus} ke ${status}`,
-    order,
-  };
-}
 
   // ── PRODUCT MODERATION ─────────────────────────────────────
 
@@ -236,7 +222,6 @@ async updateOrderStatus(
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
-  // Nonaktifkan produk yang melanggar (misal: bukan tenun asli)
   async toggleProductActive(productId: number, isActive: boolean) {
     const product = await this.productRepo.findOne({ where: { id: productId } });
     if (!product) throw new NotFoundException('Produk tidak ditemukan');

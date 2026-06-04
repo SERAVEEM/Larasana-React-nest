@@ -16,6 +16,7 @@ export class ProductsController {
   findById(@Payload() data: { productId: number }) {
     return this.productsService.findById(data.productId);
   }
+
   @MessagePattern(PRODUCTS_PATTERNS.CREATE)
   create(@Payload() data: any) {
     return this.productsService.create(data);
