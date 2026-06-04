@@ -6,7 +6,6 @@ import { Repository, DataSource } from 'typeorm';
 import { Order, OrderItem, Payment, Product, Address, ShippingMethod } from '../../../libs/shared/src';
 import { MidtransService } from './midtrans.service';
 
-
 @Injectable()
 export class PaymentsService {
   constructor(
@@ -126,7 +125,18 @@ export class PaymentsService {
       }
     }
 
-    return { orderId, orderStatus: order.status, paymentStatus: payment.status, paidAt: payment.paidAt };
+    return {
+      orderId,
+      orderStatus: order.status,
+      paymentStatus: payment.status,
+      paidAt: payment.paidAt,
+      paymentMethod: payment.paymentMethod,
+      amount: payment.amount,
+      paymentUrl: payment.paymentUrl,
+      qrImageUrl: payment.qrImageUrl,
+      vaNumber: payment.vaNumber,
+      expiryTime: payment.expiryTime,
+    };
   }
 
   async handleWebhook(payload: any) {

@@ -17,3 +17,6 @@ export * from './constants/message-patterns';
 
 // Database
 export * from './database/database.module';
+
+// Filters
+export * from './filters/all-exceptions-rpc.filter';

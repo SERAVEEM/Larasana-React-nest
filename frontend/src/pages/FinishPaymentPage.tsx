@@ -42,7 +42,7 @@ export default function FinishPaymentPage() {
   }, [showStatusModal, redirectCount, navigate]);
 
   const handleMyOrders = () => {
-    setShowStatusModal(true);
+    navigate('/my-orders');
   };
 
   const handleBackToHome = () => {

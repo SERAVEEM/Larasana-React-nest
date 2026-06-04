@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": false,
-    "outDir": "../../dist/shipping-service"
+    "outDir": "../../dist/commerce-service"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test"]

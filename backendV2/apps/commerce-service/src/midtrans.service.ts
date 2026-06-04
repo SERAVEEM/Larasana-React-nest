@@ -1,19 +1,8 @@
-// src/payments/midtrans.service.ts
-//
-// Midtrans adalah payment gateway Indonesia yang support:
-// QRIS, GoPay, ShopeePay, Virtual Account (BCA/BNI/BRI/Mandiri), dll
-//
-// Setup:
-// 1. Daftar di https://midtrans.com
-// 2. Masuk ke Sandbox untuk testing
-// 3. Ambil Server Key & Client Key dari Settings > Access Keys
-// 4. Isi di .env
-
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { PaymentMethod } from '@app/shared';
 
 export interface MidtransChargeRequest {
-  orderId: string;         // unik per transaksi
+  orderId: string;
   amount: number;
   customerName: string;
   customerEmail: string;
@@ -68,7 +57,6 @@ export class MidtransService {
     return 'Basic ' + Buffer.from(this.serverKey + ':').toString('base64');
   }
 
-  // ── CHARGE PAYMENT ─────────────────────────────────────────
   async charge(req: MidtransChargeRequest): Promise<MidtransChargeResult> {
     const expiryTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 jam
 
@@ -101,12 +89,10 @@ export class MidtransService {
     let body: any;
     let endpoint: string;
 
-    // QRIS — gunakan Snap API (paling mudah, support semua method termasuk QRIS)
     if (req.paymentMethod === 'qris') {
       endpoint = `${this.snapBaseUrl}/transactions`;
       body = this.buildSnapPayload(req, expiryTime);
     } else {
-      // Core API untuk Virtual Account & E-wallet spesifik
       endpoint = `${this.baseUrl}/charge`;
       body = this.buildCorePayload(req, expiryTime);
     }
@@ -138,7 +124,6 @@ export class MidtransService {
     }
   }
 
-  // ── GET TRANSACTION STATUS ─────────────────────────────────
   async getStatus(midtransOrderId: string): Promise<any> {
     if (this.isMockMode) {
       return {
@@ -154,7 +139,6 @@ export class MidtransService {
     return res.json();
   }
 
-  // ── CANCEL TRANSACTION ─────────────────────────────────────
   async cancel(midtransOrderId: string): Promise<any> {
     if (this.isMockMode) {
       return { transaction_status: 'cancel' };
@@ -166,8 +150,6 @@ export class MidtransService {
     return res.json();
   }
 
-  // ── VERIFY NOTIFICATION SIGNATURE ─────────────────────────
-  // Dipakai di webhook endpoint untuk verifikasi payload dari Midtrans
   verifySignature(
     orderId: string,
     statusCode: string,
@@ -180,7 +162,6 @@ export class MidtransService {
     return expected === signatureKey;
   }
 
-  // ── PRIVATE: Build Snap payload ────────────────────────────
   private buildSnapPayload(req: MidtransChargeRequest, expiryTime: Date): any {
     return {
       transaction_details: {
@@ -206,7 +187,6 @@ export class MidtransService {
     };
   }
 
-  // ── PRIVATE: Build Core API payload ───────────────────────
   private buildCorePayload(req: MidtransChargeRequest, expiryTime: Date): any {
     const base = {
       transaction_details: {
@@ -243,7 +223,6 @@ export class MidtransService {
     }
   }
 
-  // ── PRIVATE: Parse Midtrans response ──────────────────────
   private parseResponse(
     req: MidtransChargeRequest,
     data: any,
@@ -270,7 +249,6 @@ export class MidtransService {
   }
 
   private formatMidtransTime(date: Date): string {
-    // Format: "2024-01-01 12:00:00 +0700"
     const pad = (n: number) => n.toString().padStart(2, '0');
     return (
       `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +

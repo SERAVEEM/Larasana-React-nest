@@ -21,11 +21,9 @@ export class AddressesService {
   }
 
   async createAddress(userId: number, dto: CreateAddressDto): Promise<Address> {
-    // Kalau user belum punya alamat sama sekali, jadikan primary otomatis
     const count = await this.addressRepo.count({ where: { userId } });
     const isPrimary = dto.isPrimary ?? count === 0;
 
-    // Kalau set primary, unset yang lama
     if (isPrimary) {
       await this.addressRepo.update({ userId, isPrimary: true }, { isPrimary: false });
     }

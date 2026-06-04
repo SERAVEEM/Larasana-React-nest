@@ -66,6 +66,17 @@ export default function ProductDetailPage() {
         if (active) setLoading(false);
       });
 
+    const token = localStorage.getItem('larasana_auth_token');
+    if (token) {
+      client.get(`/favorites/check/${apiId}`)
+        .then((res) => {
+          if (active) {
+            setIsLiked(res.data.isFavorited);
+          }
+        })
+        .catch((err) => console.error('Failed to check favorite status:', err));
+    }
+
     return () => {
       active = false;
     };
@@ -86,6 +97,26 @@ export default function ProductDetailPage() {
       navigate(-1);
     } else {
       navigate('/');
+    }
+  };
+
+  const handleLikeToggle = async () => {
+    const token = localStorage.getItem('larasana_auth_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        await client.delete(`/favorites/${product.id}`);
+        setIsLiked(false);
+      } else {
+        await client.post(`/favorites/${product.id}`);
+        setIsLiked(true);
+      }
+    } catch (err) {
+      console.error('Failed to toggle favorite:', err);
     }
   };
 
@@ -234,7 +265,7 @@ export default function ProductDetailPage() {
               
               <button 
                 className={`pd-like-button ${isLiked ? 'active' : ''}`} 
-                onClick={() => setIsLiked(!isLiked)}
+                onClick={handleLikeToggle}
                 aria-label="Add to favorites"
               >
                 <svg viewBox="0 0 24 24" width="24" height="24" fill={isLiked ? '#C2A353' : 'none'} stroke={isLiked ? '#C2A353' : '#C2A353'} strokeWidth="2">
