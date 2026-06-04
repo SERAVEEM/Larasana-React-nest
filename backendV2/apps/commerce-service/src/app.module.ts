@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   createDatabaseModule,
-  Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod, User,
+  User, RefreshToken, EmailVerification, PasswordReset, Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod,
 } from '../../../libs/shared/src';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
@@ -21,7 +21,7 @@ import { MidtransService } from './midtrans.service';
 @Module({
   imports: [
     createDatabaseModule([
-      Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod, User,
+      User, RefreshToken, EmailVerification, PasswordReset, Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod,
     ]),
     TypeOrmModule.forFeature([
       Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod, User,

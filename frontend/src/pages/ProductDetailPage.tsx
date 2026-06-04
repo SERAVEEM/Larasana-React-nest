@@ -16,6 +16,17 @@ export default function ProductDetailPage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('XL');
   const [isLiked, setIsLiked] = useState(false);
+  const [productList, setProductList] = useState<any[]>([]);
+
+  useEffect(() => {
+    client.get('/products')
+      .then((res) => {
+        setProductList(res.data.data || []);
+      })
+      .catch((err) => {
+        console.error('Failed to load product list for navigation:', err);
+      });
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -82,14 +93,40 @@ export default function ProductDetailPage() {
     };
   }, [id]);
 
-  const handlePrevImage = () => {
-    if (!product) return;
-    setActiveImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+  // Removed unused handlePrevImage and handleNextImage handlers
+
+  const handlePrevProduct = () => {
+    if (!id || productList.length === 0) return;
+    const match = id.match(/^([a-zA-Z_-]*)([0-9]+)$/);
+    if (!match) return;
+    const prefix = match[1];
+    const currentNumericId = parseInt(match[2], 10);
+    const currentIndex = productList.findIndex((p) => p.id === currentNumericId);
+    if (currentIndex === -1) {
+      const prevId = Math.max(1, currentNumericId - 1);
+      navigate(`/product/${prefix}${prevId}`);
+      return;
+    }
+    const prevIndex = (currentIndex - 1 + productList.length) % productList.length;
+    const prevProduct = productList[prevIndex];
+    navigate(`/product/${prefix}${prevProduct.id}`);
   };
 
-  const handleNextImage = () => {
-    if (!product) return;
-    setActiveImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+  const handleNextProduct = () => {
+    if (!id || productList.length === 0) return;
+    const match = id.match(/^([a-zA-Z_-]*)([0-9]+)$/);
+    if (!match) return;
+    const prefix = match[1];
+    const currentNumericId = parseInt(match[2], 10);
+    const currentIndex = productList.findIndex((p) => p.id === currentNumericId);
+    if (currentIndex === -1) {
+      const nextId = currentNumericId + 1;
+      navigate(`/product/${prefix}${nextId}`);
+      return;
+    }
+    const nextIndex = (currentIndex + 1) % productList.length;
+    const nextProduct = productList[nextIndex];
+    navigate(`/product/${prefix}${nextProduct.id}`);
   };
 
   const handleBack = () => {
@@ -154,7 +191,7 @@ export default function ProductDetailPage() {
           {/* Left Column: Image Slideshow */}
           <div className="pd-gallery-column">
             <div className="pd-carousel-container">
-              <button className="pd-carousel-arrow arrow-left" onClick={handlePrevImage} aria-label="Previous image">
+              <button className="pd-carousel-arrow arrow-left" onClick={handlePrevProduct} aria-label="Previous product">
                 <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="15 18 9 12 15 6" />
                 </svg>
@@ -175,7 +212,7 @@ export default function ProductDetailPage() {
                 </AnimatePresence>
               </div>
 
-              <button className="pd-carousel-arrow arrow-right" onClick={handleNextImage} aria-label="Next image">
+              <button className="pd-carousel-arrow arrow-right" onClick={handleNextProduct} aria-label="Next product">
                 <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>

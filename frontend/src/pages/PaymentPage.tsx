@@ -43,25 +43,25 @@ export default function PaymentPage() {
     product: {
       id: '1',
       name: 'Noir Enchanted Vest',
-      price: 1700000,
+      price: 120.00,
       image: '',
       size: 'XL'
     },
     pricing: {
-      subtotal: 1700000,
-      shipping: 25000,
-      total: 1725000
+      subtotal: 120.00,
+      shipping: 2.00,
+      total: 122.00
     },
     order: {
       id: 1,
       orderCode: 'LRS-20260603-9999',
-      totalAmount: 1725000,
+      totalAmount: 122.00,
       status: 'pending'
     },
     payment: {
       id: 1,
       method: 'qris',
-      amount: 1725000,
+      amount: 122.00,
       status: 'pending',
       paymentUrl: '',
       qrImageUrl: '',
