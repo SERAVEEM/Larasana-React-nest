@@ -130,7 +130,7 @@ export class MidtransService {
         transaction_status: 'settlement',
         fraud_status: 'accept',
         transaction_id: 'mock-trans-id-999',
-        gross_amount: '1725000.00'
+        gross_amount: '122.00'
       };
     }
     const res = await fetch(`${this.baseUrl}/${midtransOrderId}/status`, {

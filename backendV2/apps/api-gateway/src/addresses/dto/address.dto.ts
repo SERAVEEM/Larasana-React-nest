@@ -43,6 +43,12 @@ export class CreateAddressDto {
   @MaxLength(10)
   postalCode: string;
 
+  @ApiPropertyOptional({ example: 'ID', description: 'Negara (default ID)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(10)
+  country?: string;
+
   @ApiPropertyOptional({ example: false, description: 'Set sebagai alamat utama' })
   @IsOptional()
   @IsBoolean()
@@ -97,6 +103,12 @@ export class UpdateAddressDto {
   @IsString()
   @MaxLength(10)
   postalCode?: string;
+
+  @ApiPropertyOptional({ example: 'ID', description: 'Negara' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(10)
+  country?: string;
 
   @ApiPropertyOptional({ example: false, description: 'Set sebagai alamat utama' })
   @IsOptional()

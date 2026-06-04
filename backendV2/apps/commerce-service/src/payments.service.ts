@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Order, OrderItem, Payment, Product, Address, ShippingMethod } from '../../../libs/shared/src';
 import { MidtransService } from './midtrans.service';
+import { ShippingService } from './shipping.service';
 
 @Injectable()
 export class PaymentsService {
@@ -17,6 +18,7 @@ export class PaymentsService {
     @InjectRepository(ShippingMethod) private shippingRepo: Repository<ShippingMethod>,
     private midtransService: MidtransService,
     private dataSource: DataSource,
+    private readonly shippingService: ShippingService,
   ) {}
 
   async checkout(data: {
@@ -32,7 +34,7 @@ export class PaymentsService {
     const address = await this.addressRepo.findOne({ where: { id: addressId, userId: user.id } });
     if (!address) throw new NotFoundException('Alamat tidak ditemukan');
 
-    const shipping = await this.shippingRepo.findOne({ where: { id: shippingMethodId, isActive: true } });
+    const shipping = await this.shippingService.findById(shippingMethodId, addressId);
     if (!shipping) throw new NotFoundException('Metode pengiriman tidak ditemukan');
 
     let productTotal = 0;

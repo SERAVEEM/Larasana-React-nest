@@ -8,8 +8,8 @@ export class ShippingController {
   constructor(private readonly shippingService: ShippingService) {}
 
   @MessagePattern(SHIPPING_PATTERNS.GET_ALL)
-  getAll() {
-    return this.shippingService.getAll();
+  getAll(@Payload() data?: { addressId?: number }) {
+    return this.shippingService.getAll(data);
   }
 
   @MessagePattern(SHIPPING_PATTERNS.FIND_BY_ID)

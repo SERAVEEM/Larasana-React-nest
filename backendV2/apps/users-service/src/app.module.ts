@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
   createDatabaseModule,
-  User, RefreshToken, EmailVerification, PasswordReset, Order, Payment, Product,
+  User, RefreshToken, EmailVerification, PasswordReset, Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod,
   SERVICES,
 } from '../../../libs/shared/src';
 import { UsersController } from './users.controller';
@@ -17,7 +17,7 @@ import { AdminService } from './admin.service';
 @Module({
   imports: [
     createDatabaseModule([
-      User, RefreshToken, EmailVerification, PasswordReset, Order, Payment, Product,
+      User, RefreshToken, EmailVerification, PasswordReset, Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod,
     ]),
     TypeOrmModule.forFeature([
       User, RefreshToken, EmailVerification, PasswordReset, Order, Payment, Product,

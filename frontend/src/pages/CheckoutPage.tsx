@@ -31,54 +31,7 @@ interface PaymentMethod {
   description: string;
 }
 
-const ADDRESS_BOOK: Address[] = [
-  {
-    id: 'addr-1',
-    label: 'Home',
-    name: 'Alvin Cihuy',
-    street: 'Jalan Sandang No D5B, RT 1/RW 11',
-    district: 'Palmerah',
-    city: 'West Jakarta',
-    province: 'DKI Jakarta',
-    postalCode: '11480',
-    country: 'ID'
-  },
-  {
-    id: 'addr-2',
-    label: 'Office',
-    name: 'Alvin Cihuy',
-    street: 'Equity Tower 32nd Fl, SCBD Lot 9',
-    district: 'Senayan',
-    city: 'South Jakarta',
-    province: 'DKI Jakarta',
-    postalCode: '12190',
-    country: 'ID'
-  }
-];
-
-const SHIPPING_OPTIONS: ShippingOption[] = [
-  {
-    id: 'ship-1',
-    name: 'JNE Express',
-    price: 25000,
-    eta: '2-3 business days',
-    logo: 'JNE'
-  },
-  {
-    id: 'ship-2',
-    name: 'DHL Express',
-    price: 150000,
-    eta: '1-2 business days',
-    logo: 'DHL'
-  },
-  {
-    id: 'ship-3',
-    name: 'Standard Shipping',
-    price: 15000,
-    eta: '5-7 business days',
-    logo: 'STD'
-  }
-];
+// Unused local mock lists removed to satisfy strict ts compiler settings
 
 const PAYMENT_METHODS: PaymentMethod[] = [
   {
@@ -184,7 +137,7 @@ export default function CheckoutPage() {
           setProduct({
             id: productId,
             name: 'Noir Enchanted Vest',
-            price: 1700000,
+            price: 120.00,
             images: ['/images/product/far left.png']
           });
           setLoading(false);
@@ -204,7 +157,7 @@ export default function CheckoutPage() {
             city: addr.city,
             province: addr.province,
             postalCode: addr.postalCode,
-            country: 'ID',
+            country: addr.country || 'ID',
             phone: addr.phone
           }));
           setAddresses(mapped);
@@ -213,8 +166,16 @@ export default function CheckoutPage() {
       })
       .catch((err) => console.error('Failed to fetch addresses:', err));
 
-    // Fetch shipping options
-    client.get('/shipping')
+    return () => {
+      active = false;
+    };
+  }, [productId, navigate]);
+
+  useEffect(() => {
+    let active = true;
+    const url = selectedAddressId ? `/shipping?addressId=${selectedAddressId}` : '/shipping';
+
+    client.get(url)
       .then((res) => {
         if (active && res.data && res.data.length > 0) {
           const mapped = res.data.map((ship: any) => ({
@@ -233,13 +194,13 @@ export default function CheckoutPage() {
     return () => {
       active = false;
     };
-  }, [productId, navigate]);
+  }, [selectedAddressId]);
 
   const selectedAddress = addresses.find(a => a.id === selectedAddressId) || { id: '', label: 'No Address', name: '', street: 'Please add a shipping address', district: '', city: '', province: '', postalCode: '', country: 'ID', phone: '' };
   const selectedShipping = shippingOptions.find(s => s.id === selectedShippingId) || { id: '', name: 'No Carrier', price: 0, eta: '', logo: '' };
   const selectedPayment = PAYMENT_METHODS.find(p => p.id === selectedPaymentId) || PAYMENT_METHODS[0];
 
-  const basePrice = product ? product.price : 1700000;
+  const basePrice = product ? product.price : 120.00;
   const shippingFee = selectedShipping.price;
   const totalPrice = basePrice + shippingFee;
 
@@ -256,6 +217,19 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (!newAddress.label || !newAddress.name || !newAddress.street || !newAddress.phone) return;
 
+    // Client-side phone format validation (matching backend regex)
+    const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,10}$/;
+    if (!phoneRegex.test(newAddress.phone)) {
+      alert('Format nomor HP tidak valid. Gunakan format Indonesia (e.g. 081234567890).');
+      return;
+    }
+
+    // Client-side street address length validation (matching backend minLength)
+    if (newAddress.street.length < 10) {
+      alert('Alamat lengkap minimal 10 karakter.');
+      return;
+    }
+
     try {
       const payload = {
         label: newAddress.label,
@@ -265,7 +239,8 @@ export default function CheckoutPage() {
         district: newAddress.district || '-',
         city: newAddress.city || '-',
         province: newAddress.province || '-',
-        postalCode: newAddress.postalCode || '00000'
+        postalCode: newAddress.postalCode || '00000',
+        country: newAddress.country || 'ID'
       };
 
       const res = await client.post('/addresses', payload);
@@ -279,7 +254,7 @@ export default function CheckoutPage() {
         city: res.data.city,
         province: res.data.province,
         postalCode: res.data.postalCode,
-        country: 'ID',
+        country: res.data.country || 'ID',
         phone: res.data.phone
       };
 
@@ -287,9 +262,10 @@ export default function CheckoutPage() {
       setSelectedAddressId(added.id);
       setShowAddAddressForm(false);
       setNewAddress({ label: '', name: '', street: '', district: '', city: '', province: '', postalCode: '', country: 'ID', phone: '' });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to save address:', err);
-      alert('Gagal menyimpan alamat baru');
+      const errMsg = err.response?.data?.message || 'Gagal menyimpan alamat baru';
+      alert(Array.isArray(errMsg) ? errMsg.join('\n') : errMsg);
     }
   };
 
@@ -649,6 +625,33 @@ export default function CheckoutPage() {
                             placeholder="Postal Code"
                           />
                         </div>
+                      </div>
+                      <div className="co-form-group">
+                        <label>Country</label>
+                        <select 
+                          value={newAddress.country}
+                          onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value })}
+                          style={{
+                            width: '100%',
+                            padding: '0.8rem 1rem',
+                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            backgroundColor: '#fff',
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: '0.95rem',
+                            color: '#333',
+                            outline: 'none',
+                            transition: 'border-color 0.2s ease',
+                            cursor: 'pointer',
+                            marginBottom: '1rem'
+                          }}
+                        >
+                          <option value="ID">Indonesia</option>
+                          <option value="US">United States</option>
+                          <option value="SG">Singapore</option>
+                          <option value="MY">Malaysia</option>
+                          <option value="AU">Australia</option>
+                        </select>
                       </div>
                       <div className="co-form-actions">
                         <button 

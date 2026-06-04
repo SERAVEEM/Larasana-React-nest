@@ -1,4 +1,4 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Get, Inject, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { SERVICES, SHIPPING_PATTERNS } from '../../../../libs/shared/src';
@@ -12,7 +12,7 @@ export class ShippingGatewayController {
   @Get()
   @ApiOperation({ summary: 'Daftar kurir pengiriman' })
   @ApiOkResponse({ type: [ShippingMethod], description: 'Daftar kurir pengiriman aktif berhasil diambil' })
-  getAll() {
-    return this.client.send(SHIPPING_PATTERNS.GET_ALL, {});
+  getAll(@Query('addressId') addressId?: string) {
+    return this.client.send(SHIPPING_PATTERNS.GET_ALL, { addressId: addressId ? Number(addressId) : undefined });
   }
 }

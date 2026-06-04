@@ -15,7 +15,7 @@ export default function FinishPaymentPage() {
   // Retrieve state passed from Payment page
   const successDetails = location.state as PaymentSuccessDetails || {
     orderId: '#BTR-89231',
-    amountPaid: 1725000,
+    amountPaid: 122.00,
     productName: 'Noir Enchanted Vest'
   };
 
@@ -23,7 +23,7 @@ export default function FinishPaymentPage() {
     return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showStatusModal] = useState(false);
   const [redirectCount, setRedirectCount] = useState(5);
 
   // Auto-redirect effect when status modal is open

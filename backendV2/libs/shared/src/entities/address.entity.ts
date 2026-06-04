@@ -48,6 +48,10 @@ export class Address {
   @Column({ name: 'postal_code', length: 10 })
   postalCode: string;
 
+  @ApiProperty({ example: 'ID' })
+  @Column({ length: 10, default: 'ID' })
+  country: string;
+
   @ApiProperty({ default: false })
   @Column({ name: 'is_primary', default: false })
   isPrimary: boolean;
