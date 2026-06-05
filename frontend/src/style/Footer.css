@@ -1,0 +1,211 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+/* ===== Footer Section ===== */
+.footer {
+  background-color: #000000;
+  color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 50px 80px 30px 80px;
+  font-family: poppins, sans-serif;
+}
+
+.footer-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  column-gap: clamp(40px, 8vw, 120px);
+  row-gap: 30px;
+  align-items: flex-start;
+}
+
+/* Brand Column */
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: flex-start;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+}
+
+.footer-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+}
+
+.footer-emblem-img {
+  height: 3rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.footer-logo-text {
+  font-family: 'Linotype Didot Bold', 'GFS Didot', serif;
+  font-size: 4rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.footer-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #d9d9d9;
+  width: 450px;
+  height: auto;
+  margin-top: 20px; /* Gap top margin of 20px */
+  max-width: 100%;
+}
+
+/* Explore Link Column */
+.footer-links-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-col-title {
+  font-size: 0.9rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.footer-explore-links {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.footer-explore-links li a {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: #cccccc;
+  transition: color 0.25s ease, transform 0.25s ease;
+  display: inline-block;
+}
+
+.footer-explore-links li a:hover {
+  color: #b8860b;
+  transform: translateX(4px);
+}
+
+/* Information Column */
+.footer-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.footer-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer-info-label {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: #888888;
+}
+
+.footer-info-value {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: #ffffff;
+  transition: color 0.25s ease;
+}
+
+a.footer-info-value:hover {
+  color: #b8860b;
+}
+
+/* Brand Social Media Buttons (BNCC Style) */
+.footer-socials-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.footer-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #cccccc;
+  transition: all 0.3s ease;
+}
+
+.footer-social-btn:hover {
+  background-color: #b8860b; /* Primary Brand Gold */
+  color: #ffffff;
+  transform: translateY(-3px);
+}
+
+/* Bottom Bar */
+.footer-bottom {
+  max-width: 1440px;
+  margin: 40px auto 0 auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-copyright-centered {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: #888888;
+  text-align: center;
+}
+
+/* Responsive Styling */
+@media (max-width: 1024px) {
+  .footer {
+    padding: 60px 40px 30px 40px;
+  }
+  
+  .footer-container {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 60px 24px 30px 24px;
+  }
+
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+
+  .footer-description {
+    width: 100%;
+    height: auto;
+  }
+
+  .footer-explore-links li a:hover {
+    transform: none; /* Disable horizontal slide hover effect on mobile */
+  }
+
+  .footer-bottom {
+    margin-top: 40px;
+    padding-top: 20px;
+  }
+}
