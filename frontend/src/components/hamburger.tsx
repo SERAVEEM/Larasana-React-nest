@@ -30,6 +30,7 @@ export default function Hamburger() {
   };
 
   const handleContactClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     setIsOpen(false);
     const footer = document.getElementById('footer');
     if (footer) {
@@ -94,7 +95,6 @@ export default function Hamburger() {
                     background: 'none',
                     border: 'none',
                     textAlign: 'left',
-                    fontFamily: 'inherit',
                     cursor: 'pointer',
                     width: '100%',
                     padding: 0

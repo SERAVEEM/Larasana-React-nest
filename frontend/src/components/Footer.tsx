@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import emblem from '../assets/images/Footer/footer logo.png';
 import '../style/Footer.css';
 
 export default function Footer() {
@@ -53,7 +52,7 @@ export default function Footer() {
 
         {/* Explore Column */}
         <div className="footer-links-col">
-          <h4 className="footer-col-title">Explore</h4>
+          <h4 className="footer-col-title-1">Explore</h4>
           <ul className="footer-explore-links">
             <li><Link to="/Story" onClick={handleScrollToTop}>Story</Link></li>
             <li><Link to="/aboutus" onClick={handleScrollToTop}>About Us</Link></li>
@@ -63,7 +62,7 @@ export default function Footer() {
 
         {/* Information Column */}
         <div className="footer-info-col">
-          <h4 className="footer-col-title">Information</h4>
+          <h4 className="footer-col-title-2">Information</h4>
           <div className="footer-info-block">
             <span className="footer-info-label">WhatsApp</span>
             <a href="https://wa.me/62821333948400" target="_blank" rel="noopener noreferrer" className="footer-info-value">+62 8213 3394 8400</a>
