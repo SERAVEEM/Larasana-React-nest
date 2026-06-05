@@ -61,7 +61,7 @@
   color: #d9d9d9;
   width: 450px;
   height: auto;
-  margin-top: 20px; /* Gap top margin of 20px */
+  margin-top: 20px;
   max-width: 100%;
 }
 
@@ -69,15 +69,28 @@
 .footer-links-col {
   display: flex;
   flex-direction: column;
+  margin-top: 25px;
+  justify-self: center;
 }
 
-.footer-col-title {
-  font-size: 0.9rem;
-  font-weight: 300;
+.footer-col-title-1 {
+  font-size: 1.1rem;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #ffffff;
-  margin-bottom: 24px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.footer-col-title-2 {
+  margin-top: 24px;
+  font-size: 1.1em;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+  margin-bottom: 20px;
   position: relative;
 }
 
@@ -88,7 +101,7 @@
 }
 
 .footer-explore-links li a {
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 300;
   color: #cccccc;
   transition: color 0.25s ease, transform 0.25s ease;
@@ -104,7 +117,9 @@
 .footer-info-col {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
+  justify-self: end; 
+  margin-top:0px;
 }
 
 .footer-info-block {
@@ -115,13 +130,13 @@
 
 .footer-info-label {
   font-size: 0.85rem;
-  font-weight: 300;
+  font-weight: 500;
   color: #888888;
 }
 
 .footer-info-value {
   font-size: 0.85rem;
-  font-weight: 300;
+  font-weight: 500;
   color: #ffffff;
   transition: color 0.25s ease;
 }
@@ -130,7 +145,6 @@ a.footer-info-value:hover {
   color: #b8860b;
 }
 
-/* Brand Social Media Buttons (BNCC Style) */
 .footer-socials-row {
   display: flex;
   gap: 12px;
@@ -150,7 +164,7 @@ a.footer-info-value:hover {
 }
 
 .footer-social-btn:hover {
-  background-color: #b8860b; /* Primary Brand Gold */
+  background-color: #b8860b;
   color: #ffffff;
   transform: translateY(-3px);
 }
@@ -178,7 +192,7 @@ a.footer-info-value:hover {
   .footer {
     padding: 60px 40px 30px 40px;
   }
-  
+
   .footer-container {
     gap: 40px;
   }
@@ -194,6 +208,10 @@ a.footer-info-value:hover {
     gap: 48px;
   }
 
+  .footer-links-col,
+  .footer-info-col {
+    justify-self: start;
+  }
 
   .footer-description {
     width: 100%;
@@ -201,7 +219,8 @@ a.footer-info-value:hover {
   }
 
   .footer-explore-links li a:hover {
-    transform: none; /* Disable horizontal slide hover effect on mobile */
+    transform: none;
+    /* Disable horizontal slide hover effect on mobile */
   }
 
   .footer-bottom {
