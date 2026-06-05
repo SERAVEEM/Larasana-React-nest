@@ -12,6 +12,7 @@ import ImpactPages from "./pages/ImpactPages.tsx"
 import Story from './pages/Story.tsx'
 import AboutUs from './pages/AboutUs.tsx'
 import Navbar from './components/navbar.tsx'
+import Footer from './components/Footer.tsx'
 import SmoothScroll from './components/SmoothScroll.tsx'
 import ProductDetailPage from './pages/ProductDetailPage.tsx'
 import CheckoutPage from './pages/CheckoutPage.tsx'
@@ -33,17 +34,17 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <SmoothScroll>
         <Routes>
-          <Route path="/" element={<><Navbar /><LandingPages /><StoryTelling /><HeroShowcasePage /></>} />
+          <Route path="/" element={<><Navbar /><LandingPages /><StoryTelling /><HeroShowcasePage /><Footer /></>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/Impact" element={<><Navbar/><ImpactPages /></>} />
-          <Route path="/Story" element={<><Navbar /><Story /></>} />
-          <Route path="/aboutus" element={<><Navbar/><AboutUs /></>} />
-          <Route path="/product/:id" element={<><Navbar /><ProductDetailPage /></>} />
-          <Route path="/checkout" element={<><Navbar /><CheckoutPage /></>} />
-          <Route path="/payment" element={<><Navbar /><PaymentPage /></>} />
-          <Route path="/payment-success" element={<><Navbar /><FinishPaymentPage /></>} />
-          <Route path="/my-orders" element={<><Navbar /><MyOrdersPage /></>} />
+          <Route path="/Impact" element={<><Navbar/><ImpactPages /><Footer /></>} />
+          <Route path="/Story" element={<><Navbar /><Story /><Footer /></>} />
+          <Route path="/aboutus" element={<><Navbar/><AboutUs /><Footer /></>} />
+          <Route path="/product/:id" element={<><Navbar /><ProductDetailPage /><Footer /></>} />
+          <Route path="/checkout" element={<><Navbar /><CheckoutPage /><Footer /></>} />
+          <Route path="/payment" element={<><Navbar /><PaymentPage /><Footer /></>} />
+          <Route path="/payment-success" element={<><Navbar /><FinishPaymentPage /><Footer /></>} />
+          <Route path="/my-orders" element={<><Navbar /><MyOrdersPage /><Footer /></>} />
           
           <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
           <Route path="/admin/products" element={<AdminLayout><AdminProducts /></AdminLayout>} />

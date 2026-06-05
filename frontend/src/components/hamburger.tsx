@@ -22,19 +22,21 @@ export default function Hamburger() {
     };
   }, [isOpen]);
 
-  const menuItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Product', path: '/#hero-showcase' },
-    { name: 'About Us', path: '/aboutus' },
-    { name: 'Story', path: '/Story' },
-    { name: 'Impact', path: '/Impact' },
-  ];
-
   const handleLogout = () => {
     localStorage.removeItem('larasana_auth_token');
     setIsLoggedIn(false);
     setIsOpen(false);
     navigate('/login');
+  };
+
+  const handleContactClick = (e: React.MouseEvent) => {
+    setIsOpen(false);
+    const footer = document.getElementById('footer');
+    if (footer) {
+      setTimeout(() => {
+        footer.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
   };
 
   return (
@@ -72,50 +74,43 @@ export default function Hamburger() {
             </button>
 
             <nav className="hamburger-overlay__links">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.name}
-                  className="hamburger-overlay__link"
-                  to={item.path}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
+              <Link className="hamburger-overlay__link" to="/" onClick={() => setIsOpen(false)}>
+                Home
+              </Link>
+              
+              <Link className="hamburger-overlay__link" to="/aboutus" onClick={() => setIsOpen(false)}>
+                About Us
+              </Link>
+
+              <Link className="hamburger-overlay__link" to="/my-orders" onClick={() => setIsOpen(false)}>
+                Order History
+              </Link>
+
               {isLoggedIn ? (
-                <>
-                  <Link
-                    className="hamburger-overlay__link"
-                    to="/my-orders"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    My Orders
-                  </Link>
-                  <button
-                    className="hamburger-overlay__link hamburger-logout-btn"
-                    onClick={handleLogout}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      textAlign: 'left',
-                      fontFamily: 'inherit',
-                      cursor: 'pointer',
-                      width: '100%',
-                      padding: 0
-                    }}
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <Link
-                  className="hamburger-overlay__link"
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
+                <button
+                  className="hamburger-overlay__link hamburger-logout-btn"
+                  onClick={handleLogout}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    textAlign: 'left',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
+                    width: '100%',
+                    padding: 0
+                  }}
                 >
-                  Login
+                  Logout
+                </button>
+              ) : (
+                <Link className="hamburger-overlay__link" to="/register" onClick={() => setIsOpen(false)}>
+                  Register
                 </Link>
               )}
+
+              <Link className="hamburger-overlay__link" to="#footer" onClick={handleContactClick}>
+                Contact Us
+              </Link>
             </nav>
           </div>
         </>,
