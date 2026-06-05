@@ -39,10 +39,10 @@
 }
 
 .hero-title {
-  font-family: var(--story-font-serif);
-  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  font-family: 'Gelasio', serif;
+  font-size: 5.625rem;
   letter-spacing: 0.15em;
-  font-weight: 400;
+  font-weight: 500;
   margin-bottom: 2rem;
   color: #1A1A1A;
   text-transform: uppercase;
@@ -58,14 +58,13 @@
 }
 
 .hero-subtitle {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  line-height: 2;
-  color: #000000;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.08rem;
+  line-height: 1.42;
+  color: #101010;
   max-width: 650px;
   margin: 0 auto;
-  letter-spacing: 0.02em;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .hero-gallery {
@@ -158,22 +157,21 @@
 .section-title {
   margin: 0;
   color: #000000;
-  font-family: 'Poppins', sans-serif;
-  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-family: 'inter', sans-serif;
+  font-size: 48px;
   font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .section-tagline {
   margin: 0;
   margin-top: 1.437rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'inter', sans-serif;
   font-size: 1.25rem;
-  font-weight: 400;
   font-style: italic;
+  font-weight: 600;
   line-height: 1.4;
-  color: #000;
+  color: #6a6a6ad9;
 }
 
 .section-desc-wrapper {
@@ -190,11 +188,12 @@
 
 .section-description {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.125rem;
-  font-weight: 400;
-  color: #AAAAAA;
-  line-height: 1.8;
+  margin-bottom: 1.2rem;
+  font-family: 'inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111;
+  line-height: 1.6;
   transform: translateY(-1.5rem);
   transition: transform 0.8s ease-out;
 }
@@ -211,14 +210,14 @@
 
 .info-link {
   margin: 0;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   color: #000000;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 400;
+  font-family: 'inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
   line-height: 1.3;
   text-decoration: none;
-  transition: all 0.3s ease;
+  opacity: 0.8;
 }
 
 .info-link:hover {

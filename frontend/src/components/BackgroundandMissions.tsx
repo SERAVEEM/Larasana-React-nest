@@ -87,7 +87,7 @@ export default function BackgroundandMissions() {
                             </p>
                         </div>
                     </div>
-                    <p className="missions-prompt">Our Pillars</p>
+                    <p className="missions-prompt">Our Pillars!</p>
                 </div>
             </motion.section>
 
