@@ -11,6 +11,7 @@ export const AUTH_PATTERNS = {
   VERIFY_EMAIL:     'auth.verify_email',
   FORGOT_PASSWORD:  'auth.forgot_password',
   RESET_PASSWORD:   'auth.reset_password',
+  GOOGLE_LOGIN:     'auth.google_login',
 };
 
 export const USERS_PATTERNS = {

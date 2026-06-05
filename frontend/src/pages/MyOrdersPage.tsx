@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { client } from '../api/client';
 import '../style/MyOrders.css';
-
+import { showAlert } from '../utils/alerts';
 interface OrderItemSnapshot {
   name: string;
   thumbnailUrl: string | null;
@@ -90,7 +90,7 @@ export default function MyOrdersPage() {
       fetchOrders();
     } catch (err) {
       console.error('Failed to cancel order:', err);
-      alert('Failed to cancel order. Please try again.');
+      showAlert('Failed to cancel order. Please try again.');
     } finally {
       setSubmittingCancel(false);
     }
@@ -138,7 +138,7 @@ export default function MyOrdersPage() {
       navigate('/payment', { state: orderDetails });
     } catch (err) {
       console.error('Failed to load payment credentials:', err);
-      alert('Could not retrieve payment information. Please try again.');
+      showAlert('Could not retrieve payment information. Please try again.');
     }
   };
 

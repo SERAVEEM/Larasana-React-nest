@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { client } from '../api/client';
 import '../style/Checkout.css';
+import { showAlert } from '../utils/alerts';
 
 interface Address {
   id: string;
@@ -220,13 +221,13 @@ export default function CheckoutPage() {
     // Client-side phone format validation (matching backend regex)
     const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,10}$/;
     if (!phoneRegex.test(newAddress.phone)) {
-      alert('Format nomor HP tidak valid. Gunakan format Indonesia (e.g. 081234567890).');
+      showAlert('Format nomor HP tidak valid. Gunakan format Indonesia (e.g. 081234567890).');
       return;
     }
 
     // Client-side street address length validation (matching backend minLength)
     if (newAddress.street.length < 10) {
-      alert('Alamat lengkap minimal 10 karakter.');
+      showAlert('Alamat lengkap minimal 10 karakter.');
       return;
     }
 
@@ -265,17 +266,17 @@ export default function CheckoutPage() {
     } catch (err: any) {
       console.error('Failed to save address:', err);
       const errMsg = err.response?.data?.message || 'Gagal menyimpan alamat baru';
-      alert(Array.isArray(errMsg) ? errMsg.join('\n') : errMsg);
+      showAlert(Array.isArray(errMsg) ? errMsg.join('\n') : errMsg);
     }
   };
 
   const handleCheckout = async () => {
     if (!selectedAddressId) {
-      alert('Silakan pilih atau tambahkan alamat terlebih dahulu.');
+      showAlert('Silakan pilih atau tambahkan alamat terlebih dahulu.');
       return;
     }
     if (!selectedShippingId) {
-      alert('Silakan pilih kurir pengiriman terlebih dahulu.');
+      showAlert('Silakan pilih kurir pengiriman terlebih dahulu.');
       return;
     }
 
@@ -310,7 +311,7 @@ export default function CheckoutPage() {
     } catch (err: any) {
       console.error('Checkout creation failed:', err);
       const errMsg = err.response?.data?.message || 'Gagal memproses checkout';
-      alert(Array.isArray(errMsg) ? errMsg[0] : errMsg);
+      showAlert(Array.isArray(errMsg) ? errMsg[0] : errMsg);
     }
   };
 

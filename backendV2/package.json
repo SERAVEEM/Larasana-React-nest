@@ -8,7 +8,6 @@
     "start:commerce": "nest start commerce-service --watch -r tsconfig-paths/register",
     "start:notification": "nest start notification-service --watch -r tsconfig-paths/register",
     "dev": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"npm run start:gateway\" \"npm run start:users\" \"npm run start:commerce\" \"npm run start:notification\"",
-
     "build": "nest build"
   },
   "dependencies": {
@@ -24,6 +23,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.5",
+    "google-auth-library": "^10.7.0",
     "mysql2": "^3.9.7",
     "nodemailer": "^6.9.13",
     "passport": "^0.7.0",

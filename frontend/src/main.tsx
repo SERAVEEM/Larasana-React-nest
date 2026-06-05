@@ -1,4 +1,5 @@
-import { StrictMode, useState } from 'react'
+import { StrictMode, useState } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import 'lenis/dist/lenis.css'
@@ -74,7 +75,9 @@ function RootApp() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RootApp />
+    <HelmetProvider>
+      <RootApp />
+    </HelmetProvider>
   </StrictMode>
 )
 

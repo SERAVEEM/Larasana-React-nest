@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../style/Payment.css';
 import { client } from '../api/client';
+import { showAlert } from '../utils/alerts';
 
 interface OrderDetails {
   product: {
@@ -153,11 +154,11 @@ export default function PaymentPage() {
           }
         });
       } else {
-        alert('Pembayaran belum kami terima. Silakan selesaikan pembayaran Anda di e-wallet atau bank Anda.');
+        showAlert('Pembayaran belum kami terima. Silakan selesaikan pembayaran Anda di e-wallet atau bank Anda.');
       }
     } catch (err) {
       console.error('Manual check failed:', err);
-      alert('Gagal mengecek status pembayaran.');
+      showAlert('Gagal mengecek status pembayaran.');
     } finally {
       setIsVerifying(false);
     }

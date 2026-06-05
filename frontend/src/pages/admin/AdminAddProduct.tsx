@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { saveProductAsync } from './mockData';
 import '../../style/admin.css';
-
+import { showAlert } from '../../utils/alerts';
 export default function AdminAddProduct() {
   const navigate = useNavigate();
   
@@ -71,7 +71,7 @@ export default function AdminAddProduct() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !price) {
-      alert('Please fill out Name and Price fields.');
+      showAlert('Please fill out Name and Price fields.');
       return;
     }
 
@@ -96,7 +96,7 @@ export default function AdminAddProduct() {
       navigate('/admin/products');
     } catch (err) {
       console.error('Failed to create product:', err);
-      alert('Failed to create product.');
+      showAlert('Failed to create product.');
     } finally {
       setSubmitting(false);
     }
