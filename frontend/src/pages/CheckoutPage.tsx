@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { client } from '../api/client';
 import '../style/Checkout.css';
@@ -104,6 +104,33 @@ export default function CheckoutPage() {
     country: 'ID',
     phone: ''
   });
+
+  const [citiesList, setCitiesList] = useState<any[]>([]);
+  const [citySearchQuery, setCitySearchQuery] = useState('');
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+
+  useEffect(() => {
+    if (newAddress.country === 'ID' && citiesList.length === 0 && showAddAddressForm) {
+      client.get('/shipping/cities')
+        .then(res => {
+          setCitiesList(res.data || []);
+        })
+        .catch(err => console.error('Failed to load cities:', err));
+    }
+  }, [newAddress.country, citiesList.length, showAddAddressForm]);
+
+  useEffect(() => {
+    setCitySearchQuery(newAddress.city);
+  }, [newAddress.city]);
+
+  const filteredCities = useMemo(() => {
+    if (!citySearchQuery) return citiesList;
+    const q = citySearchQuery.toLowerCase();
+    return citiesList.filter(c => 
+      c.city_name.toLowerCase().includes(q) || 
+      c.province.toLowerCase().includes(q)
+    );
+  }, [citiesList, citySearchQuery]);
 
   useEffect(() => {
     let active = true;
@@ -608,55 +635,11 @@ export default function CheckoutPage() {
                           placeholder="Street name, building/apartment number"
                         />
                       </div>
-                      <div className="co-form-grid">
-                        <div className="co-form-group">
-                          <label>District</label>
-                          <input 
-                            type="text" 
-                            required 
-                            value={newAddress.district}
-                            onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
-                            placeholder="District"
-                          />
-                        </div>
-                        <div className="co-form-group">
-                          <label>City</label>
-                          <input 
-                            type="text" 
-                            required 
-                            value={newAddress.city}
-                            onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
-                            placeholder="City"
-                          />
-                        </div>
-                      </div>
-                      <div className="co-form-grid">
-                        <div className="co-form-group">
-                          <label>Province</label>
-                          <input 
-                            type="text" 
-                            required 
-                            value={newAddress.province}
-                            onChange={(e) => setNewAddress({ ...newAddress, province: e.target.value })}
-                            placeholder="Province"
-                          />
-                        </div>
-                        <div className="co-form-group">
-                          <label>Postal Code</label>
-                          <input 
-                            type="text" 
-                            required 
-                            value={newAddress.postalCode}
-                            onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })}
-                            placeholder="Postal Code"
-                          />
-                        </div>
-                      </div>
                       <div className="co-form-group">
                         <label>Country</label>
                         <select 
                           value={newAddress.country}
-                          onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value })}
+                          onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value, city: '', province: '', postalCode: '' })}
                           style={{
                             width: '100%',
                             padding: '0.8rem 1rem',
@@ -679,6 +662,135 @@ export default function CheckoutPage() {
                           <option value="AU">Australia</option>
                         </select>
                       </div>
+
+                      {newAddress.country === 'ID' ? (
+                        <>
+                          <div className="co-form-grid">
+                            <div className="co-form-group co-city-dropdown-container">
+                              <label>City / Kabupaten</label>
+                              <input 
+                                type="text" 
+                                required 
+                                value={citySearchQuery}
+                                onChange={(e) => {
+                                  setCitySearchQuery(e.target.value);
+                                  setShowCityDropdown(true);
+                                }}
+                                onFocus={() => setShowCityDropdown(true)}
+                                onBlur={() => {
+                                  setTimeout(() => setShowCityDropdown(false), 200);
+                                }}
+                                placeholder="Type to search city..."
+                              />
+                              {showCityDropdown && (
+                                <ul className="co-city-dropdown-list">
+                                  {filteredCities.length > 0 ? (
+                                    filteredCities.slice(0, 15).map(c => (
+                                      <li 
+                                        key={c.city_id} 
+                                        onMouseDown={() => {
+                                          setNewAddress({
+                                            ...newAddress,
+                                            city: `${c.type} ${c.city_name}`,
+                                            province: c.province,
+                                            postalCode: c.postal_code
+                                          });
+                                          setCitySearchQuery(`${c.type} ${c.city_name}`);
+                                          setShowCityDropdown(false);
+                                        }}
+                                      >
+                                        {c.type} {c.city_name}, {c.province}
+                                      </li>
+                                    ))
+                                  ) : (
+                                    <li style={{ cursor: 'default', color: '#999' }}>No cities found</li>
+                                  )}
+                                </ul>
+                              )}
+                            </div>
+                            <div className="co-form-group">
+                              <label>District (Kecamatan)</label>
+                              <input 
+                                type="text" 
+                                required 
+                                value={newAddress.district}
+                                onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
+                                placeholder="District"
+                              />
+                            </div>
+                          </div>
+                          <div className="co-form-grid">
+                            <div className="co-form-group">
+                              <label>Province</label>
+                              <input 
+                                type="text" 
+                                required 
+                                readOnly
+                                value={newAddress.province}
+                                style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
+                                placeholder="Auto-populated"
+                              />
+                            </div>
+                            <div className="co-form-group">
+                              <label>Postal Code</label>
+                              <input 
+                                type="text" 
+                                required 
+                                value={newAddress.postalCode}
+                                onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })}
+                                placeholder="Postal Code"
+                              />
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="co-form-grid">
+                            <div className="co-form-group">
+                              <label>City</label>
+                              <input 
+                                type="text" 
+                                required 
+                                value={newAddress.city}
+                                onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                                placeholder="City"
+                              />
+                            </div>
+                            <div className="co-form-group">
+                              <label>District</label>
+                              <input 
+                                type="text" 
+                                required 
+                                value={newAddress.district}
+                                onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
+                                placeholder="District"
+                              />
+                            </div>
+                          </div>
+                          <div className="co-form-grid">
+                            <div className="co-form-group">
+                              <label>Province / State</label>
+                              <input 
+                                type="text" 
+                                required 
+                                value={newAddress.province}
+                                onChange={(e) => setNewAddress({ ...newAddress, province: e.target.value })}
+                                placeholder="Province / State"
+                              />
+                            </div>
+                            <div className="co-form-group">
+                              <label>Postal Code</label>
+                              <input 
+                                type="text" 
+                                required 
+                                value={newAddress.postalCode}
+                                onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })}
+                                placeholder="Postal Code"
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
                       <div className="co-form-actions">
                         <button 
                           type="button" 
@@ -770,6 +882,42 @@ export default function CheckoutPage() {
           </div>
         </div>
       )}
+      <style>{`
+        .co-city-dropdown-container {
+          position: relative;
+        }
+        .co-city-dropdown-list {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          max-height: 200px;
+          overflow-y: auto;
+          background-color: #ffffff;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          list-style: none;
+          padding: 0;
+          margin: 4px 0 0 0;
+          z-index: 1000;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .co-city-dropdown-list li {
+          padding: 10px 14px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          color: #333;
+          transition: background-color 0.15s ease;
+          border-bottom: 1px solid #f0f0f0;
+          text-align: left;
+        }
+        .co-city-dropdown-list li:hover {
+          background-color: #f7f7f7;
+        }
+        .co-city-dropdown-list li:last-child {
+          border-bottom: none;
+        }
+      `}</style>
     </div>
   );
 }

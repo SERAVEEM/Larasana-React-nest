@@ -36,6 +36,7 @@ export interface OrderItem {
 export interface Order {
   id: string;
   date: string;
+  createdAt?: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -48,6 +49,13 @@ export interface Order {
   numericAmount: number;
   note?: string;
   items: OrderItem[];
+}
+
+export interface DashboardStats {
+  users: { total: number; buyers: number; sellers: number };
+  orders: { total: number; pending: number };
+  products: { total: number };
+  revenue: { total: number };
 }
 
 const DEFAULT_PRODUCTS: Product[] = [
@@ -282,8 +290,10 @@ const initializeStorage = () => {
 };
 
 // Helper format function for currency
-export const formatUSD = (value: number): string => {
-  return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const formatUSD = (value: number | string): string => {
+  const num = Number(value);
+  if (isNaN(num)) return '$0.00';
+  return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 export const getProducts = (): Product[] => {
@@ -366,6 +376,11 @@ export const updateOrderStatus = (id: string, status: 'Delivered' | 'Canceled' |
     return true;
   }
   return false;
+};
+
+export const getDashboardStatsAsync = async (): Promise<DashboardStats> => {
+  const response = await client.get('/admin/dashboard');
+  return response.data;
 };
 
 export const getProductsAsync = async (): Promise<Product[]> => {
@@ -473,6 +488,7 @@ export const getOrdersAsync = async (): Promise<Order[]> => {
   return rawOrders.map((o: any) => ({
     id: o.orderCode || `#${o.id}`,
     date: new Date(o.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    createdAt: o.createdAt,
     customerName: o.buyer?.name || o.shippingName || 'Guest',
     customerEmail: o.buyer?.email || '',
     customerPhone: o.shippingPhone || '',
