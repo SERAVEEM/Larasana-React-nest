@@ -16,4 +16,9 @@ export class ShippingController {
   findById(@Payload() data: { id: number }) {
     return this.shippingService.findById(data.id);
   }
+
+  @MessagePattern(SHIPPING_PATTERNS.GET_CITIES)
+  getCities() {
+    return this.shippingService.getCities();
+  }
 }

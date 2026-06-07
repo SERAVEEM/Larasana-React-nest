@@ -52,6 +52,7 @@ export const ADDRESSES_PATTERNS = {
 export const SHIPPING_PATTERNS = {
   GET_ALL:          'shipping.get_all',
   FIND_BY_ID:       'shipping.find_by_id',
+  GET_CITIES:       'shipping.get_cities',
 };
 
 export const PAYMENTS_PATTERNS = {

@@ -126,8 +126,16 @@ export class MidtransService {
 
   async getStatus(midtransOrderId: string): Promise<any> {
     if (this.isMockMode) {
+      // Extract timestamp from the end of LRS-code-timestamp
+      const parts = midtransOrderId.split('-');
+      const timestampStr = parts[parts.length - 1];
+      const timestamp = Number(timestampStr);
+      
+      // Keep transaction pending for 30 seconds to allow inspecting the QR code or VA number in UI
+      const isPending = !isNaN(timestamp) && (Date.now() - timestamp < 30000);
+      
       return {
-        transaction_status: 'settlement',
+        transaction_status: isPending ? 'pending' : 'settlement',
         fraud_status: 'accept',
         transaction_id: 'mock-trans-id-999',
         gross_amount: '122.00'
@@ -206,6 +214,7 @@ export class MidtransService {
     };
 
     switch (req.paymentMethod) {
+      case 'bank_transfer':
       case 'va_bca':
         return { ...base, payment_type: 'bank_transfer', bank_transfer: { bank: 'bca' } };
       case 'va_bni':

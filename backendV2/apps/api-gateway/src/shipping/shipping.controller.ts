@@ -15,4 +15,10 @@ export class ShippingGatewayController {
   getAll(@Query('addressId') addressId?: string) {
     return this.client.send(SHIPPING_PATTERNS.GET_ALL, { addressId: addressId ? Number(addressId) : undefined });
   }
+
+  @Get('cities')
+  @ApiOperation({ summary: 'Daftar kota RajaOngkir' })
+  getCities() {
+    return this.client.send(SHIPPING_PATTERNS.GET_CITIES, {});
+  }
 }
