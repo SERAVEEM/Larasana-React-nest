@@ -77,9 +77,11 @@ export default function PaymentPage() {
 
   const totalAmount = orderDetails.pricing.total;
 
+  type PaymentState = 'idle' | 'verifying' | 'success' | 'expired';
+
   // Countdown timer state: 15 minutes = 900 seconds
   const [timeLeft, setTimeLeft] = useState(900);
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [paymentState, setPaymentState] = useState<PaymentState>('idle');
 
   // Set timeLeft dynamically based on real payment expiryTime
   useEffect(() => {
@@ -87,15 +89,23 @@ export default function PaymentPage() {
       const expiry = new Date(orderDetails.payment.expiryTime).getTime();
       const diff = Math.max(0, Math.floor((expiry - Date.now()) / 1000));
       setTimeLeft(diff);
+      if (diff <= 0) {
+        setPaymentState('expired');
+      } else if (paymentState !== 'verifying' && paymentState !== 'success') {
+        setPaymentState('idle');
+      }
     }
   }, [orderDetails]);
 
   // Background countdown timer
   useEffect(() => {
+    if (paymentState === 'expired' || paymentState === 'success') return;
+
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer);
+          setPaymentState('expired');
           return 0;
         }
         return prev - 1;
@@ -103,17 +113,18 @@ export default function PaymentPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [paymentState]);
 
   // Background payment status polling every 3 seconds
   useEffect(() => {
-    if (!orderDetails.order?.id) return;
+    if (!orderDetails.order?.id || paymentState === 'success' || paymentState === 'expired') return;
 
     const interval = setInterval(() => {
       client.get(`/checkout/payment-status/${orderDetails.order.id}`)
         .then((res) => {
           if (res.data.paymentStatus === 'paid' || res.data.orderStatus === 'processing') {
             clearInterval(interval);
+            setPaymentState('success');
             navigate('/payment-success', {
               state: {
                 orderId: orderDetails.order.orderCode,
@@ -129,7 +140,7 @@ export default function PaymentPage() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [orderDetails, navigate, totalAmount]);
+  }, [orderDetails, navigate, totalAmount, paymentState]);
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
@@ -140,12 +151,13 @@ export default function PaymentPage() {
 
   // Manual payment check trigger
   const handleBuyNow = async () => {
-    if (!orderDetails.order?.id) return;
-    setIsVerifying(true);
+    if (!orderDetails.order?.id || paymentState !== 'idle') return;
+    setPaymentState('verifying');
 
     try {
       const res = await client.get(`/checkout/payment-status/${orderDetails.order.id}`);
       if (res.data.paymentStatus === 'paid' || res.data.orderStatus === 'processing') {
+        setPaymentState('success');
         navigate('/payment-success', {
           state: {
             orderId: orderDetails.order.orderCode,
@@ -154,19 +166,22 @@ export default function PaymentPage() {
           }
         });
       } else {
+        setPaymentState('idle');
         showAlert('Pembayaran belum kami terima. Silakan selesaikan pembayaran Anda di e-wallet atau bank Anda.');
       }
     } catch (err) {
       console.error('Manual check failed:', err);
+      setPaymentState('idle');
       showAlert('Gagal mengecek status pembayaran.');
-    } finally {
-      setIsVerifying(false);
     }
   };
 
   const handleBack = () => {
+    if (paymentState === 'verifying' || paymentState === 'success') return;
     navigate('/checkout', { state: { productId: orderDetails.product.id, selectedSize: orderDetails.product.size } });
   };
+
+  const isTransitioning = paymentState === 'verifying' || paymentState === 'success';
 
   return (
     <div className="pay-wrapper">
@@ -176,14 +191,20 @@ export default function PaymentPage() {
       <div className="pay-container">
         
         {/* Back Button */}
-        <button className="pay-back-button" onClick={handleBack} aria-label="Go back to Checkout">
+        <button 
+          className="pay-back-button" 
+          onClick={handleBack} 
+          disabled={isTransitioning}
+          style={{ opacity: isTransitioning ? 0.3 : 1, cursor: isTransitioning ? 'not-allowed' : 'pointer' }}
+          aria-label="Go back to Checkout"
+        >
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
 
         {/* Payment Main Card */}
-        <div className="pay-main-card">
+        <div className="pay-main-card" style={{ opacity: paymentState === 'expired' ? 0.6 : 1 }}>
           
           {/* QRIS BRAND HEADER */}
           <div className="pay-qris-brand">
@@ -202,11 +223,11 @@ export default function PaymentPage() {
               <img 
                 src={orderDetails.payment.qrImageUrl} 
                 alt="QRIS Payment Code" 
-                style={{ width: '220px', height: '220px', objectFit: 'contain', background: '#fff', padding: '10px', borderRadius: '8px' }} 
+                style={{ width: '220px', height: '220px', objectFit: 'contain', background: '#fff', padding: '10px', borderRadius: '8px', filter: paymentState === 'expired' ? 'grayscale(1) contrast(0.5)' : 'none' }} 
               />
             ) : (
               /* Fallback custom SVG QR code for high-definition premium appearance */
-              <svg viewBox="0 0 100 100" className="pay-qr-svg" width="200" height="200">
+              <svg viewBox="0 0 100 100" className="pay-qr-svg" width="200" height="200" style={{ filter: paymentState === 'expired' ? 'grayscale(1) contrast(0.5)' : 'none' }}>
                 <rect width="100" height="100" fill="#ffffff" />
                 {/* Position Detection Patterns */}
                 <rect x="5" y="5" width="21" height="21" fill="#000000" />
@@ -262,11 +283,23 @@ export default function PaymentPage() {
           {orderDetails.payment?.paymentUrl && !orderDetails.payment?.qrImageUrl && (
             <div style={{ textAlign: 'center', margin: '1rem 0' }}>
               <a 
-                href={orderDetails.payment.paymentUrl} 
+                href={paymentState === 'expired' ? undefined : orderDetails.payment.paymentUrl} 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="pay-external-link" 
-                style={{ background: '#c4a050', color: '#0a0a0a', padding: '12px 28px', textDecoration: 'none', fontWeight: 'bold', display: 'inline-block', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem' }}
+                style={{ 
+                  background: paymentState === 'expired' ? '#444' : '#c4a050', 
+                  color: paymentState === 'expired' ? '#888' : '#0a0a0a', 
+                  pointerEvents: paymentState === 'expired' ? 'none' : 'auto',
+                  padding: '12px 28px', 
+                  textDecoration: 'none', 
+                  fontWeight: 'bold', 
+                  display: 'inline-block', 
+                  borderRadius: '4px', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: '1px', 
+                  fontSize: '0.85rem' 
+                }}
               >
                 Bayar via Midtrans
               </a>
@@ -276,8 +309,8 @@ export default function PaymentPage() {
           {/* TIMER OVERLAY (Expires in X) */}
           <div className="pay-timer-row">
             <span className="pay-timer-label">Expires in:</span>
-            <span className={`pay-timer-countdown ${timeLeft < 180 ? 'critical' : ''}`}>
-              {formatTime(timeLeft)}
+            <span className={`pay-timer-countdown ${timeLeft < 180 ? 'critical' : ''} ${paymentState === 'expired' ? 'expired-text' : ''}`}>
+              {paymentState === 'expired' ? '00:00 (Expired)' : formatTime(timeLeft)}
             </span>
           </div>
 
@@ -309,21 +342,37 @@ export default function PaymentPage() {
               </svg>
             </div>
             <p className="pay-notice-text">
-              Please complete payment within 15 minutes, or else your order will be cancelled automatically.
+              {paymentState === 'expired' 
+                ? 'Time for payment has expired. This order has been cancelled.' 
+                : 'Please complete payment within 15 minutes, or else your order will be cancelled automatically.'}
             </p>
           </div>
 
         </div>
 
         {/* BOTTOM BUY NOW / CONFIRM BUTTON */}
-        <button className="pay-buy-btn" onClick={handleBuyNow} disabled={timeLeft <= 0}>
-          {timeLeft <= 0 ? 'Payment Expired' : 'Check Status'}
+        <button 
+          className="pay-buy-btn" 
+          onClick={handleBuyNow} 
+          disabled={paymentState !== 'idle'}
+          style={{ 
+            opacity: paymentState !== 'idle' ? 0.5 : 1, 
+            cursor: paymentState !== 'idle' ? 'not-allowed' : 'pointer' 
+          }}
+        >
+          {paymentState === 'expired' 
+            ? 'Payment Expired' 
+            : paymentState === 'verifying' 
+            ? 'Verifying...' 
+            : paymentState === 'success' 
+            ? 'Success' 
+            : 'Check Status'}
         </button>
 
       </div>
 
       {/* FULL SCREEN LOADING OVERLAY */}
-      {isVerifying && (
+      {paymentState === 'verifying' && (
         <div className="pay-verify-overlay">
           <div className="pay-verify-card">
             <div className="pay-spinner">

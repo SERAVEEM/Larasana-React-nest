@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getOrderByIdAsync, updateOrderStatusAsync } from './mockData';
-import type { Order } from './mockData';
+import { getOrderByIdAsync, updateOrderStatusAsync } from '../../api/adminService';
+import type { Order } from '../../api/adminService';
 import '../../style/admin.css';
 import { showAlert } from '../../utils/alerts';
 

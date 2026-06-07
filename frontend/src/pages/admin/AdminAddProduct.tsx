@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { saveProductAsync } from './mockData';
+import { saveProductAsync } from '../../api/adminService';
 import '../../style/admin.css';
 import { showAlert } from '../../utils/alerts';
 export default function AdminAddProduct() {
