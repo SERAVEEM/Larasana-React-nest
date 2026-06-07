@@ -1,4 +1,6 @@
-# <p align="center"><img src="docs/assets/logo.png" alt="Larasana Logo" width="350" /></p>
+<p align="center">
+  <img src="docs/assets/logo.png" alt="Larasana Logo" width="300" />
+</p>
 
 ---
 
@@ -31,12 +33,12 @@ The platform is engineered using a decoupled, service-oriented architecture desi
 * **Monorepo Architecture**: Nest CLI monorepo workspace (segregates independent applications from shared libraries).
 * **Internal Microservice Broker**: **TCP Transport Protocol** (NestJS native microservice TCP communication to enable low-overhead, fast internal messaging).
 * **Database & ORM**:
-  * **Database Engine**: **MySQL** / MariaDB (skema constraints, foreign keys, and indexes are restored via `larasana_db.sql`).
+  * **Database Engine**: **MySQL** / MariaDB (schema constraints, foreign keys, and indexes are restored via `larasana_db.sql`).
   * **ORM**: **TypeORM 0.3.x** / `@nestjs/typeorm` (manages schema synchronization, data-mapper queries, and transaction tables).
 * **Security & Authentication**:
   * Hashing credentials via `bcrypt` (adaptive salt-rounds hashing).
   * JSON Web Tokens (JWT) using Passport strategies (Access Token [15 min expiry] and DB-persisted Refresh Token [7 day expiry] flow).
-  * Autentikasi guards managed via `@nestjs/passport` and `passport-jwt`.
+  * Authentication guards managed via `@nestjs/passport` and `passport-jwt`.
 * **Transactional Emailing**: **Nodemailer 6.x** (connects to SMTP engines to send secure HTML OTPs and Password Reset links).
 
 ### C. Third-Party Integrations
@@ -48,11 +50,46 @@ The platform is engineered using a decoupled, service-oriented architecture desi
 
 ## 3. System Architecture & Service Layout
 
-LARASANA utilizes a **Decoupled Single Page Application (SPA) & Microservices Backend** architecture:
+LARASANA utilizes a **Decoupled Single Page Application (SPA) & Microservices Backend** architecture. Below is the system blueprint representing how components interact:
 
-<p align="center">
-  <img src="docs/assets/architecture_diagram.png" alt="Larasana System Architecture Diagram" width="750" />
-</p>
+```mermaid
+graph TD
+    %% Frontend Node
+    FE["React SPA Frontend (Port 5173)"]
+    
+    %% API Gateway
+    GW["NestJS API Gateway (Port 3000)"]
+    
+    %% Microservices
+    US["Users Service (Port 3001)"]
+    CS["Commerce Service (Port 3002)"]
+    NS["Notification Service (Port 3003)"]
+    
+    %% External Integrations
+    MD["Midtrans Payment API"]
+    EP["EasyPost Shipping API"]
+    GO["Google OAuth"]
+    MS["SMTP Mail Server"]
+    
+    %% Database
+    DB[("MySQL Database")]
+    
+    %% Connections
+    FE -->|HTTP/REST /api/v1| GW
+    FE -.->|Google Login Token| GO
+    
+    GW -->|TCP / auth.login, users.*| US
+    GW -->|TCP / products.*, orders.*| CS
+    GW -->|TCP / notification.*| NS
+    
+    US -.->|Google OAuth Library| GO
+    CS -.->|Fetch API| MD
+    CS -.->|Fetch API| EP
+    NS -.->|Nodemailer| MS
+    
+    US --->|TypeORM| DB
+    CS --->|TypeORM| DB
+```
 
 ### A. Frontend Architecture
 The client is structured as a client-side routed SPA. The root layout is decorated with global contexts using the Provider Pattern (`HelmetProvider` -> `BrowserRouter` -> `SmoothScroll`). Logic modules are encapsulated inside container pages, which interface with presentational UI components.
@@ -88,11 +125,60 @@ The frontend codebase adopts structured design patterns to maintain separation o
 
 ## 5. Transaction & Payment Data Flow
 
-The checkout transaction sequence coordinates third-party shipping and payment APIs as outlined below:
+The checkout transaction sequence coordinates third-party shipping and payment APIs. Below is the sequential process flow showing interactions:
 
-<p align="center">
-  <img src="docs/assets/checkout_dataflow.png" alt="Larasana Transaction Data Flow Diagram" width="750" />
-</p>
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Buyer (Frontend)
+    participant GW as API Gateway (NestJS)
+    participant CS as Commerce Service
+    participant EP as EasyPost API
+    participant MD as Midtrans API
+    participant DB as MySQL DB
+
+    User->>GW: 1. Post Address Details
+    GW->>CS: (TCP) Forward Address Details
+    CS->>DB: Save Address Records
+    DB-->>CS: Address Saved Successfully
+    
+    rect rgb(30, 30, 30)
+        note over CS, EP: Shipping Rate Resolution
+        alt Country is International (Non-ID)
+            CS->>EP: Request Shipping Rates (Weight & Address)
+            EP-->>CS: Return DHL / FedEx / EMS Rates
+        else Country is Domestic (Indonesia)
+            CS->>DB: Query Domestic Courier Base Rates
+            DB-->>CS: Return Local Courier Rates
+        end
+    end
+    
+    CS-->>GW: Return Available Shipping Options
+    GW-->>User: Display Courier Options to Client
+    
+    User->>GW: 2. Trigger Checkout (Courier & Payment Method Selected)
+    GW->>CS: (TCP) Forward Checkout Request
+    CS->>DB: Create Pending Order (LRS-XXXX)
+    
+    rect rgb(30, 30, 30)
+        note over CS, MD: Payment Gateway Integration
+        CS->>MD: Request Payment Token (Snap / Charge API)
+        MD-->>CS: Return QRIS String / VA Code / Redirect URL
+    end
+    
+    CS->>DB: Save Transaction Token & Expiry (15 mins)
+    CS-->>GW: Return Payment Credentials
+    GW-->>User: Display QRIS / VA screen & Start 3s status polling loop
+    
+    loop 3s Polling
+        User->>GW: Poll Order Payment Status
+        GW->>CS: (TCP) Get Payment Status
+        CS->>DB: Check Payment Logs
+        DB-->>CS: Return Paid / Pending
+        CS-->>GW: Return Status
+        GW-->>User: Update UI / Redirect to Success if Paid
+    end
+```
 
 ### Transaction Lifecycle Steps:
 1. **User Action**: The user selects a size on the Product Detail Page and clicks **Buy Now**.
