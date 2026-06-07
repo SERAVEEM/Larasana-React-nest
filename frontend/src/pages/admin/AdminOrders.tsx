@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getOrdersAsync } from './mockData';
-import type { Order } from './mockData';
+import { getOrdersAsync } from '../../api/adminService';
+import type { Order } from '../../api/adminService';
 import '../../style/admin.css';
 
 export default function AdminOrders() {

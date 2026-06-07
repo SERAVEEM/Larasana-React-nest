@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getProductByIdAsync, saveProductAsync, deleteProductAsync } from './mockData';
-import type { Product } from './mockData';
+import { getProductByIdAsync, saveProductAsync, deleteProductAsync } from '../../api/adminService';
+import type { Product } from '../../api/adminService';
 import '../../style/admin.css';
 import { showAlert } from '../../utils/alerts';
 

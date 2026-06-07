@@ -1,122 +1,22 @@
-import { useState, useMemo, useEffect } from 'react';
-import { getProductsAsync, getOrdersAsync, formatUSD } from './mockData';
-import type { Product, Order } from './mockData';
+import { formatUSD } from '../../api/adminService';
+import { useAdminDashboard } from '../../hooks/useAdminDashboard';
+import type { FilterType } from '../../hooks/useAdminDashboard';
 import '../../style/admin.css';
 
-type FilterType = 'Daily' | 'Weekly' | 'Monthly' | 'Yearly';
-
 export default function AdminDashboard() {
-  const [timeFilter, setTimeFilter] = useState<FilterType>('Monthly');
-  const [graphFilter, setGraphFilter] = useState<'Weekly' | 'Monthly' | 'Yearly'>('Monthly');
-
-  // Load products & orders asynchronously
-  const [products, setProducts] = useState<Product[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Fetch products & orders asynchronously from backend on mount
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    Promise.all([getProductsAsync(), getOrdersAsync()])
-      .then(([productsData, ordersData]) => {
-        if (active) {
-          setProducts(productsData);
-          setOrders(ordersData);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to load dashboard metrics:', err);
-        if (active) {
-          setLoading(false);
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  // Compute metrics dynamically based on mock database state
-  const totalRevenue = useMemo(() => {
-    const baseRevenue = 278000000; // static base to match mockup design styling
-    const orderSum = orders
-      .filter(o => o.status === 'Delivered')
-      .reduce((sum, o) => sum + o.numericAmount, 0);
-    return baseRevenue + orderSum;
-  }, [orders]);
-
-  const totalOrders = useMemo(() => {
-    return 2070 + orders.length;
-  }, [orders]);
-
-  const totalProductCount = useMemo(() => {
-    // Return count of products or sum of stocks. Mockup says "273" total products.
-    // Let's do a base of 268 + products count.
-    return 268 + products.length;
-  }, [products]);
-
-  const totalCustomers = 8971; // static customer base
-
-  // Best selling products based on mock DB sales
-  const bestProducts = useMemo(() => {
-    return [...products]
-      .sort((a, b) => b.sales - a.sales)
-      .slice(0, 3);
-  }, [products]);
-
-  // Graph paths for dynamic SVG rendering
-  // Coordinates are computed within a 500x200 viewBox space
-  const graphData = useMemo(() => {
-    if (graphFilter === 'Weekly') {
-      return {
-        labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
-        points: [
-          { x: 30, y: 170 },  // Mon
-          { x: 100, y: 150 }, // Tue
-          { x: 170, y: 160 }, // Wed
-          { x: 240, y: 120 }, // Thu
-          { x: 310, y: 90 },  // Fri
-          { x: 380, y: 60 },  // Sat
-          { x: 450, y: 40 }   // Sun
-        ],
-        path: 'M 30 170 C 65 160, 65 150, 100 150 C 135 150, 135 160, 170 160 C 205 160, 205 120, 240 120 C 275 120, 275 90, 310 90 C 345 90, 345 60, 380 60 C 415 60, 415 40, 450 40',
-        areaPath: 'M 30 170 C 65 160, 65 150, 100 150 C 135 150, 135 160, 170 160 C 205 160, 205 120, 240 120 C 275 120, 275 90, 310 90 C 345 90, 345 60, 380 60 C 415 60, 415 40, 450 40 L 450 200 L 30 200 Z',
-        yLabels: ['30.000.000', '20.000.000', '10.000.000', '5.000.000', '0']
-      };
-    } else if (graphFilter === 'Yearly') {
-      return {
-        labels: ['2021', '2022', '2023', '2024', '2025', '2026'],
-        points: [
-          { x: 30, y: 180 },
-          { x: 114, y: 150 },
-          { x: 198, y: 120 },
-          { x: 282, y: 80 },
-          { x: 366, y: 50 },
-          { x: 450, y: 25 }
-        ],
-        path: 'M 30 180 C 72 165, 72 150, 114 150 C 156 150, 156 120, 198 120 C 240 120, 240 80, 282 80 C 324 80, 324 50, 366 50 C 408 50, 408 25, 450 25',
-        areaPath: 'M 30 180 C 72 165, 72 150, 114 150 C 156 150, 156 120, 198 120 C 240 120, 240 80, 282 80 C 324 80, 324 50, 366 50 C 408 50, 408 25, 450 25 L 450 200 L 30 200 Z',
-        yLabels: ['3.000.000.000', '2.000.000.000', '1.000.000.000', '500.000.000', '0']
-      };
-    } else {
-      // Monthly (mockup matches)
-      return {
-        labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-        points: [
-          { x: 30, y: 185 },  // Jul
-          { x: 114, y: 180 }, // Aug
-          { x: 198, y: 175 }, // Sep
-          { x: 282, y: 182 }, // Oct
-          { x: 366, y: 150 }, // Nov
-          { x: 450, y: 35 }   // Dec (large jump to 230m)
-        ],
-        path: 'M 30 185 C 72 182.5, 72 180, 114 180 C 156 180, 156 175, 198 175 C 240 175, 240 182, 282 182 C 324 182, 324 150, 366 150 C 408 150, 408 35, 450 35',
-        areaPath: 'M 30 185 C 72 182.5, 72 180, 114 180 C 156 180, 156 175, 198 175 C 240 175, 240 182, 282 182 C 324 182, 324 150, 366 150 C 408 150, 408 35, 450 35 L 450 200 L 30 200 Z',
-        yLabels: ['300.000.000', '200.000.000', '100.000.000', '10.000.000', '0']
-      };
-    }
-  }, [graphFilter]);
+  const {
+    timeFilter,
+    setTimeFilter,
+    graphFilter,
+    setGraphFilter,
+    loading,
+    totalRevenue,
+    totalOrders,
+    totalProductCount,
+    totalCustomers,
+    bestProducts,
+    graphData
+  } = useAdminDashboard();
 
   return (
     <div className="admin-container">

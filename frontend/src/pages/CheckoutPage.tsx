@@ -69,8 +69,17 @@ export default function CheckoutPage() {
     selectedSize?: string;
   };
 
+  type CheckoutStepState = 
+    | 'loading_details'
+    | 'idle'
+    | 'saving_address'
+    | 'submitting_checkout'
+    | 'checkout_completed'
+    | 'error';
+
   const [product, setProduct] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [checkoutState, setCheckoutState] = useState<CheckoutStepState>('loading_details');
+  const loading = checkoutState === 'loading_details';
 
   // Component States for Checkout Selection
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -98,7 +107,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
+    setCheckoutState('loading_details');
 
     // Check auth
     const token = localStorage.getItem('larasana_auth_token');
@@ -129,7 +138,7 @@ export default function CheckoutPage() {
             price: Number(p.price),
             images: imageList,
           });
-          setLoading(false);
+          setCheckoutState('idle');
         }
       })
       .catch((err) => {
@@ -141,7 +150,7 @@ export default function CheckoutPage() {
             price: 120.00,
             images: ['/images/product/far left.png']
           });
-          setLoading(false);
+          setCheckoutState('idle');
         }
       });
 
@@ -216,6 +225,7 @@ export default function CheckoutPage() {
 
   const handleAddAddress = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (checkoutState !== 'idle') return;
     if (!newAddress.label || !newAddress.name || !newAddress.street || !newAddress.phone) return;
 
     // Client-side phone format validation (matching backend regex)
@@ -231,6 +241,7 @@ export default function CheckoutPage() {
       return;
     }
 
+    setCheckoutState('saving_address');
     try {
       const payload = {
         label: newAddress.label,
@@ -263,14 +274,17 @@ export default function CheckoutPage() {
       setSelectedAddressId(added.id);
       setShowAddAddressForm(false);
       setNewAddress({ label: '', name: '', street: '', district: '', city: '', province: '', postalCode: '', country: 'ID', phone: '' });
+      setCheckoutState('idle');
     } catch (err: any) {
       console.error('Failed to save address:', err);
+      setCheckoutState('idle');
       const errMsg = err.response?.data?.message || 'Gagal menyimpan alamat baru';
       showAlert(Array.isArray(errMsg) ? errMsg.join('\n') : errMsg);
     }
   };
 
   const handleCheckout = async () => {
+    if (checkoutState !== 'idle') return;
     if (!selectedAddressId) {
       showAlert('Silakan pilih atau tambahkan alamat terlebih dahulu.');
       return;
@@ -280,6 +294,7 @@ export default function CheckoutPage() {
       return;
     }
 
+    setCheckoutState('submitting_checkout');
     try {
       // Map payment methods to backend expectations: e.g. QRIS -> 'qris'
       const payMethod = selectedPayment.name === 'QRIS' ? 'qris' : 'bank_transfer';
@@ -290,6 +305,7 @@ export default function CheckoutPage() {
         paymentMethod: payMethod
       });
 
+      setCheckoutState('checkout_completed');
       navigate('/payment', {
         state: {
           order: res.data.order,
@@ -310,6 +326,7 @@ export default function CheckoutPage() {
       });
     } catch (err: any) {
       console.error('Checkout creation failed:', err);
+      setCheckoutState('idle');
       const errMsg = err.response?.data?.message || 'Gagal memproses checkout';
       showAlert(Array.isArray(errMsg) ? errMsg[0] : errMsg);
     }
@@ -466,8 +483,16 @@ export default function CheckoutPage() {
             </div>
 
             {/* Checkout Action Button */}
-            <button className="co-checkout-btn" onClick={handleCheckout}>
-              Checkout Now
+            <button 
+              className="co-checkout-btn" 
+              onClick={handleCheckout}
+              disabled={checkoutState !== 'idle'}
+              style={{
+                opacity: checkoutState !== 'idle' ? 0.7 : 1,
+                cursor: checkoutState !== 'idle' ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {checkoutState === 'submitting_checkout' ? 'Processing...' : 'Checkout Now'}
             </button>
 
           </div>
@@ -662,8 +687,16 @@ export default function CheckoutPage() {
                         >
                           Cancel
                         </button>
-                        <button type="submit" className="co-form-submit">
-                          Save Address
+                        <button 
+                          type="submit" 
+                          className="co-form-submit"
+                          disabled={checkoutState !== 'idle'}
+                          style={{
+                            opacity: checkoutState !== 'idle' ? 0.7 : 1,
+                            cursor: checkoutState !== 'idle' ? 'not-allowed' : 'pointer'
+                          }}
+                        >
+                          {checkoutState === 'saving_address' ? 'Saving...' : 'Save Address'}
                         </button>
                       </div>
                     </form>

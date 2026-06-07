@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProductsAsync } from './mockData';
-import type { Product } from './mockData';
+import { getProductsAsync } from '../../api/adminService';
+import type { Product } from '../../api/adminService';
 import '../../style/admin.css';
 
 export default function AdminProducts() {
