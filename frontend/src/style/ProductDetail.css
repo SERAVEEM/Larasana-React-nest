@@ -510,3 +510,34 @@
     aspect-ratio: 1.8;
   }
 }
+
+/* Loading Indicator Bar */
+.pd-loading-bar-container {
+  position: absolute;
+  top: 0rem;
+  left: 4rem;
+  right: 4rem;
+  height: 4px;
+  background: rgba(194, 163, 83, 0.1);
+  overflow: hidden;
+  border-radius: 2px;
+  z-index: 10;
+}
+
+.pd-loading-bar-shimmer {
+  width: 30%;
+  height: 100%;
+  background: #C2A353;
+  border-radius: 2px;
+  animation: pd-bar-loading 1.2s infinite linear;
+}
+
+@keyframes pd-bar-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+

@@ -1,6 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const slideVariants = {
+  enter: (direction: 'next' | 'prev') => ({
+    x: direction === 'next' ? 60 : -60,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: 'next' | 'prev') => ({
+    x: direction === 'next' ? -60 : 60,
+    opacity: 0,
+  }),
+};
 
 import weaverImg from '../assets/images/product/weaver_portrait.png';
 
@@ -17,6 +32,9 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState('XL');
   const [isLiked, setIsLiked] = useState(false);
   const [productList, setProductList] = useState<any[]>([]);
+  const [direction, setDirection] = useState<'next' | 'prev'>('next');
+
+  const prevIdRef = useRef(id);
 
   useEffect(() => {
     client.get('/products')
@@ -32,6 +50,21 @@ export default function ProductDetailPage() {
     if (!id) return;
     let active = true;
     setLoading(true);
+
+    if (prevIdRef.current && prevIdRef.current !== id) {
+      const matchPrev = prevIdRef.current.match(/^([a-zA-Z_-]*)([0-9]+)$/);
+      const matchCurrent = id.match(/^([a-zA-Z_-]*)([0-9]+)$/);
+      if (matchPrev && matchCurrent) {
+        const prevNum = parseInt(matchPrev[2], 10);
+        const currNum = parseInt(matchCurrent[2], 10);
+        if (currNum > prevNum) {
+          setDirection('next');
+        } else if (currNum < prevNum) {
+          setDirection('prev');
+        }
+      }
+    }
+    prevIdRef.current = id;
 
     // Resolve string IDs to numbers for database integration compatibility
     let apiId = id;
@@ -96,9 +129,10 @@ export default function ProductDetailPage() {
   // Removed unused handlePrevImage and handleNextImage handlers
 
   const handlePrevProduct = () => {
-    if (!id || productList.length === 0) return;
+    if (!id || productList.length === 0 || loading) return;
     const match = id.match(/^([a-zA-Z_-]*)([0-9]+)$/);
     if (!match) return;
+    setDirection('prev');
     const prefix = match[1];
     const currentNumericId = parseInt(match[2], 10);
     const currentIndex = productList.findIndex((p) => p.id === currentNumericId);
@@ -113,9 +147,10 @@ export default function ProductDetailPage() {
   };
 
   const handleNextProduct = () => {
-    if (!id || productList.length === 0) return;
+    if (!id || productList.length === 0 || loading) return;
     const match = id.match(/^([a-zA-Z_-]*)([0-9]+)$/);
     if (!match) return;
+    setDirection('next');
     const prefix = match[1];
     const currentNumericId = parseInt(match[2], 10);
     const currentIndex = productList.findIndex((p) => p.id === currentNumericId);
@@ -157,7 +192,9 @@ export default function ProductDetailPage() {
     }
   };
 
-  if (loading) {
+  const isInitialLoad = loading && !product;
+
+  if (isInitialLoad) {
     return (
       <div className="pd-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <div style={{ fontSize: '1.2rem', color: '#666', fontFamily: "'Inter', sans-serif" }}>Loading Product Details...</div>
@@ -186,7 +223,32 @@ export default function ProductDetailPage() {
           </svg>
         </button>
 
-        <div className="pd-content-grid">
+        {loading && (
+          <div className="pd-loading-bar-container">
+            <div className="pd-loading-bar-shimmer" />
+          </div>
+        )}
+
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={product.id}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: 'spring', stiffness: 300, damping: 32 },
+              opacity: { duration: 0.25 }
+            }}
+            className="pd-content-grid"
+            style={{
+              opacity: loading ? 0.6 : 1,
+              filter: loading ? 'blur(1px)' : 'none',
+              transition: 'opacity 0.3s ease, filter 0.3s ease',
+              pointerEvents: loading ? 'none' : 'auto'
+            }}
+          >
           
           {/* Left Column: Image Slideshow */}
           <div className="pd-gallery-column">
@@ -313,7 +375,8 @@ export default function ProductDetailPage() {
 
           </div>
 
-        </div>
+        </motion.div>
+      </AnimatePresence>
       </div>
     </div>
   );
