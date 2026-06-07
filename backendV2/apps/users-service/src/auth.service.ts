@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ClientProxy } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
 import {
   User, RefreshToken, EmailVerification, PasswordReset,
   SERVICES, NOTIFICATION_PATTERNS,
@@ -15,6 +16,7 @@ import {
 @Injectable()
 export class AuthService {
   private readonly SALT = 12;
+  private googleClient: OAuth2Client;
 
   constructor(
     @InjectRepository(User)             private userRepo: Repository<User>,
@@ -23,7 +25,9 @@ export class AuthService {
     @InjectRepository(PasswordReset)    private prRepo: Repository<PasswordReset>,
     private jwtService: JwtService,
     @Inject(SERVICES.NOTIFICATION) private notifClient: ClientProxy,
-  ) {}
+  ) {
+    this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  }
 
   async register(data: { name: string; email: string; password: string; meta: any }) {
     const exists = await this.userRepo.findOne({ where: { email: data.email } });
@@ -53,6 +57,62 @@ export class AuthService {
 
     if (user.role === 'seller' && !user.isEmailVerified)
       throw new UnauthorizedException('Email belum diverifikasi');
+
+    const tokens = await this.generateTokens(user, data.meta);
+    return { user: this.sanitize(user), tokens };
+  }
+
+  async googleLogin(data: { idToken: string; meta: any }) {
+    if (!data.idToken) {
+      throw new BadRequestException('ID Token Google diperlukan');
+    }
+
+    let payload;
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken: data.idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      payload = ticket.getPayload();
+    } catch (error: any) {
+      throw new UnauthorizedException(`Token Google tidak valid atau kadaluarsa: ${error.message || error}. Backend Client ID: ${process.env.GOOGLE_CLIENT_ID}`);
+    }
+
+    if (!payload) {
+      throw new UnauthorizedException('Gagal memproses data profil Google');
+    }
+
+    const { email, name, picture } = payload;
+    if (!email) {
+      throw new BadRequestException('Akun Google tidak menyediakan email');
+    }
+
+    let user = await this.userRepo.findOne({ where: { email } });
+
+    if (!user) {
+      const randomPassword = crypto.randomBytes(16).toString('hex');
+      const passwordHash = await bcrypt.hash(randomPassword, this.SALT);
+      
+      user = await this.userRepo.save(
+        this.userRepo.create({
+          name: name || 'Google User',
+          email,
+          passwordHash,
+          role: 'buyer',
+          isEmailVerified: true,
+          avatarUrl: picture || null,
+        }),
+      );
+    } else {
+      if (!user.avatarUrl && picture) {
+        user.avatarUrl = picture;
+        await this.userRepo.save(user);
+      }
+      
+      if (!user.isActive) {
+        throw new UnauthorizedException('Akun dinonaktifkan');
+      }
+    }
 
     const tokens = await this.generateTokens(user, data.meta);
     return { user: this.sanitize(user), tokens };

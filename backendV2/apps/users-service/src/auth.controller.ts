@@ -17,6 +17,11 @@ export class AuthController {
     return this.authService.login(data);
   }
 
+  @MessagePattern(AUTH_PATTERNS.GOOGLE_LOGIN)
+  googleLogin(@Payload() data: { idToken: string; meta: any }) {
+    return this.authService.googleLogin(data);
+  }
+
   @MessagePattern(AUTH_PATTERNS.REFRESH)
   refresh(@Payload() data: { refreshToken: string; sub: number; email: string; role: string; meta: any }) {
     return this.authService.refreshTokens(data);

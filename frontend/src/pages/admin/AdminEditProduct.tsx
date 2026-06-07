@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getProductByIdAsync, saveProductAsync, deleteProductAsync } from './mockData';
 import type { Product } from './mockData';
 import '../../style/admin.css';
+import { showAlert } from '../../utils/alerts';
 
 export default function AdminEditProduct() {
   const { id } = useParams<{ id: string }>();
@@ -111,7 +112,7 @@ export default function AdminEditProduct() {
     e.preventDefault();
     if (!id) return;
     if (!name || !price) {
-      alert('Please fill out Name and Price fields.');
+      showAlert('Please fill out Name and Price fields.');
       return;
     }
 
@@ -139,7 +140,7 @@ export default function AdminEditProduct() {
       .catch(err => {
         console.error('Failed to save product:', err);
         setSaving(false);
-        alert('Failed to save product. Please try again.');
+        showAlert('Failed to save product. Please try again.');
       });
   };
 
@@ -156,7 +157,7 @@ export default function AdminEditProduct() {
       .catch(err => {
         console.error('Failed to delete product:', err);
         setDeleting(false);
-        alert('Failed to delete product. Please try again.');
+        showAlert('Failed to delete product. Please try again.');
       });
   };
 

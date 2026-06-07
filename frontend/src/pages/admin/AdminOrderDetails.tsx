@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getOrderByIdAsync, updateOrderStatusAsync } from './mockData';
 import type { Order } from './mockData';
 import '../../style/admin.css';
+import { showAlert } from '../../utils/alerts';
 
 export default function AdminOrderDetails() {
   const { id } = useParams<{ id: string }>();
@@ -46,15 +47,15 @@ export default function AdminOrderDetails() {
         setUpdatingStatus(false);
         if (success) {
           setStatus(newStatus);
-          alert(`Order status updated to ${newStatus}`);
+          showAlert(`Order status updated to ${newStatus}`);
         } else {
-          alert('Failed to update order status.');
+          showAlert('Failed to update order status.');
         }
       })
       .catch(err => {
         console.error('Failed to update order status:', err);
         setUpdatingStatus(false);
-        alert('An error occurred while updating order status.');
+        showAlert('An error occurred while updating order status.');
       });
   };
 

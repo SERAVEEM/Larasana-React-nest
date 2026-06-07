@@ -35,6 +35,7 @@ const GRID_ITEMS: Array<{
 export default function HeroShowcase() {
   const [hasScrolledIntoView, setHasScrolledIntoView] = useState(false);
   const [gridItems, setGridItems] = useState<any[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const whiteBgRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: fadeProgress } = useScroll({
@@ -46,6 +47,21 @@ export default function HeroShowcase() {
   const gridOpacity = useTransform(fadeProgress, [0, 1], [0, 1]);
   const gridY = useTransform(fadeProgress, [0, 1], [50, 0]);
 
+  const itemsToRender = gridItems.length > 0 ? gridItems : GRID_ITEMS;
+  const showPrevButton = currentIndex > 0;
+  const showNextButton = currentIndex < itemsToRender.length - 5;
+
+  const handleNext = () => {
+    if (currentIndex < itemsToRender.length - 5) {
+      setCurrentIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -64,7 +80,7 @@ export default function HeroShowcase() {
           while (padded.length < 5) {
             padded.push({ id: `empty-${padded.length}`, empty: true } as any);
           }
-          setGridItems(padded.slice(0, 5));
+          setGridItems(padded);
         }
       })
       .catch((err) => {
@@ -130,40 +146,67 @@ export default function HeroShowcase() {
     
       <div className="hs-bg-white" ref={whiteBgRef}>
         <motion.div
-          className="hs-product-grid"
+          className="hs-grid-carousel-container"
           style={{ opacity: gridOpacity, y: gridY }}
         >
-          {(gridItems.length > 0 ? gridItems : GRID_ITEMS).map((item) => (
-            item.empty ? (
-              <div key={item.id} className="hs-grid-item empty" />
-            ) : (
-              <Link key={item.id} to={`/product/${item.id}`} className="hs-grid-item">
-                <img src={item.image} alt={item.name} className="hs-grid-item-img" />
+          <button
+            className="hs-carousel-btn prev"
+            onClick={handlePrev}
+            disabled={!showPrevButton}
+            aria-label="Previous products"
+          >
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
 
-                <div 
-                  className="hs-grid-heart"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" />
-                  </svg>
-                </div>
+          <div
+            className="hs-product-grid"
+            style={{ '--slide-transform': `-${currentIndex * 20}%` } as React.CSSProperties}
+          >
+            {itemsToRender.map((item) => (
+              item.empty ? (
+                <div key={item.id} className="hs-grid-item empty" />
+              ) : (
+                <Link key={item.id} to={`/product/${item.id}`} className="hs-grid-item">
+                  <img src={item.image} alt={item.name} className="hs-grid-item-img" />
 
-                <div className="hs-grid-info">
-                  <div className="hs-grid-info-top">
-                    <h3 className="hs-grid-title">{item.name}</h3>
-                    <span className="hs-grid-price">{item.price}</span>
+                  <div 
+                    className="hs-grid-heart"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" />
+                    </svg>
                   </div>
-                  <div className="hs-grid-rating">
-                    ★ {item.rating}
+
+                  <div className="hs-grid-info">
+                    <div className="hs-grid-info-top">
+                      <h3 className="hs-grid-title">{item.name}</h3>
+                      <span className="hs-grid-price">{item.price}</span>
+                    </div>
+                    <div className="hs-grid-rating">
+                      ★ {item.rating}
+                    </div>
                   </div>
-                </div>
-              </Link>
-            )
-          ))}
+                </Link>
+              )
+            ))}
+          </div>
+
+          <button
+            className="hs-carousel-btn next"
+            onClick={handleNext}
+            disabled={!showNextButton}
+            aria-label="Next products"
+          >
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </motion.div>
       </div>
 

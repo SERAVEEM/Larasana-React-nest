@@ -18,6 +18,7 @@ import { RefreshDto } from './dto/refresh.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
 
 import { AuthResponseDto, TokensDto, MessageResponseDto } from './dto/auth-response.dto';
 import { BadRequestResponseDto, UnauthorizedResponseDto, ConflictResponseDto } from '../common/dto/error-response.dto';
@@ -51,6 +52,15 @@ export class AuthGatewayController {
   @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto, description: 'Kredensial salah atau akun tidak aktif' })
   login(@Body() body: LoginDto, @Req() req: Request) {
     return this.authClient.send(AUTH_PATTERNS.LOGIN, { ...body, meta: this.meta(req) });
+  }
+
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Google login & registration (token exchange)' })
+  @ApiOkResponse({ type: AuthResponseDto, description: 'Login/Register berhasil' })
+  @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto, description: 'Google token tidak valid' })
+  googleLogin(@Body() body: GoogleLoginDto, @Req() req: Request) {
+    return this.authClient.send(AUTH_PATTERNS.GOOGLE_LOGIN, { idToken: body.idToken, meta: this.meta(req) });
   }
 
   @Post('refresh')
