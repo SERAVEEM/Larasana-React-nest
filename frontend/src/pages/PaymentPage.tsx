@@ -84,11 +84,14 @@ export default function PaymentPage() {
   const [paymentState, setPaymentState] = useState<PaymentState>('idle');
 
   // Set timeLeft dynamically based on real payment expiryTime
+  // Capped at 900 seconds (15 min) regardless of backend expiry value
   useEffect(() => {
     if (orderDetails.payment?.expiryTime) {
       const expiry = new Date(orderDetails.payment.expiryTime).getTime();
       const diff = Math.max(0, Math.floor((expiry - Date.now()) / 1000));
-      setTimeLeft(diff);
+      // Cap at 15 minutes for UX — backend may set 24h but we show 15m max
+      const capped = Math.min(diff, 900);
+      setTimeLeft(capped);
       if (diff <= 0) {
         setPaymentState('expired');
       } else if (paymentState !== 'verifying' && paymentState !== 'success') {
@@ -176,6 +179,20 @@ export default function PaymentPage() {
     }
   };
 
+  // Dev-only: purely client-side payment simulation — no backend call needed
+  // Immune to backend crashes during recompilation
+  const handleSimulateSuccess = () => {
+    if (paymentState !== 'idle') return;
+    setPaymentState('success');
+    navigate('/payment-success', {
+      state: {
+        orderId: orderDetails.order?.orderCode || 'DEV-MOCK',
+        amountPaid: totalAmount,
+        productName: orderDetails.product?.name || 'Curated Piece'
+      }
+    });
+  };
+
   const handleBack = () => {
     if (paymentState === 'verifying' || paymentState === 'success') return;
     navigate('/checkout', { state: { productId: orderDetails.product.id, selectedSize: orderDetails.product.size } });
@@ -187,13 +204,13 @@ export default function PaymentPage() {
     <div className="pay-wrapper">
       {/* Page Header Area */}
       <div className="pay-header-space" />
-      
+
       <div className="pay-container">
-        
+
         {/* Back Button */}
-        <button 
-          className="pay-back-button" 
-          onClick={handleBack} 
+        <button
+          className="pay-back-button"
+          onClick={handleBack}
           disabled={isTransitioning}
           style={{ opacity: isTransitioning ? 0.3 : 1, cursor: isTransitioning ? 'not-allowed' : 'pointer' }}
           aria-label="Go back to Checkout"
@@ -205,25 +222,42 @@ export default function PaymentPage() {
 
         {/* Payment Main Card */}
         <div className="pay-main-card" style={{ opacity: paymentState === 'expired' ? 0.6 : 1 }}>
-          
+
           {/* QRIS BRAND HEADER */}
           <div className="pay-qris-brand">
-            <svg className="pay-qris-svg" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5 5h15v5H10v20h10v5H5V5zm40 0h15v5H50v8h10v5H50v7h15v5H45V5zm40 0h15v5H90v20h10v5H85V5z" fill="#000" />
-              {/* Styled QRIS text boxes */}
-              <text x="3" y="27" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="24" fill="#000" letterSpacing="2">QRIS</text>
-              <rect x="76" y="8" width="40" height="22" rx="4" fill="#000" />
-              <text x="81" y="24" fontFamily="system-ui, sans-serif" fontWeight="700" fontSize="11" fill="#fff">QUICK</text>
+            <svg className="pay-qris-svg" viewBox="0 0 160 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Clean QRIS wordmark */}
+              <text
+                x="4"
+                y="33"
+                fontFamily="'Arial Black', 'Arial', sans-serif"
+                fontWeight="900"
+                fontSize="30"
+                fill="#000"
+                letterSpacing="1.5"
+              >QRIS</text>
+              {/* QUICK badge — right side */}
+              <rect x="106" y="9" width="50" height="26" rx="5" fill="#E8222C" />
+              <text
+                x="131"
+                y="27"
+                fontFamily="'Arial', sans-serif"
+                fontWeight="700"
+                fontSize="12"
+                fill="#fff"
+                textAnchor="middle"
+                letterSpacing="0.5"
+              >QUICK</text>
             </svg>
           </div>
 
           {/* QR CODE CONTAINER */}
           <div className="pay-qrcode-box" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
             {orderDetails.payment?.qrImageUrl ? (
-              <img 
-                src={orderDetails.payment.qrImageUrl} 
-                alt="QRIS Payment Code" 
-                style={{ width: '220px', height: '220px', objectFit: 'contain', background: '#fff', padding: '10px', borderRadius: '8px', filter: paymentState === 'expired' ? 'grayscale(1) contrast(0.5)' : 'none' }} 
+              <img
+                src={orderDetails.payment.qrImageUrl}
+                alt="QRIS Payment Code"
+                style={{ width: '220px', height: '220px', objectFit: 'contain', background: '#fff', padding: '10px', borderRadius: '8px', filter: paymentState === 'expired' ? 'grayscale(1) contrast(0.5)' : 'none' }}
               />
             ) : (
               /* Fallback custom SVG QR code for high-definition premium appearance */
@@ -282,23 +316,23 @@ export default function PaymentPage() {
           {/* EXTERNAL PAYMENT URL LINK FOR CREDIT CARD / OTHER METHODS */}
           {orderDetails.payment?.paymentUrl && !orderDetails.payment?.qrImageUrl && (
             <div style={{ textAlign: 'center', margin: '1rem 0' }}>
-              <a 
-                href={paymentState === 'expired' ? undefined : orderDetails.payment.paymentUrl} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="pay-external-link" 
-                style={{ 
-                  background: paymentState === 'expired' ? '#444' : '#c4a050', 
-                  color: paymentState === 'expired' ? '#888' : '#0a0a0a', 
+              <a
+                href={paymentState === 'expired' ? undefined : orderDetails.payment.paymentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pay-external-link"
+                style={{
+                  background: paymentState === 'expired' ? '#444' : '#c4a050',
+                  color: paymentState === 'expired' ? '#888' : '#0a0a0a',
                   pointerEvents: paymentState === 'expired' ? 'none' : 'auto',
-                  padding: '12px 28px', 
-                  textDecoration: 'none', 
-                  fontWeight: 'bold', 
-                  display: 'inline-block', 
-                  borderRadius: '4px', 
-                  textTransform: 'uppercase', 
-                  letterSpacing: '1px', 
-                  fontSize: '0.85rem' 
+                  padding: '12px 28px',
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  display: 'inline-block',
+                  borderRadius: '4px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontSize: '0.85rem'
                 }}
               >
                 Bayar via Midtrans
@@ -342,8 +376,8 @@ export default function PaymentPage() {
               </svg>
             </div>
             <p className="pay-notice-text">
-              {paymentState === 'expired' 
-                ? 'Time for payment has expired. This order has been cancelled.' 
+              {paymentState === 'expired'
+                ? 'Time for payment has expired. This order has been cancelled.'
                 : 'Please complete payment within 15 minutes, or else your order will be cancelled automatically.'}
             </p>
           </div>
@@ -351,23 +385,34 @@ export default function PaymentPage() {
         </div>
 
         {/* BOTTOM BUY NOW / CONFIRM BUTTON */}
-        <button 
-          className="pay-buy-btn" 
-          onClick={handleBuyNow} 
+        <button
+          className="pay-buy-btn"
+          onClick={handleBuyNow}
           disabled={paymentState !== 'idle'}
-          style={{ 
-            opacity: paymentState !== 'idle' ? 0.5 : 1, 
-            cursor: paymentState !== 'idle' ? 'not-allowed' : 'pointer' 
+          style={{
+            opacity: paymentState !== 'idle' ? 0.5 : 1,
+            cursor: paymentState !== 'idle' ? 'not-allowed' : 'pointer'
           }}
         >
-          {paymentState === 'expired' 
-            ? 'Payment Expired' 
-            : paymentState === 'verifying' 
-            ? 'Verifying...' 
-            : paymentState === 'success' 
-            ? 'Success' 
-            : 'Check Status'}
+          {paymentState === 'expired'
+            ? 'Payment Expired'
+            : paymentState === 'verifying'
+              ? 'Verifying...'
+              : paymentState === 'success'
+                ? 'Success'
+                : 'Check Status'}
         </button>
+
+        {/* DEV-ONLY: Instant payment simulator — only visible on localhost */}
+        {window.location.hostname === 'localhost' && paymentState === 'idle' && (
+          <button
+            className="pay-buy-btn pay-mock-btn"
+            onClick={handleSimulateSuccess}
+            title="Dev only: simulates payment success instantly"
+          >
+            ⚡ Simulate Payment Success
+          </button>
+        )}
 
       </div>
 
