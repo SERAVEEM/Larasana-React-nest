@@ -10,16 +10,16 @@ import { ShippingService } from './shipping.service';
 @Injectable()
 export class PaymentsService {
   constructor(
-    @InjectRepository(Order)          private orderRepo: Repository<Order>,
-    @InjectRepository(OrderItem)      private orderItemRepo: Repository<OrderItem>,
-    @InjectRepository(Payment)        private paymentRepo: Repository<Payment>,
-    @InjectRepository(Product)        private productRepo: Repository<Product>,
-    @InjectRepository(Address)        private addressRepo: Repository<Address>,
+    @InjectRepository(Order) private orderRepo: Repository<Order>,
+    @InjectRepository(OrderItem) private orderItemRepo: Repository<OrderItem>,
+    @InjectRepository(Payment) private paymentRepo: Repository<Payment>,
+    @InjectRepository(Product) private productRepo: Repository<Product>,
+    @InjectRepository(Address) private addressRepo: Repository<Address>,
     @InjectRepository(ShippingMethod) private shippingRepo: Repository<ShippingMethod>,
     private midtransService: MidtransService,
     private dataSource: DataSource,
     private readonly shippingService: ShippingService,
-  ) {}
+  ) { }
 
   async checkout(data: {
     user: { id: number; name: string; email: string };
@@ -109,20 +109,35 @@ export class PaymentsService {
     };
   }
 
-  async getPaymentStatus(userId: number, orderId: number) {
+  async getPaymentStatus(userId: number, orderId: number, simulate?: string) {
     const order = await this.orderRepo.findOne({ where: { id: orderId, buyerId: userId } });
     if (!order) throw new NotFoundException('Order tidak ditemukan');
 
     const payment = await this.paymentRepo.findOne({ where: { orderId } });
     if (!payment) throw new NotFoundException('Data pembayaran tidak ditemukan');
 
-    if (payment.status === 'pending' && payment.midtransOrderId) {
-      const mt = await this.midtransService.getStatus(payment.midtransOrderId);
-      const newStatus = this.mapStatus(mt.transaction_status, mt.fraud_status);
+    if (payment.status === 'pending') {
+      let newStatus: any = payment.status;
+
+      // Dev-only: instant success simulation via mock backend
+      if (simulate === 'success' && this.midtransService.isMockMode) {
+        newStatus = 'paid';
+      } else if (payment.midtransOrderId) {
+        const mt = await this.midtransService.getStatus(payment.midtransOrderId);
+        newStatus = this.mapStatus(mt.transaction_status, mt.fraud_status);
+      }
+
       if (newStatus !== payment.status) {
         payment.status = newStatus;
-        if (newStatus === 'paid') { payment.paidAt = new Date(); await this.orderRepo.update(orderId, { status: 'processing' }); }
-        if (newStatus === 'expired' || newStatus === 'failed') await this.orderRepo.update(orderId, { status: 'cancelled' });
+        if (newStatus === 'paid') {
+          payment.paidAt = new Date();
+          await this.orderRepo.update(orderId, { status: 'processing' });
+          order.status = 'processing';
+        }
+        if (newStatus === 'expired' || newStatus === 'failed') {
+          await this.orderRepo.update(orderId, { status: 'cancelled' });
+          order.status = 'cancelled';
+        }
         await this.paymentRepo.save(payment);
       }
     }

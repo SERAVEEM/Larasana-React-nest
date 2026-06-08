@@ -86,6 +86,8 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState('');
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedShippingId, setSelectedShippingId] = useState('');
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingError, setShippingError] = useState(false);
   const [selectedPaymentId, setSelectedPaymentId] = useState(PAYMENT_METHODS[0].id);
 
   // Modal visibility states
@@ -208,13 +210,15 @@ export default function CheckoutPage() {
     };
   }, [productId, navigate]);
 
-  useEffect(() => {
-    let active = true;
-    const url = selectedAddressId ? `/shipping?addressId=${selectedAddressId}` : '/shipping';
+  // Fetch shipping options whenever address changes
+  const fetchShipping = (addressId: string) => {
+    setShippingLoading(true);
+    setShippingError(false);
+    const url = addressId ? `/shipping?addressId=${addressId}` : '/shipping';
 
     client.get(url)
       .then((res) => {
-        if (active && res.data && res.data.length > 0) {
+        if (res.data && res.data.length > 0) {
           const mapped = res.data.map((ship: any) => ({
             id: String(ship.id),
             name: ship.label,
@@ -224,13 +228,31 @@ export default function CheckoutPage() {
           }));
           setShippingOptions(mapped);
           setSelectedShippingId(mapped[0].id);
+        } else {
+          // Rich fallback mock rates when backend has no API key configured
+          const fallback: ShippingOption[] = [
+            { id: 'mock-1', name: 'JNE Regular (REG)', price: 1.50, eta: '3-5 hari', logo: 'JNE' },
+            { id: 'mock-2', name: 'JNE YES (1 Day Service)', price: 3.20, eta: '1 hari', logo: 'JNE' },
+            { id: 'mock-3', name: 'POS Kilat Khusus', price: 1.20, eta: '4-7 hari', logo: 'POS' },
+            { id: 'mock-4', name: 'TIKI Regular', price: 1.40, eta: '4-6 hari', logo: 'TIKI' },
+          ];
+          setShippingOptions(fallback);
+          setSelectedShippingId(fallback[0].id);
         }
+        setShippingLoading(false);
       })
-      .catch((err) => console.error('Failed to fetch shipping methods:', err));
+      .catch((err) => {
+        console.error('Failed to fetch shipping methods:', err);
+        setShippingError(true);
+        setShippingLoading(false);
+      });
+  };
 
-    return () => {
-      active = false;
-    };
+  useEffect(() => {
+    let active = true;
+    if (!active) return;
+    fetchShipping(selectedAddressId);
+    return () => { active = false; };
   }, [selectedAddressId]);
 
   const selectedAddress = addresses.find(a => a.id === selectedAddressId) || { id: '', label: 'No Address', name: '', street: 'Please add a shipping address', district: '', city: '', province: '', postalCode: '', country: 'ID', phone: '' };
@@ -442,29 +464,58 @@ export default function CheckoutPage() {
             {/* Shipping Selection Card */}
             <div className="co-card-section">
               <h2 className="co-section-title">Shipping</h2>
-              <button 
-                className="co-select-card" 
-                onClick={() => handleOpenModal('shipping')}
-                aria-label="Edit shipping carrier"
-              >
-                <div className="co-card-info-row">
-                  <div className="co-carrier-badge-wrapper">
-                    <span className={`co-carrier-logo ${selectedShipping.logo.toLowerCase()}`}>
-                      {selectedShipping.logo}
-                    </span>
-                    <div className="co-carrier-details">
-                      <p className="co-carrier-name">{selectedShipping.name}</p>
-                      <p className="co-carrier-eta">{selectedShipping.eta}</p>
-                    </div>
+              {shippingLoading ? (
+                <div className="co-shipping-skeleton">
+                  <div className="co-skeleton-logo" />
+                  <div className="co-skeleton-lines">
+                    <div className="co-skeleton-line co-skeleton-line--wide" />
+                    <div className="co-skeleton-line co-skeleton-line--narrow" />
                   </div>
                 </div>
-                <div className="co-card-edit-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 20h9" />
-                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                  </svg>
+              ) : shippingError ? (
+                <div className="co-shipping-error-card">
+                  <span>Failed to load shipping rates.</span>
+                  <button className="co-shipping-retry-btn" onClick={() => fetchShipping(selectedAddressId)}>
+                    Retry
+                  </button>
                 </div>
-              </button>
+              ) : (
+                <button
+                  className="co-select-card"
+                  onClick={() => handleOpenModal('shipping')}
+                  aria-label="Edit shipping carrier"
+                >
+                  <div className="co-card-info-row">
+                    <div className="co-carrier-badge-wrapper">
+                      <span className={`co-carrier-logo ${selectedShipping.logo.toLowerCase()}`}>
+                        {selectedShipping.logo}
+                      </span>
+                      <div className="co-carrier-details">
+                        <p className="co-carrier-name">{selectedShipping.name}</p>
+                        <p className="co-carrier-eta">{selectedShipping.eta}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                    <span style={{ fontWeight: 700, color: '#C2A353', fontSize: '0.95rem' }}>
+                      {formatPrice(selectedShipping.price)}
+                    </span>
+                    <div className="co-card-edit-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                      </svg>
+                    </div>
+                  </div>
+                </button>
+              )}
+              {/* Live API indicator */}
+              {!shippingLoading && !shippingError && selectedShippingId && Number(selectedShippingId) >= 500 && (
+                <div className="co-shipping-live-badge">⚡ Live rates from Biteship</div>
+              )}
+              {!shippingLoading && !shippingError && selectedShippingId && Number(selectedShippingId) >= 300 && Number(selectedShippingId) < 500 && (
+                <div className="co-shipping-live-badge">⚡ Live rates from RajaOngkir</div>
+              )}
             </div>
 
             {/* Payment Method Card */}
@@ -819,32 +870,51 @@ export default function CheckoutPage() {
               {/* SHIPPING SELECTION MODAL */}
               {activeModal === 'shipping' && (
                 <div className="co-modal-options-list">
-                  {shippingOptions.map((ship) => (
-                    <button
-                      key={ship.id}
-                      className={`co-modal-option-card align-center ${selectedShippingId === ship.id ? 'active' : ''}`}
-                      onClick={() => {
-                        setSelectedShippingId(ship.id);
-                        handleCloseModal();
-                      }}
-                    >
-                      <div className="co-option-radio">
-                        <span className="co-radio-dot" />
-                      </div>
-                      <div className="co-option-info flex-row justify-between">
-                        <div className="co-option-carrier">
-                          <span className={`co-carrier-logo ${ship.logo.toLowerCase()}`}>
-                            {ship.logo}
-                          </span>
-                          <div className="co-carrier-desc-block">
-                            <span className="co-carrier-name-bold">{ship.name}</span>
-                            <span className="co-carrier-eta-text">{ship.eta}</span>
-                          </div>
+                  {shippingLoading ? (
+                    [1, 2, 3].map(i => (
+                      <div key={i} className="co-shipping-skeleton co-shipping-skeleton--modal">
+                        <div className="co-skeleton-logo" />
+                        <div className="co-skeleton-lines">
+                          <div className="co-skeleton-line co-skeleton-line--wide" />
+                          <div className="co-skeleton-line co-skeleton-line--narrow" />
                         </div>
-                        <span className="co-option-price">{formatPrice(ship.price)}</span>
                       </div>
-                    </button>
-                  ))}
+                    ))
+                  ) : shippingOptions.length === 0 ? (
+                    <div className="co-shipping-error-card">
+                      <span>No shipping options available for this address.</span>
+                      <button className="co-shipping-retry-btn" onClick={() => fetchShipping(selectedAddressId)}>Retry</button>
+                    </div>
+                  ) : (
+                    shippingOptions.map((ship) => (
+                      <button
+                        key={ship.id}
+                        className={`co-modal-option-card align-center ${selectedShippingId === ship.id ? 'active' : ''}`}
+                        onClick={() => {
+                          setSelectedShippingId(ship.id);
+                          handleCloseModal();
+                        }}
+                      >
+                        <div className="co-option-radio">
+                          <span className="co-radio-dot" />
+                        </div>
+                        <div className="co-option-info flex-row justify-between">
+                          <div className="co-option-carrier">
+                            <span className={`co-carrier-logo ${ship.logo.toLowerCase()}`}>
+                              {ship.logo}
+                            </span>
+                            <div className="co-carrier-desc-block">
+                              <span className="co-carrier-name-bold">{ship.name}</span>
+                              <span className="co-carrier-eta-text">
+                                🕐 {ship.eta}{Number(ship.id) >= 300 ? ' · Live Rate' : ''}
+                              </span>
+                            </div>
+                          </div>
+                          <span className="co-option-price">{formatPrice(ship.price)}</span>
+                        </div>
+                      </button>
+                    ))
+                  )}
                 </div>
               )}
 

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, UseGuards, Inject, ParseIntPipe, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, UseGuards, Inject, ParseIntPipe, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiOkResponse, ApiCreatedResponse, ApiUnauthorizedResponse, ApiBadRequestResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { SERVICES, PAYMENTS_PATTERNS } from '../../../../libs/shared/src';
@@ -11,7 +11,7 @@ import { BadRequestResponseDto, UnauthorizedResponseDto, NotFoundResponseDto } f
 @ApiTags('checkout')
 @Controller('checkout')
 export class CheckoutGatewayController {
-  constructor(@Inject(SERVICES.PAYMENTS) private client: ClientProxy) {}
+  constructor(@Inject(SERVICES.PAYMENTS) private client: ClientProxy) { }
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -32,8 +32,12 @@ export class CheckoutGatewayController {
   @ApiOkResponse({ type: PaymentStatusResponseDto, description: 'Status pembayaran berhasil diambil' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto, description: 'Order tidak ditemukan' })
   @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto })
-  getStatus(@GetUser() user: any, @Param('orderId', ParseIntPipe) orderId: number) {
-    return this.client.send(PAYMENTS_PATTERNS.GET_STATUS, { userId: user.sub, orderId });
+  getStatus(
+    @GetUser() user: any,
+    @Param('orderId', ParseIntPipe) orderId: number,
+    @Query('simulate') simulate?: string,
+  ) {
+    return this.client.send(PAYMENTS_PATTERNS.GET_STATUS, { userId: user.sub, orderId, simulate });
   }
 
   @Post('webhook/midtrans')

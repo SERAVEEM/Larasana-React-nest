@@ -30,7 +30,7 @@ export interface MidtransChargeResult {
 export class MidtransService {
   private readonly logger = new Logger(MidtransService.name);
 
-  private get isMockMode(): boolean {
+  get isMockMode(): boolean {
     const key = this.serverKey;
     return !key || key.includes('xxxxxxxx') || key.trim() === '' || !key.startsWith('SB-');
   }
@@ -130,10 +130,10 @@ export class MidtransService {
       const parts = midtransOrderId.split('-');
       const timestampStr = parts[parts.length - 1];
       const timestamp = Number(timestampStr);
-      
+
       // Keep transaction pending for 30 seconds to allow inspecting the QR code or VA number in UI
       const isPending = !isNaN(timestamp) && (Date.now() - timestamp < 30000);
-      
+
       return {
         transaction_status: isPending ? 'pending' : 'settlement',
         fraud_status: 'accept',
