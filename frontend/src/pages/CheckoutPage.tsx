@@ -1,8 +1,14 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { client } from '../api/client';
 import '../style/Checkout.css';
 import { showAlert } from '../utils/alerts';
+
+declare global {
+  interface Window {
+    snap: any;
+  }
+}
 
 interface Address {
   id: string;
@@ -30,29 +36,79 @@ interface PaymentMethod {
   name: string;
   logoText: string;
   description: string;
+  /** Midtrans API key — maps directly to the paymentMethod field in the checkout DTO */
+  midtransKey: string;
 }
 
-// Unused local mock lists removed to satisfy strict ts compiler settings
+/**
+ * Strict type contract for the structured shipping API response (FLAW-08).
+ * The backend always returns { success, data, message? }.
+ * Typing this prevents .map() crashes when the shape is unexpected.
+ */
+interface ShippingApiResponse {
+  success: boolean;
+  data: Array<{
+    id: number;
+    label: string;
+    baseCost: number;
+    estimatedDays: string;
+    courier: string;
+  }>;
+  message?: string;
+}
+
+/**
+ * Server-fetched exchange rate session with built-in TTL (FLAW-01).
+ * After `expiresAt`, the user is prompted to refresh before paying.
+ */
+interface RateSession {
+  usdRate: number;
+  fetchedAt: string;
+  expiresAt: number; // Unix ms timestamp
+}
+
+/** Rate TTL = 10 minutes (matches server-reported ttlSeconds: 600) */
+const RATE_TTL_MS = 10 * 60 * 1000;
+
+/**
+ * Explicit Midtrans payment method mapping (FLAW-09).
+ * Previously, all non-QRIS methods collapsed to 'bank_transfer',
+ * meaning a user selecting 'Credit Card' would get a VA instead.
+ */
+const PAYMENT_METHOD_MAP: Record<string, string> = {
+  'QRIS':          'qris',
+  'Credit Card':   'credit_card',
+  'Bank Transfer': 'bank_transfer',
+  'GoPay':         'gopay',
+  'ShopeePay':     'shopeepay',
+  'BCA VA':        'va_bca',
+  'BNI VA':        'va_bni',
+  'BRI VA':        'va_bri',
+  'Mandiri':       'va_mandiri',
+};
 
 const PAYMENT_METHODS: PaymentMethod[] = [
   {
     id: 'pay-1',
     name: 'QRIS',
     logoText: 'QRIS',
-    description: 'Pay instantly with QR code scanner'
+    description: 'Pay instantly with QR code scanner',
+    midtransKey: 'qris',
   },
   {
     id: 'pay-2',
     name: 'Credit Card',
     logoText: 'CARD',
-    description: 'Visa, MasterCard, or American Express'
+    description: 'Visa, MasterCard, or American Express (3D Secure)',
+    midtransKey: 'credit_card',
   },
   {
     id: 'pay-3',
     name: 'Bank Transfer',
     logoText: 'BANK',
-    description: 'Virtual Account transfer'
-  }
+    description: 'Virtual Account transfer (BCA, BNI, BRI, Mandiri)',
+    midtransKey: 'bank_transfer',
+  },
 ];
 
 const formatPrice = (value: number): string => {
@@ -88,7 +144,19 @@ export default function CheckoutPage() {
   const [selectedShippingId, setSelectedShippingId] = useState('');
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingError, setShippingError] = useState(false);
+  const [shippingErrorMessage, setShippingErrorMessage] = useState('');
   const [selectedPaymentId, setSelectedPaymentId] = useState(PAYMENT_METHODS[0].id);
+
+  /**
+   * FLAW-01 FIX: Exchange rate is fetched from the server on mount.
+   * The rate is stored with an expiry timestamp (TTL = 10 minutes).
+   * If expired when the user hits Pay, they are prompted to refresh.
+   * The backend NEVER trusts a rate sent from the client.
+   */
+  const [rateSession, setRateSession] = useState<RateSession | null>(null);
+  const [rateLoading, setRateLoading] = useState(true);
+  const [rateExpired, setRateExpired] = useState(false);
+  const [midtransClientKey, setMidtransClientKey] = useState<string>('Mid-client-c5ohw8WHhSuc-ygW');
 
   // Modal visibility states
   const [activeModal, setActiveModal] = useState<'address' | 'shipping' | 'payment' | null>(null);
@@ -110,6 +178,65 @@ export default function CheckoutPage() {
   const [citiesList, setCitiesList] = useState<any[]>([]);
   const [citySearchQuery, setCitySearchQuery] = useState('');
   const [showCityDropdown, setShowCityDropdown] = useState(false);
+
+  // ── Fetch server-owned exchange rate on mount (FLAW-01 fix) ─────────────────
+  const fetchRateFromServer = useCallback(() => {
+    setRateLoading(true);
+    setRateExpired(false);
+    client.get('/config/rates')
+      .then((res) => {
+        const { usdRate, fetchedAt, ttlSeconds, midtransClientKey: clientKey } = res.data as {
+          usdRate: number;
+          fetchedAt: string;
+          ttlSeconds: number;
+          midtransClientKey?: string;
+        };
+        if (clientKey) {
+          setMidtransClientKey(clientKey);
+        }
+        setRateSession({
+          usdRate,
+          fetchedAt,
+          expiresAt: Date.now() + (ttlSeconds ?? 600) * 1000,
+        });
+        setRateLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch exchange rate from server:', err);
+        // Fallback to env-default — better than blocking checkout entirely
+        setRateSession({
+          usdRate: 15000,
+          fetchedAt: new Date().toISOString(),
+          expiresAt: Date.now() + RATE_TTL_MS,
+        });
+        setRateLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetchRateFromServer();
+    // Also set a timer to mark the rate as expired after TTL
+    const timer = setTimeout(() => setRateExpired(true), RATE_TTL_MS);
+    return () => clearTimeout(timer);
+  }, [fetchRateFromServer]);
+
+  useEffect(() => {
+    // Dynamic load of Midtrans Snap JS script
+    const snapUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const scriptId = 'midtrans-snap-script';
+
+    let script = document.getElementById(scriptId) as HTMLScriptElement;
+    if (script) {
+      script.setAttribute('data-client-key', midtransClientKey);
+    } else {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.src = snapUrl;
+      script.setAttribute('data-client-key', midtransClientKey);
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, [midtransClientKey]);
 
   useEffect(() => {
     if (newAddress.country === 'ID' && citiesList.length === 0 && showAddAddressForm) {
@@ -210,40 +337,64 @@ export default function CheckoutPage() {
     };
   }, [productId, navigate]);
 
-  // Fetch shipping options whenever address changes
+  // Fetch shipping options whenever address changes (FLAW-08: typed response)
   const fetchShipping = (addressId: string) => {
     setShippingLoading(true);
     setShippingError(false);
-    const url = addressId ? `/shipping?addressId=${addressId}` : '/shipping';
+    setShippingErrorMessage('');
+    // NOTE: usdRate is intentionally NOT sent — server owns the rate (FLAW-04 fix)
+    const url = addressId
+      ? `/shipping?addressId=${addressId}&weight=1000`
+      : `/shipping?weight=1000`;
 
     client.get(url)
       .then((res) => {
-        if (res.data && res.data.length > 0) {
-          const mapped = res.data.map((ship: any) => ({
+        // FLAW-08 FIX: Use the typed ShippingApiResponse contract
+        const raw = res.data as ShippingApiResponse | ShippingApiResponse['data'];
+        const isStructured = raw !== null &&
+          typeof raw === 'object' &&
+          !Array.isArray(raw) &&
+          'success' in raw;
+
+        const structured = isStructured ? (raw as ShippingApiResponse) : null;
+        const success = structured ? structured.success : true;
+        const data: ShippingApiResponse['data'] = structured
+          ? (structured.data ?? [])
+          : (raw as ShippingApiResponse['data'] ?? []);
+        const errMsg = structured?.message ?? 'Failed to load shipping rates.';
+
+        if (success && data && data.length > 0) {
+          const mapped: ShippingOption[] = data.map((ship) => ({
             id: String(ship.id),
             name: ship.label,
             price: Number(ship.baseCost),
             eta: ship.estimatedDays,
-            logo: ship.courier.toUpperCase()
+            logo: ship.courier.toUpperCase(),
           }));
           setShippingOptions(mapped);
           setSelectedShippingId(mapped[0].id);
         } else {
-          // Rich fallback mock rates when backend has no API key configured
-          const fallback: ShippingOption[] = [
-            { id: 'mock-1', name: 'JNE Regular (REG)', price: 1.50, eta: '3-5 hari', logo: 'JNE' },
-            { id: 'mock-2', name: 'JNE YES (1 Day Service)', price: 3.20, eta: '1 hari', logo: 'JNE' },
-            { id: 'mock-3', name: 'POS Kilat Khusus', price: 1.20, eta: '4-7 hari', logo: 'POS' },
-            { id: 'mock-4', name: 'TIKI Regular', price: 1.40, eta: '4-6 hari', logo: 'TIKI' },
-          ];
-          setShippingOptions(fallback);
-          setSelectedShippingId(fallback[0].id);
+          if (isStructured && !success) {
+            setShippingError(true);
+            setShippingErrorMessage(errMsg);
+          } else {
+            // Rich fallback mock rates when backend has no API key configured
+            const fallback: ShippingOption[] = [
+              { id: 'mock-1', name: 'JNE Regular (REG)', price: 1.50, eta: '3-5 hari', logo: 'JNE' },
+              { id: 'mock-2', name: 'JNE YES (1 Day Service)', price: 3.20, eta: '1 hari', logo: 'JNE' },
+              { id: 'mock-3', name: 'POS Kilat Khusus', price: 1.20, eta: '4-7 hari', logo: 'POS' },
+              { id: 'mock-4', name: 'TIKI Regular', price: 1.40, eta: '4-6 hari', logo: 'TIKI' },
+            ];
+            setShippingOptions(fallback);
+            setSelectedShippingId(fallback[0].id);
+          }
         }
         setShippingLoading(false);
       })
       .catch((err) => {
         console.error('Failed to fetch shipping methods:', err);
         setShippingError(true);
+        setShippingErrorMessage('Failed to load shipping rates due to server or network error.');
         setShippingLoading(false);
       });
   };
@@ -343,40 +494,96 @@ export default function CheckoutPage() {
       return;
     }
 
+    // FLAW-01 FIX: Guard against rate still loading or stale session
+    if (rateLoading) {
+      showAlert('Sedang mengambil data harga terkini, mohon tunggu sebentar.');
+      return;
+    }
+    if (rateExpired || !rateSession) {
+      showAlert('Sesi harga sudah kedaluwarsa (10 menit). Halaman akan diperbarui otomatis untuk mengunci harga terbaru.');
+      fetchRateFromServer();
+      return;
+    }
+
     setCheckoutState('submitting_checkout');
     try {
-      // Map payment methods to backend expectations: e.g. QRIS -> 'qris'
-      const payMethod = selectedPayment.name === 'QRIS' ? 'qris' : 'bank_transfer';
+      // FLAW-09 FIX: Use explicit midtransKey from PAYMENT_METHODS definition
+      const payMethod = selectedPayment.midtransKey ?? PAYMENT_METHOD_MAP[selectedPayment.name] ?? 'qris';
+
+      // NOTE: usdRate is intentionally NOT sent in the payload.
+      // The backend always uses its own server-side rate (FLAW-04 fix).
       const res = await client.post('/checkout', {
         items: [{ productId: Number(product.id), quantity: 1 }],
         addressId: Number(selectedAddressId),
         shippingMethodId: Number(selectedShippingId),
-        paymentMethod: payMethod
+        paymentMethod: payMethod,
+        // weight is intentionally omitted — backend derives it from product.weightGrams (FLAW-03 fix)
       });
 
-      setCheckoutState('checkout_completed');
-      navigate('/payment', {
-        state: {
-          order: res.data.order,
-          payment: res.data.payment,
-          product: {
-            id: productId,
-            name: product.name,
-            price: basePrice,
-            image: product.images[0],
-            size: selectedSize
+      const { order, payment } = res.data;
+
+      if (payment && payment.snapToken && window.snap) {
+        window.snap.pay(payment.snapToken, {
+          onSuccess: (result: any) => {
+            console.log('Payment success:', result);
+            setCheckoutState('checkout_completed');
+            navigate('/payment-success', {
+              state: {
+                orderId: order.orderCode,
+                amountPaid: totalPrice,
+                productName: product.name,
+              },
+            });
           },
-          pricing: {
-            subtotal: basePrice,
-            shipping: shippingFee,
-            total: totalPrice
+          onPending: (result: any) => {
+            console.log('Payment pending:', result);
+            showAlert('Pembayaran Anda sedang diproses/tertunda. Silakan cek status di menu Pesanan Saya.');
+            setCheckoutState('idle');
+            navigate('/my-orders');
+          },
+          onError: (result: any) => {
+            console.error('Payment error:', result);
+            showAlert('Terjadi kesalahan saat memproses pembayaran.');
+            setCheckoutState('idle');
+          },
+          onClose: () => {
+            console.log('Payment popup closed');
+            showAlert('Anda menutup popup pembayaran. Anda dapat menyelesaikan pembayaran nanti di menu Pesanan Saya.');
+            setCheckoutState('idle');
+            navigate('/my-orders');
+          },
+        });
+      } else {
+        setCheckoutState('checkout_completed');
+        navigate('/payment', {
+          state: {
+            order: order,
+            payment: payment,
+            product: {
+              id: productId,
+              name: product.name,
+              price: basePrice,
+              image: product.images[0],
+              size: selectedSize
+            },
+            pricing: {
+              subtotal: basePrice,
+              shipping: shippingFee,
+              total: totalPrice
+            }
           }
-        }
-      });
+        });
+      }
     } catch (err: any) {
       console.error('Checkout creation failed:', err);
       setCheckoutState('idle');
-      const errMsg = err.response?.data?.message || 'Gagal memproses checkout';
+      const data = err.response?.data;
+      const midtransErr = data?.midtransError;
+
+      let errMsg = data?.message || 'Gagal memproses checkout';
+      if (midtransErr) {
+        errMsg = `Midtrans Error (${midtransErr.statusCode}): ${midtransErr.message}. Silakan hubungi dukungan atau coba lagi.`;
+      }
       showAlert(Array.isArray(errMsg) ? errMsg[0] : errMsg);
     }
   };
@@ -474,7 +681,7 @@ export default function CheckoutPage() {
                 </div>
               ) : shippingError ? (
                 <div className="co-shipping-error-card">
-                  <span>Failed to load shipping rates.</span>
+                  <span>{shippingErrorMessage || 'Failed to load shipping rates.'}</span>
                   <button className="co-shipping-retry-btn" onClick={() => fetchShipping(selectedAddressId)}>
                     Retry
                   </button>

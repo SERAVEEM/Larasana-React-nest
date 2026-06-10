@@ -9,6 +9,7 @@ import { ShippingGatewayModule }  from './shipping/shipping.module';
 import { CheckoutGatewayModule }  from './checkout/checkout.module';
 import { AdminGatewayModule }     from './admin/admin.module';
 import { ProductsGatewayModule }  from './products/products.module';
+import { ConfigGatewayModule }    from './config/config.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProductsGatewayModule }  from './products/products.module';
     CheckoutGatewayModule,
     AdminGatewayModule,
     ProductsGatewayModule,
+    ConfigGatewayModule,
   ],
 })
 export class GatewayAppModule {}

@@ -81,6 +81,10 @@ export class Product {
   @Column({ name: 'total_reviews', unsigned: true, default: 0 })
   totalReviews: number;
 
+  @ApiProperty({ example: 500, description: 'Berat produk dalam gram (digunakan untuk kalkulasi ongkir)' })
+  @Column({ name: 'weight_grams', unsigned: true, default: 500 })
+  weightGrams: number;
+
   @ApiProperty({ example: 'Inaq Sri' })
   @Column({ name: 'weaver_name', length: 100, nullable: true })
   weaverName: string | null;

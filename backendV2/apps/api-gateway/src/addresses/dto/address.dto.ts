@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsBoolean, MaxLength, MinLength, Matches } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, MaxLength, MinLength, Matches, IsIn } from 'class-validator';
+
+// ISO-3166 Alpha-2 country codes supported by our shipping carriers
+const ALLOWED_COUNTRIES = [
+  'ID', // Indonesia — RajaOngkir
+  'US', 'GB', 'AU', 'SG', 'MY', 'JP', 'KR', 'DE', 'FR', 'NL',
+  'CN', 'HK', 'TW', 'TH', 'PH', 'VN', 'IN', 'SA', 'AE', 'CA',
+] as const;
 
 export class CreateAddressDto {
   @ApiPropertyOptional({ example: 'Rumah', description: 'Label alamat: Rumah, Kantor, dll' })
@@ -43,10 +50,13 @@ export class CreateAddressDto {
   @MaxLength(10)
   postalCode: string;
 
-  @ApiPropertyOptional({ example: 'ID', description: 'Negara (default ID)' })
+  @ApiPropertyOptional({
+    example: 'ID',
+    description: `Kode negara ISO-3166 Alpha-2. Didukung: ${ALLOWED_COUNTRIES.join(', ')}`,
+  })
   @IsOptional()
   @IsString()
-  @MaxLength(10)
+  @IsIn([...ALLOWED_COUNTRIES], { message: 'Kode negara tidak didukung. Gunakan format ISO-3166 Alpha-2 (contoh: ID, US, GB)' })
   country?: string;
 
   @ApiPropertyOptional({ example: false, description: 'Set sebagai alamat utama' })
@@ -104,10 +114,13 @@ export class UpdateAddressDto {
   @MaxLength(10)
   postalCode?: string;
 
-  @ApiPropertyOptional({ example: 'ID', description: 'Negara' })
+  @ApiPropertyOptional({
+    example: 'ID',
+    description: `Kode negara ISO-3166 Alpha-2. Didukung: ${ALLOWED_COUNTRIES.join(', ')}`,
+  })
   @IsOptional()
   @IsString()
-  @MaxLength(10)
+  @IsIn([...ALLOWED_COUNTRIES], { message: 'Kode negara tidak didukung. Gunakan format ISO-3166 Alpha-2 (contoh: ID, US, GB)' })
   country?: string;
 
   @ApiPropertyOptional({ example: false, description: 'Set sebagai alamat utama' })

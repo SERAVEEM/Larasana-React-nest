@@ -1,8 +1,14 @@
 import {
   IsString, IsOptional, IsBoolean,
-  MaxLength, MinLength, Matches,
+  MaxLength, MinLength, Matches, IsIn,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+const ALLOWED_COUNTRIES = [
+  'ID',
+  'US', 'GB', 'AU', 'SG', 'MY', 'JP', 'KR', 'DE', 'FR', 'NL',
+  'CN', 'HK', 'TW', 'TH', 'PH', 'VN', 'IN', 'SA', 'AE', 'CA',
+] as const;
 
 export class CreateAddressDto {
   @ApiPropertyOptional({ example: 'Rumah', description: 'Label alamat: Rumah, Kantor, dll' })
@@ -49,7 +55,7 @@ export class CreateAddressDto {
   @ApiPropertyOptional({ example: 'ID' })
   @IsOptional()
   @IsString()
-  @MaxLength(10)
+  @IsIn([...ALLOWED_COUNTRIES], { message: 'Kode negara tidak didukung' })
   country?: string;
 
   @ApiPropertyOptional({ example: false })

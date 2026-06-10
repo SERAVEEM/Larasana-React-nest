@@ -17,9 +17,9 @@ export class OrderItem {
   @Column({ name: 'order_id', unsigned: true })
   orderId: number;
 
-  @ApiProperty({ example: 2 })
-  @Column({ name: 'product_id', unsigned: true })
-  productId: number;
+  @ApiProperty({ example: 2, nullable: true })
+  @Column({ name: 'product_id', unsigned: true, nullable: true })
+  productId: number | null;
 
   @ApiProperty({ example: 3 })
   @Column({ name: 'seller_id', unsigned: true })
