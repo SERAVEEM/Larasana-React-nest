@@ -1,4 +1,4 @@
-import v2 from '../assets/video/v2 - Trim.mp4';
+const v2 = 'https://assets.mixkit.co/videos/preview/mixkit-weaving-threads-on-a-loom-40915-large.mp4';
 
 export default function Hero() {
   return (

@@ -17,6 +17,7 @@ import { OrdersService } from './orders.service';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
 import { MidtransService } from './midtrans.service';
+import { CourierBookingService } from './courier-booking.service';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { MidtransService } from './midtrans.service';
     OrdersService,
     PaymentsService,
     MidtransService,
+    CourierBookingService,
   ],
 })
 export class CommerceAppModule {}

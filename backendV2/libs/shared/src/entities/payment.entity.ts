@@ -14,7 +14,8 @@ export type PaymentMethod =
   | 'va_bri'
   | 'va_mandiri'
   | 'gopay'
-  | 'shopeepay';
+  | 'shopeepay'
+  | 'credit_card';
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired' | 'refunded';
 
@@ -29,13 +30,13 @@ export class Payment {
   orderId: number;
 
   @ApiProperty({
-    enum: ['qris','bank_transfer','va_bca','va_bni','va_bri','va_mandiri','gopay','shopeepay'],
+    enum: ['qris','bank_transfer','va_bca','va_bni','va_bri','va_mandiri','gopay','shopeepay','credit_card'],
     default: 'qris',
   })
   @Column({
     name: 'payment_method',
     type: 'enum',
-    enum: ['qris','bank_transfer','va_bca','va_bni','va_bri','va_mandiri','gopay','shopeepay'],
+    enum: ['qris','bank_transfer','va_bca','va_bni','va_bri','va_mandiri','gopay','shopeepay','credit_card'],
     default: 'qris',
   })
   paymentMethod: PaymentMethod;
@@ -63,6 +64,14 @@ export class Payment {
   @ApiProperty({ example: 'midtrans-tx-12345', nullable: true })
   @Column({ name: 'midtrans_transaction_id', length: 100, nullable: true })
   midtransTransactionId: string | null;
+
+  /**
+   * Midtrans Snap token — returned by POST /snap/v1/transactions.
+   * Frontend uses this to call window.snap.pay(snapToken) for the pop-up flow.
+   */
+  @ApiProperty({ example: 'abc123-snap-token-xyz', nullable: true })
+  @Column({ name: 'snap_token', length: 500, nullable: true })
+  snapToken: string | null;
 
   @ApiProperty({ example: 'https://app.sandbox.midtrans.com/snap/v2/vtlink/123', nullable: true })
   @Column({ name: 'payment_url', length: 1000, nullable: true })

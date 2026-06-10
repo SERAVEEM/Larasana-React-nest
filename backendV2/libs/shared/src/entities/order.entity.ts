@@ -78,6 +78,10 @@ export class Order {
   @Column({ name: 'cancel_reason', type: 'text', nullable: true })
   cancelReason: string | null;
 
+  @ApiProperty({ example: 'JNE-1234567890', nullable: true, description: 'Nomor resi kurir (diisi otomatis setelah pembayaran)' })
+  @Column({ name: 'tracking_number', length: 100, nullable: true })
+  trackingNumber: string | null;
+
   @ApiProperty()
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
