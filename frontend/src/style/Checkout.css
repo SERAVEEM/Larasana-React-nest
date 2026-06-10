@@ -470,7 +470,6 @@
   max-height: calc(85vh - 5rem);
 }
 
-/* Modal Option Cards */
 .co-modal-options-list,
 .co-modal-address-list {
   display: flex;
@@ -976,5 +975,10 @@
 
   .co-modal-content {
     max-width: 90%;
+  }
+
+  .co-form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }

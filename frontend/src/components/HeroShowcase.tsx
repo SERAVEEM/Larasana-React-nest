@@ -36,8 +36,11 @@ export default function HeroShowcase() {
   const [hasScrolledIntoView, setHasScrolledIntoView] = useState(false);
   const [gridItems, setGridItems] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(5);
   const sectionRef = useRef<HTMLElement>(null);
   const whiteBgRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
   const { scrollYProgress: fadeProgress } = useScroll({
     target: whiteBgRef,
     offset: ["start 100%", "start 50%"]
@@ -49,10 +52,10 @@ export default function HeroShowcase() {
 
   const itemsToRender = gridItems.length > 0 ? gridItems : GRID_ITEMS;
   const showPrevButton = currentIndex > 0;
-  const showNextButton = currentIndex < itemsToRender.length - 5;
+  const showNextButton = currentIndex < itemsToRender.length - visibleCount;
 
   const handleNext = () => {
-    if (currentIndex < itemsToRender.length - 5) {
+    if (currentIndex < itemsToRender.length - visibleCount) {
       setCurrentIndex((prev) => prev + 1);
     }
   };
@@ -62,6 +65,38 @@ export default function HeroShowcase() {
       setCurrentIndex((prev) => prev - 1);
     }
   };
+
+  // Responsive visible count check
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setVisibleCount(1);
+      } else if (window.innerWidth <= 1024) {
+        setVisibleCount(2);
+      } else {
+        setVisibleCount(5);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Smooth scroll mobile carousel to current index
+  useEffect(() => {
+    if (window.innerWidth <= 1024 && gridRef.current) {
+      const card = gridRef.current.querySelector('.hs-grid-item');
+      if (card) {
+        const cardWidth = card.getBoundingClientRect().width;
+        // Match the gap defined in CSS (1.5rem = 24px)
+        const gap = 24; 
+        gridRef.current.scrollTo({
+          left: currentIndex * (cardWidth + gap),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [currentIndex]);
 
   useEffect(() => {
     let active = true;
@@ -161,6 +196,7 @@ export default function HeroShowcase() {
           </button>
 
           <div
+            ref={gridRef}
             className="hs-product-grid"
             style={{ '--slide-transform': `-${currentIndex * 20}%` } as React.CSSProperties}
           >

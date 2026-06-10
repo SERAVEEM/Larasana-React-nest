@@ -78,15 +78,33 @@ export class PaymentsService {
       return saved;
     });
 
+    const isIdr = address.country === 'ID';
+    const exchangeRate = 15000;
+    const midtransAmount = Number((totalAmount * exchangeRate).toFixed(0));
+
+    const midtransItems = [
+      ...resolved.map(i => ({
+        id: String(i.product.id),
+        name: i.product.name,
+        price: Number((i.unitPrice * exchangeRate).toFixed(0)),
+        quantity: i.quantity
+      })),
+      {
+        id: `SHIP-${shipping.id}`,
+        name: `Ongkir ${shipping.label}`,
+        price: Number((shippingCost * exchangeRate).toFixed(0)),
+        quantity: 1
+      },
+    ];
+
     const midtransOrderId = `LRS-${order.orderCode}-${Date.now()}`;
     const result = await this.midtransService.charge({
-      orderId: midtransOrderId, amount: totalAmount,
+      orderId: midtransOrderId, amount: midtransAmount,
       customerName: user.name, customerEmail: user.email,
-      items: [
-        ...resolved.map(i => ({ id: String(i.product.id), name: i.product.name, price: i.unitPrice, quantity: i.quantity })),
-        { id: `SHIP-${shipping.id}`, name: `Ongkir ${shipping.label}`, price: shippingCost, quantity: 1 },
-      ],
+      items: midtransItems,
       paymentMethod: paymentMethod as any,
+      currency: isIdr ? 'IDR' : 'USD',
+      originalAmount: isIdr ? midtransAmount : totalAmount,
     });
 
     const payment = await this.paymentRepo.save(this.paymentRepo.create({
@@ -105,6 +123,7 @@ export class PaymentsService {
         status: payment.status, paymentUrl: payment.paymentUrl,
         qrImageUrl: payment.qrImageUrl, vaNumber: payment.vaNumber,
         expiryTime: payment.expiryTime,
+        currency: isIdr ? 'IDR' : 'USD',
       },
     };
   }

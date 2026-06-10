@@ -1,15 +1,6 @@
 import { motion } from 'framer-motion';
 import '../style/impactPages.css';
-import hhi from '../assets/images/impact/HHI.png';
-import socialImg from '../assets/images/impact/Social.png';
-import unesco from '../assets/images/impact/UNESCO.png';
-import wfi from '../assets/images/impact/WFI.png';
-import ycab from '../assets/images/impact/YCAB.png';
-import educationImg from '../assets/images/impact/education.png';
-import regenerationImg from '../assets/images/impact/regeneration.png';
-import nauseaImg from '../assets/images/impact/NAUSEA.png';
-import maxmaraImg from '../assets/images/impact/MAXMARA.png';
-import constelationImg from '../assets/images/impact/CONSTELATION.png';
+import { ASSETS } from '../utils/assets';
 
 
 const fadeInUpInitial = { opacity: 0, y: 50 };
@@ -21,46 +12,46 @@ const impactSections = [
     id: 'education',
     title: 'Education',
     description: 'Our Mission is not only to immortalize the legacy of tenun and batik, take a look, listen, and learn the art from home!. LARASANA is designing a education program for students, teacher, family, and public everywhere and everytime!',
-    image: educationImg,
+    image: ASSETS.impact.education,
   },
   {
     id: 'regeneration',
     title: 'Regeneration',
     description: 'To achieve our missions to immortalize the legacy of tenun and batik, we empower artisans and inspire future generations world wide, preserving culture and shaping the brighter future.',
-    image: regenerationImg,
+    image: ASSETS.impact.regeneration,
   },
   {
     id: 'social',
     title: 'Social',
     description: 'Beyond our missions to immortalize the legacy of tenun and batik, we are commited to giving back to society. Through community empowerment, and sustainable opportunities. Every piece we create carries not only heritage and artistry, but also hope for a brighter future.',
-    image: socialImg,
+    image: ASSETS.impact.social,
   },
 ] as const;
 
 const partnerLogos = [
-  { name: 'Wonderful Indonesia', image: wfi },
-  { name: 'Happy Hearts Indonesia', image: hhi },
-  { name: 'YCAB Ventures', image: ycab },
-  { name: 'UNESCO', image: unesco }
+  { name: 'Wonderful Indonesia', image: ASSETS.impact.wfi },
+  { name: 'Happy Hearts Indonesia', image: ASSETS.impact.hhi },
+  { name: 'YCAB Ventures', image: ASSETS.impact.ycab },
+  { name: 'UNESCO', image: ASSETS.impact.unesco }
 ] as const;
 const programsData = [
   {
     category: 'Collaboration',
     title: 'LARASANA x NAUSEA',
     description: '23.05-04.10.2026',
-    image: nauseaImg,
+    image: ASSETS.impact.nausea,
   },
   {
     category: 'Exhibition',
     title: 'The 10th Max Mara Art Prize for Women',
     description: '30.09-04.10.2026',
-    image: maxmaraImg,
+    image: ASSETS.impact.maxmara,
   },
   {
     category: 'Performance',
     title: 'Constelations | Theater Show by the Pandora',
     description: '21.11-23.11.2026',
-    image: constelationImg,
+    image: ASSETS.impact.constelation,
   },
 ];
 

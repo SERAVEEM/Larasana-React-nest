@@ -19,19 +19,7 @@ export class ShippingService {
     if (!address) return null;
 
     try {
-      if (!this.citiesCache) {
-        const response = await fetch('https://api.rajaongkir.com/starter/city', {
-          headers: { 'key': apiKey }
-        });
-
-        if (!response.ok) {
-          console.error('RajaOngkir: Failed to fetch city list:', response.status);
-          return null;
-        }
-
-        const resJson = await response.json() as any;
-        this.citiesCache = resJson.rajaongkir?.results || [];
-      }
+      const cities = await this.getCities();
 
       const cleanName = (name: string) => name.toLowerCase().replace(/kabupaten|kab\.|kota|city/g, '').trim();
 
@@ -47,17 +35,17 @@ export class ShippingService {
         if (!target) continue;
 
         // Try exact match first
-        let match = this.citiesCache.find(c => cleanName(c.city_name) === target);
+        let match = cities.find(c => cleanName(c.city_name) === target);
         if (match) return match.city_id;
 
         // Try substring match
-        match = this.citiesCache.find(c => cleanName(c.city_name).includes(target) || target.includes(cleanName(c.city_name)));
+        match = cities.find(c => cleanName(c.city_name).includes(target) || target.includes(cleanName(c.city_name)));
         if (match) return match.city_id;
       }
 
       // If still no match, search if any city name from the cache is present anywhere in the address fields
       const fullAddressText = `${address.fullAddress} ${address.district} ${address.city} ${address.province}`.toLowerCase();
-      const match = this.citiesCache.find(c => {
+      const match = cities.find(c => {
         const cleanCity = cleanName(c.city_name);
         return cleanCity.length > 2 && fullAddressText.includes(cleanCity);
       });
@@ -85,14 +73,20 @@ export class ShippingService {
         courier: courierCode
       });
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
       const response = await fetch('https://api.rajaongkir.com/starter/cost', {
         method: 'POST',
         headers: {
           'key': apiKey,
           'content-type': 'application/x-www-form-urlencoded'
         },
-        body: body.toString()
+        body: body.toString(),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errText = await response.text();
@@ -198,14 +192,20 @@ export class ShippingService {
         }
       };
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       const response = await fetch('https://api.easypost.com/v2/shipments', {
         method: 'POST',
         headers: {
           'Authorization': authHeader,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -237,9 +237,16 @@ export class ShippingService {
         countries: address.country || 'ID',
         input: address.city || ''
       });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
       const response = await fetch(`https://api.biteship.com/v1/maps/areas?${query.toString()}`, {
-        headers: { 'authorization': apiKey }
+        headers: { 'authorization': apiKey },
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
         console.error('Biteship maps area API failed:', response.status);
         return null;
@@ -289,14 +296,20 @@ export class ShippingService {
         }
       }
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
       const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
         method: 'POST',
         headers: {
           'authorization': apiKey,
           'content-type': 'application/json'
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errText = await response.text();
@@ -563,17 +576,21 @@ export class ShippingService {
 
         if (!response.ok) {
           console.error('RajaOngkir: Failed to fetch city list:', response.status);
-          this.citiesCache = fallbackCities;
+          return fallbackCities;
         } else {
           const resJson = await response.json() as any;
-          this.citiesCache = resJson.rajaongkir?.results || fallbackCities;
+          const results = resJson.rajaongkir?.results;
+          if (results && Array.isArray(results) && results.length > 0) {
+            this.citiesCache = results;
+            return this.citiesCache;
+          }
+          return fallbackCities;
         }
       }
       return this.citiesCache;
     } catch (err) {
       console.warn('RajaOngkir city fetch failed or timed out, using fallback cities list. Error:', err.message || err);
-      this.citiesCache = fallbackCities;
-      return this.citiesCache;
+      return fallbackCities;
     }
   }
 }

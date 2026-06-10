@@ -35,6 +35,26 @@ export default function ProductDetailPage() {
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
 
   const prevIdRef = useRef(id);
+  const [showStickyBuyBar, setShowStickyBuyBar] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth <= 768) {
+        const mainBuyBtn = document.querySelector('.pd-buy-button');
+        if (mainBuyBtn) {
+          const rect = mainBuyBtn.getBoundingClientRect();
+          setShowStickyBuyBar(rect.bottom < 0);
+        } else {
+          setShowStickyBuyBar(window.scrollY > 400);
+        }
+      } else {
+        setShowStickyBuyBar(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     client.get('/products')
@@ -378,6 +398,20 @@ export default function ProductDetailPage() {
         </motion.div>
       </AnimatePresence>
       </div>
+      {showStickyBuyBar && (
+        <div className="pd-sticky-buy-bar">
+          <div className="pd-sticky-buy-info">
+            <span className="pd-sticky-buy-name">{product.name}</span>
+            <span className="pd-sticky-buy-price">{product.price}</span>
+          </div>
+          <button 
+            className="pd-sticky-buy-button"
+            onClick={() => navigate('/checkout', { state: { productId: product.id, selectedSize } })}
+          >
+            Buy Now
+          </button>
+        </div>
+      )}
     </div>
   );
 }

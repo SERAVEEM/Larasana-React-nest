@@ -1,11 +1,6 @@
 import { motion } from 'framer-motion';
 import "../style/Story.css";
-
-
-import firstHero from '../assets/images/Story/First.png';
-import legacyImg from '../assets/images/Story/Legacy.png';
-import historyImg from '../assets/images/Story/History.png';
-import storyImg from '../assets/images/Story/Story.png';
+import { ASSETS } from '../utils/assets';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -41,7 +36,7 @@ const StoryPage = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.5, delay: 0.2 }}
           >
-            <img src={firstHero} alt="Voices of Lombok" className="hero-gallery-img" />
+            <img src={ASSETS.story.first} alt="Voices of Lombok" className="hero-gallery-img" />
           </motion.div>
         </section>
 
@@ -50,7 +45,7 @@ const StoryPage = () => {
           {/* Section 1: The Legacy */}
           <motion.section className="story-section legacy-section" {...fadeInUp}>
             <div className="section-image-container">
-              <img src={legacyImg} alt="The Legacy" className="section-img" />
+              <img src={ASSETS.story.legacy} alt="The Legacy" className="section-img" />
               <p className="image-caption">Lombok, 2024</p>
             </div>
             <div className="section-text">
@@ -60,7 +55,7 @@ const StoryPage = () => {
                 <div className="section-desc-inner">
                   <p className="section-description">
                     From the heart of lombok, every thread carries the whispers <br />
-                    of history and the spirit of its people. The artistry of weaving <br />
+                     of history and the spirit of its people. The artistry of weaving <br />
                     is more than craft - it is a living legacy, passed down through <br />
                     generations with devotion and pride
                     <br /><br />
@@ -102,7 +97,7 @@ const StoryPage = () => {
               <span className="info-link">Click for more Information!</span>
             </div>
             <div className="section-image-container">
-              <img src={historyImg} alt="The History" className="section-img" />
+              <img src={ASSETS.story.history} alt="The History" className="section-img" />
               <p className="image-caption-history">Sayuti, 2015</p>
             </div>
           </motion.section>
@@ -110,7 +105,7 @@ const StoryPage = () => {
           {/* Section 3: The Story */}
           <motion.section className="story-section story-info-section" {...fadeInUp}>
             <div className="section-image-container">
-              <img src={storyImg} alt="The Story" className="section-img" />
+              <img src={ASSETS.story.story} alt="The Story" className="section-img" />
               <p className="image-caption">Amaq, 2025</p>
             </div>
             <div className="section-text">

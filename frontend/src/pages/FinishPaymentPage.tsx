@@ -19,7 +19,21 @@ export default function FinishPaymentPage() {
     productName: 'Noir Enchanted Vest'
   };
 
+  const queryParams = new URLSearchParams(location.search);
+  const orderCodeParam = queryParams.get('order_code');
+  const amountParam = queryParams.get('amount');
+  const currencyParam = queryParams.get('currency') || 'USD';
+  const productNameParam = queryParams.get('product_name');
+
+  const orderId = orderCodeParam || successDetails.orderId;
+  const amountPaid = amountParam ? Number(amountParam) : successDetails.amountPaid;
+  const productName = productNameParam ? decodeURIComponent(productNameParam) : successDetails.productName;
+  const currency = orderCodeParam ? currencyParam : 'USD';
+
   const formatPrice = (value: number): string => {
+    if (currency === 'IDR') {
+      return 'Rp ' + value.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
     return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
@@ -96,14 +110,14 @@ export default function FinishPaymentPage() {
           <h1 className="fp-title">Payment Successful</h1>
           <p className="fp-subtitle">
             Thank you for your purchase. Your order ID is<br />
-            <strong className="fp-order-id">{successDetails.orderId}</strong>
+            <strong className="fp-order-id">{orderId}</strong>
           </p>
 
           <div className="fp-divider" />
 
           {/* PAID AMOUNT */}
           <div className="fp-price-row">
-            <span className="fp-price-val">{formatPrice(successDetails.amountPaid)}</span>
+            <span className="fp-price-val">{formatPrice(amountPaid)}</span>
           </div>
 
           <div className="fp-divider" />
@@ -154,15 +168,15 @@ export default function FinishPaymentPage() {
               <div className="fp-order-meta-box">
                 <div className="fp-meta-item">
                   <span>Order ID:</span>
-                  <span>{successDetails.orderId}</span>
+                  <span>{orderId}</span>
                 </div>
                 <div className="fp-meta-item">
                   <span>Item:</span>
-                  <span>{successDetails.productName}</span>
+                  <span>{productName}</span>
                 </div>
                 <div className="fp-meta-item">
                   <span>Amount Paid:</span>
-                  <span>{formatPrice(successDetails.amountPaid)}</span>
+                  <span>{formatPrice(amountPaid)}</span>
                 </div>
               </div>
 

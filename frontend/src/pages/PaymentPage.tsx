@@ -39,7 +39,7 @@ export default function PaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Retrieve state passed from Checkout page
+
   const orderDetails = (location.state as OrderDetails) || ({
     product: {
       id: '1',
@@ -71,7 +71,13 @@ export default function PaymentPage() {
     }
   } as OrderDetails);
 
+  const currency = orderDetails.payment?.currency || 'USD';
+
   const formatPrice = (value: number): string => {
+    if (currency === 'IDR') {
+      const idrValue = value * 15000;
+      return 'Rp ' + idrValue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
     return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
@@ -312,8 +318,6 @@ export default function PaymentPage() {
               <div style={{ fontSize: '1.4rem', color: '#c4a050', fontWeight: 'bold', letterSpacing: '2px', marginTop: '0.25rem' }}>{orderDetails.payment.vaNumber}</div>
             </div>
           )}
-
-          {/* EXTERNAL PAYMENT URL LINK FOR CREDIT CARD / OTHER METHODS */}
           {orderDetails.payment?.paymentUrl && !orderDetails.payment?.qrImageUrl && (
             <div style={{ textAlign: 'center', margin: '1rem 0' }}>
               <a
@@ -340,7 +344,6 @@ export default function PaymentPage() {
             </div>
           )}
 
-          {/* TIMER OVERLAY (Expires in X) */}
           <div className="pay-timer-row">
             <span className="pay-timer-label">Expires in:</span>
             <span className={`pay-timer-countdown ${timeLeft < 180 ? 'critical' : ''} ${paymentState === 'expired' ? 'expired-text' : ''}`}>
@@ -348,13 +351,12 @@ export default function PaymentPage() {
             </span>
           </div>
 
-          {/* PRODUCT & PRICE INFO */}
+
           <div className="pay-info-section">
             <h2 className="pay-item-name">{orderDetails.product.name}</h2>
             <p className="pay-item-price">{formatPrice(totalAmount)}</p>
           </div>
 
-          {/* DYNAMIC BACKEND INTEGRATION DETAILS */}
           <div className="pay-integration-meta">
             <div className="pay-meta-row">
               <span>Order Code:</span>
@@ -366,7 +368,6 @@ export default function PaymentPage() {
             </div>
           </div>
 
-          {/* NOTICE ALERT */}
           <div className="pay-notice-alert">
             <div className="pay-notice-icon">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -384,7 +385,6 @@ export default function PaymentPage() {
 
         </div>
 
-        {/* BOTTOM BUY NOW / CONFIRM BUTTON */}
         <button
           className="pay-buy-btn"
           onClick={handleBuyNow}
@@ -402,21 +402,18 @@ export default function PaymentPage() {
                 ? 'Success'
                 : 'Check Status'}
         </button>
-
-        {/* DEV-ONLY: Instant payment simulator — only visible on localhost */}
         {window.location.hostname === 'localhost' && paymentState === 'idle' && (
           <button
             className="pay-buy-btn pay-mock-btn"
             onClick={handleSimulateSuccess}
             title="Dev only: simulates payment success instantly"
           >
-            ⚡ Simulate Payment Success
+
           </button>
         )}
 
       </div>
 
-      {/* FULL SCREEN LOADING OVERLAY */}
       {paymentState === 'verifying' && (
         <div className="pay-verify-overlay">
           <div className="pay-verify-card">

@@ -71,7 +71,7 @@
   height: 48.4rem;
   width: 100%;
   position: sticky;
-  top: calc(50vh - 24.2rem);
+  top: max(8rem, calc(50vh - 22rem));
   margin-top: calc(75rem - 48.4rem);
   pointer-events: auto;
   display: flex;
@@ -377,9 +377,6 @@
   transition-delay: 2.8s;
 }
 
-/* ===================================================
-   PRODUCT GRID (At the bottom of white section)
-=================================================== */
 
 .hs-bg-white {
   position: relative;

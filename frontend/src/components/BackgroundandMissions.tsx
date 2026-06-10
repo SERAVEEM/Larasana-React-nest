@@ -1,13 +1,6 @@
 import { motion } from "framer-motion";
 import "../style/BackgroundandMissions.css";
-import first from "../assets/images/About US/First.png";
-import second from "../assets/images/About US/Second.png";
-import fawwaz from "../assets/images/About US/Fawwaz.png";
-import sheva from "../assets/images/About US/anak agung sheva.png";
-import nauval from "../assets/images/About US/nauval.png";
-import faruk from "../assets/images/About US/faruk.png";
-import joel from "../assets/images/About US/joel.png";
-import apis from "../assets/images/About US/apis.png";
+import { ASSETS } from "../utils/assets";
 
 const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -53,7 +46,7 @@ export default function BackgroundandMissions() {
                     <p className="about-prompt">Read Our Story!</p>
                 </div>
                 <div className="about-image">
-                    <img src={first} alt="About Larasana" />
+                    <img src={ASSETS.aboutUs.first} alt="About Larasana" />
                 </div>
             </motion.section>
 
@@ -64,7 +57,7 @@ export default function BackgroundandMissions() {
                 {...fadeInUp}
             >
                 <div className="missions-image">
-                    <img src={second} alt="Larasana Missions" />
+                    <img src={ASSETS.aboutUs.second} alt="Larasana Missions" />
                 </div>
                 <div className="missions-text">
                     <h2 className="missions-title">Our Missions <span className="serif-text"></span></h2>
@@ -138,21 +131,21 @@ export default function BackgroundandMissions() {
                         viewport={{ once: true, margin: "-100px" }}
                     >
                         <motion.div className="member-card" variants={fadeInUp}>
-                            <div className="member-image"><img src={fawwaz} alt="Fawwaz Sidiq Nurseto" /></div>
+                            <div className="member-image"><img src={ASSETS.aboutUs.fawwaz} alt="Fawwaz Sidiq Nurseto" /></div>
                             <div className="member-info">
                                 <span className="member-name">Fawwaz Sidiq Nurseto</span>
                                 <span className="member-role">Founder & CTO</span>
                             </div>
                         </motion.div>
                         <motion.div className="member-card" variants={fadeInUp}>
-                            <div className="member-image"><img src={sheva} alt="Anak Agung Sheva" /></div>
+                            <div className="member-image"><img src={ASSETS.aboutUs.sheva} alt="Anak Agung Sheva" /></div>
                             <div className="member-info">
                                 <span className="member-name">Anak Agung Sheva</span>
                                 <span className="member-role">Founder & CFO</span>
                             </div>
                         </motion.div>
                         <motion.div className="member-card" variants={fadeInUp}>
-                            <div className="member-image"><img src={nauval} alt="Nauval Aziz R" /></div>
+                            <div className="member-image"><img src={ASSETS.aboutUs.nauval} alt="Nauval Aziz R" /></div>
                             <div className="member-info">
                                 <span className="member-name">Nauval Aziz R</span>
                                 <span className="member-role">Founder & CEO</span>
@@ -176,28 +169,28 @@ export default function BackgroundandMissions() {
                         viewport={{ once: true, margin: "-100px" }}
                     >
                         <motion.div className="member-card" variants={fadeInUp}>
-                            <div className="member-image"><img src={fawwaz} alt="Fawwaz Sidiq Nurseto" /></div>
+                            <div className="member-image"><img src={ASSETS.aboutUs.fawwaz} alt="Fawwaz Sidiq Nurseto" /></div>
                             <div className="member-info">
                                 <span className="member-name">Fawwaz Sidiq Nurseto</span>
                                 <span className="member-role">PM, FE, UI/UX</span>
                             </div>
                         </motion.div>
                         <motion.div className="member-card" variants={fadeInUp}>
-                            <div className="member-image"><img src={faruk} alt="M. Faruk" /></div>
+                            <div className="member-image"><img src={ASSETS.aboutUs.faruk} alt="M. Faruk" /></div>
                             <div className="member-info">
                                 <span className="member-name">M. Faruk</span>
                                 <span className="member-role">UI/UX Designer</span>
                             </div>
                         </motion.div>
                         <motion.div className="member-card" variants={fadeInUp}>
-                            <div className="member-image"><img src={joel} alt="Joel A.S" /></div>
+                            <div className="member-image"><img src={ASSETS.aboutUs.joel} alt="Joel A.S" /></div>
                             <div className="member-info">
                                 <span className="member-name">Joel A.S</span>
                                 <span className="member-role">BE Engineer</span>
                             </div>
                         </motion.div>
                         <motion.div className="member-card" variants={fadeInUp}>
-                            <div className="member-image"><img src={apis} alt="Alfis Fathoni" /></div>
+                            <div className="member-image"><img src={ASSETS.aboutUs.apis} alt="Alfis Fathoni" /></div>
                             <div className="member-info">
                                 <span className="member-name">Alfis Fathoni</span>
                                 <span className="member-role">BE Engineer</span>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import loginImg from '../assets/images/login-register/33d7e2776de4144419b5c6d0a2dc6544-Photoroom.png';
+import { ASSETS } from '../utils/assets';
 import '../style/auth.css';
 import { client } from '../api/client';
 import { Meta } from '../components/Meta';
@@ -42,17 +42,15 @@ export default function LoginPage() {
       localStorage.setItem('larasana_user', JSON.stringify(res.data.user));
       navigate('/');
     } catch (err: any) {
-      const errMsg = err.response?.data?.message || 'Google Login gagal. Silakan coba lagi.';
+      const errMsg = err.response?.data?.message || 'Google login failed, please try again.';
       setError(Array.isArray(errMsg) ? errMsg[0] : errMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  // No manual Google script loading; GoogleLoginButton handles it
-
   return (
-    <Meta title="Login | Larasana">
+    <Meta title="Login Larasana">
       <div className="auth-page">
         <div className="auth-panel auth-panel--form">
           <Link to="/" className="auth-back">
@@ -160,7 +158,7 @@ export default function LoginPage() {
           </div>
         </div>
         <div className="auth-panel auth-panel--image">
-          <img src={loginImg} alt="Larasana fashion" className="auth-image" />
+          <img src={ASSETS.loginRegister.bg} alt="Larasana fashion" className="auth-image" />
           <div className="auth-image-overlay">
             <span className="auth-brand">LARASANA</span>
             <div className="auth-image-caption">

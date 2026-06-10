@@ -13,6 +13,8 @@ export interface MidtransChargeRequest {
     quantity: number;
   }>;
   paymentMethod: PaymentMethod;
+  currency?: string;
+  originalAmount?: number;
 }
 
 export interface MidtransChargeResult {
@@ -32,7 +34,13 @@ export class MidtransService {
 
   get isMockMode(): boolean {
     const key = this.serverKey;
-    return !key || key.includes('xxxxxxxx') || key.trim() === '' || !key.startsWith('SB-');
+    return (
+      !key ||
+      key.includes('xxxxxxxx') ||
+      key.trim() === '' ||
+      key.includes('your_') ||
+      key.includes('ganti_')
+    );
   }
 
   private get serverKey(): string {
@@ -64,38 +72,33 @@ export class MidtransService {
       this.logger.log(`Running in mock mode. Simulating Midtrans response for ${req.paymentMethod}`);
       const mockTransId = 'mock-trans-' + Math.floor(Math.random() * 1000000).toString();
       const mockSnapToken = 'mock-token-' + Math.floor(Math.random() * 1000000).toString();
-      const qrImageUrl = req.paymentMethod === 'qris'
-        ? 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://localhost:5173/payment-success'
-        : null;
-      const vaNumber = req.paymentMethod !== 'qris'
-        ? '8806' + Math.floor(1000000000 + Math.random() * 9000000000).toString()
-        : null;
-      const paymentUrl = req.paymentMethod === 'qris'
-        ? `https://app.sandbox.midtrans.com/snap/v2/vtweb/${mockSnapToken}`
-        : null;
+
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const orderCodeParts = req.orderId.split('-');
+      const orderCode = orderCodeParts.slice(0, 3).join('-');
+      const productName = encodeURIComponent(req.items[0]?.name || 'Curated Piece');
+      const currency = req.currency || 'USD';
+      const amountVal = req.originalAmount || req.amount;
+
+      const successUrl = `${frontendUrl}/payment-success?order_code=${orderCode}&amount=${amountVal}&currency=${currency}&product_name=${productName}`;
+      const mockQrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(successUrl)}`;
+      const vaNumber = '8806' + Math.floor(1000000000 + Math.random() * 9000000000).toString();
 
       return {
         midtransOrderId: req.orderId,
         midtransTransactionId: mockTransId,
-        paymentUrl,
-        qrString: req.paymentMethod === 'qris' ? 'MOCK_QRIS_STRING' : null,
-        qrImageUrl,
+        paymentUrl: successUrl,
+        qrString: 'MOCK_QRIS_STRING',
+        qrImageUrl: mockQrImageUrl,
         vaNumber,
         expiryTime,
         rawResponse: { mock: true },
       };
     }
 
-    let body: any;
-    let endpoint: string;
-
-    if (req.paymentMethod === 'qris') {
-      endpoint = `${this.snapBaseUrl}/transactions`;
-      body = this.buildSnapPayload(req, expiryTime);
-    } else {
-      endpoint = `${this.baseUrl}/charge`;
-      body = this.buildCorePayload(req, expiryTime);
-    }
+    // Always use Snap API to retrieve Snap payment url showing the unified Midtrans UI
+    const endpoint = `${this.snapBaseUrl}/transactions`;
+    const body = this.buildSnapPayload(req, expiryTime);
 
     try {
       const res = await fetch(endpoint, {
@@ -171,6 +174,13 @@ export class MidtransService {
   }
 
   private buildSnapPayload(req: MidtransChargeRequest, expiryTime: Date): any {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const orderCodeParts = req.orderId.split('-');
+    const orderCode = orderCodeParts.slice(0, 3).join('-');
+    const productName = encodeURIComponent(req.items[0]?.name || 'Curated Piece');
+    const currency = req.currency || 'USD';
+    const amountVal = req.originalAmount || req.amount;
+
     return {
       transaction_details: {
         order_id: req.orderId,
@@ -186,7 +196,11 @@ export class MidtransService {
         price: i.price,
         quantity: i.quantity,
       })),
-      enabled_payments: this.getEnabledPayments(req.paymentMethod),
+      callbacks: {
+        finish: `${frontendUrl}/payment-success?order_code=${orderCode}&amount=${amountVal}&currency=${currency}&product_name=${productName}`,
+        error: `${frontendUrl}/payment-success?order_code=${orderCode}&amount=${amountVal}&currency=${currency}&product_name=${productName}&status=error`,
+        pending: `${frontendUrl}/payment-success?order_code=${orderCode}&amount=${amountVal}&currency=${currency}&product_name=${productName}&status=pending`
+      },
       expiry: {
         start_time: this.formatMidtransTime(new Date()),
         unit: 'hours',

@@ -447,7 +447,7 @@
   }
 
   .pd-container {
-    padding: 0 1.25rem 3rem;
+    padding: 0 1.25rem 6.5rem;
   }
 
   .pd-back-button {
@@ -539,5 +539,72 @@
   100% {
     transform: translateX(350%);
   }
+}
+
+/* Sticky Buy Bar at bottom of screen (mobile-only) */
+.pd-sticky-buy-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 999;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.06);
+  animation: slideUpSticky 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpSticky {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.pd-sticky-buy-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pd-sticky-buy-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.pd-sticky-buy-price {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #C2A353;
+}
+
+.pd-sticky-buy-button {
+  background: #C2A353;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  padding: 0.6rem 1.5rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(194, 163, 83, 0.2);
+  transition: all 0.2s ease;
+}
+
+.pd-sticky-buy-button:hover {
+  background: #b29142;
+  transform: translateY(-1px);
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../assets/images/Logo.png';
+import { ASSETS } from '../utils/assets';
 import Hamburger from './hamburger';
 
 export default function Navbar() {
@@ -24,7 +24,7 @@ export default function Navbar() {
       <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`} id="navbar">
         <div className="navbar__logo">
           <Link to="/">
-            <img src={logo} alt="Larasana logo" />
+            <img src={ASSETS.logo} alt="Larasana logo" />
           </Link>
         </div>
 

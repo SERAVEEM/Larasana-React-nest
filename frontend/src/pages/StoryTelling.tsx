@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import "../style/StoryTelling.css";
-import storyImg from "../assets/images/storytelling/story.png";
-import impactImg from "../assets/images/storytelling/impact.png";
+import { ASSETS } from "../utils/assets";
 
 export default function StoryTelling() {
   return (
@@ -23,7 +22,7 @@ export default function StoryTelling() {
           <span className="st-col-label st-col-label--story">STORY</span>
 
           <div className="st-card st-card--story">
-            <img src={storyImg} alt="Story" className="st-card__img" />
+            <img src={ASSETS.storytelling.story} alt="Story" className="st-card__img" />
             <div className="st-card__overlay">
               <div className="st-card__content">
                 <h2 className="st-card__title">STORY</h2>
@@ -47,7 +46,7 @@ export default function StoryTelling() {
           <span className="st-col-label st-col-label--impact">IMPACT</span>
 
           <div className="st-card st-card--impact">
-            <img src={impactImg} alt="Impact" className="st-card__img" />
+            <img src={ASSETS.storytelling.impact} alt="Impact" className="st-card__img" />
             <div className="st-card__overlay">
               <div className="st-card__content">
                 <h2 className="st-card__title">IMPACT</h2>

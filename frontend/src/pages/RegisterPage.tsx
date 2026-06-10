@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import registerImg from '../assets/images/login-register/33d7e2776de4144419b5c6d0a2dc6544-Photoroom.png';
+import { ASSETS } from '../utils/assets';
 import '../style/auth.css';
 import { client } from '../api/client';
 import GoogleLoginButton from '../components/GoogleLoginButton';
@@ -162,7 +162,7 @@ export default function RegisterPage() {
       </div>
 
       <div className="auth-panel auth-panel--image">
-        <img src={registerImg} alt="Larasana fashion" className="auth-image" />
+        <img src={ASSETS.loginRegister.bg} alt="Larasana fashion" className="auth-image" />
         <div className="auth-image-overlay">
           <span className="auth-brand">LARASANA</span>
           <div className="auth-image-caption">

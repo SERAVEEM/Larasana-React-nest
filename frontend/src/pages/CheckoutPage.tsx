@@ -256,6 +256,16 @@ export default function CheckoutPage() {
   }, [selectedAddressId]);
 
   const selectedAddress = addresses.find(a => a.id === selectedAddressId) || { id: '', label: 'No Address', name: '', street: 'Please add a shipping address', district: '', city: '', province: '', postalCode: '', country: 'ID', phone: '' };
+  const isIndonesian = selectedAddress?.country === 'ID';
+
+  const formatPrice = (value: number): string => {
+    if (isIndonesian) {
+      const idrValue = value * 15000;
+      return 'Rp ' + idrValue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+    return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   const selectedShipping = shippingOptions.find(s => s.id === selectedShippingId) || { id: '', name: 'No Carrier', price: 0, eta: '', logo: '' };
   const selectedPayment = PAYMENT_METHODS.find(p => p.id === selectedPaymentId) || PAYMENT_METHODS[0];
 
@@ -355,24 +365,28 @@ export default function CheckoutPage() {
       });
 
       setCheckoutState('checkout_completed');
-      navigate('/payment', {
-        state: {
-          order: res.data.order,
-          payment: res.data.payment,
-          product: {
-            id: productId,
-            name: product.name,
-            price: basePrice,
-            image: product.images[0],
-            size: selectedSize
-          },
-          pricing: {
-            subtotal: basePrice,
-            shipping: shippingFee,
-            total: totalPrice
+      if (res.data.payment?.paymentUrl) {
+        window.location.href = res.data.payment.paymentUrl;
+      } else {
+        navigate('/payment', {
+          state: {
+            order: res.data.order,
+            payment: res.data.payment,
+            product: {
+              id: productId,
+              name: product.name,
+              price: basePrice,
+              image: product.images[0],
+              size: selectedSize
+            },
+            pricing: {
+              subtotal: basePrice,
+              shipping: shippingFee,
+              total: totalPrice
+            }
           }
-        }
-      });
+        });
+      }
     } catch (err: any) {
       console.error('Checkout creation failed:', err);
       setCheckoutState('idle');
@@ -508,13 +522,6 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 </button>
-              )}
-              {/* Live API indicator */}
-              {!shippingLoading && !shippingError && selectedShippingId && Number(selectedShippingId) >= 500 && (
-                <div className="co-shipping-live-badge">⚡ Live rates from Biteship</div>
-              )}
-              {!shippingLoading && !shippingError && selectedShippingId && Number(selectedShippingId) >= 300 && Number(selectedShippingId) < 500 && (
-                <div className="co-shipping-live-badge">⚡ Live rates from RajaOngkir</div>
               )}
             </div>
 
