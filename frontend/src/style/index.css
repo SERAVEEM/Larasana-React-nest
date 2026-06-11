@@ -107,26 +107,25 @@ ul {
   transition: all 0.5s ease;
 }
 
-.navbar--scrolled {
+.navbar.navbar--scrolled {
   gap: clamp(8rem, 12vw, 17.1875rem);
-  /* Glass effect border container */
-  background: linear-gradient(-45deg,
-      rgba(255, 255, 255, 0.80) 0%,
-      rgba(255, 255, 255, 0.35) 100%);
-  backdrop-filter: blur(1.125rem) saturate(1.46);
-  -webkit-backdrop-filter: blur(1.125rem) saturate(1.46);
-  border: 0.09375rem solid rgba(255, 255, 255, 0.55);
+  /* Glass effect border container with robust fallbacks */
+  background-color: rgba(255, 255, 255, 0.60) !important;
+  background: linear-gradient(-45deg, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.35) 100%) !important;
+  backdrop-filter: blur(1.125rem) saturate(1.46) !important;
+  -webkit-backdrop-filter: blur(1.125rem) saturate(1.46) !important;
+  border: 0.09375rem solid rgba(255, 255, 255, 0.55) !important;
   box-shadow:
     0 0.5rem 2rem rgba(0, 0, 0, 0.06),
     inset 0 0.0625rem 0 rgba(255, 255, 255, 0.6),
-    inset 0 -0.0625rem 0 rgba(255, 255, 255, 0.15);
+    inset 0 -0.0625rem 0 rgba(255, 255, 255, 0.15) !important;
 }
 
-.navbar--scrolled:hover {
+.navbar.navbar--scrolled:hover {
   box-shadow:
     0 0.75rem 2.5rem rgba(0, 0, 0, 0.08),
     inset 0 0.0625rem 0 rgba(255, 255, 255, 0.7),
-    inset 0 -0.0625rem 0 rgba(255, 255, 255, 0.2);
+    inset 0 -0.0625rem 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 .navbar__logo,
