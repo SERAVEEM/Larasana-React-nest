@@ -1,4 +1,4 @@
-import v2 from '../assets/video/v2 - Trim.mp4';
+import { ASSETS } from '../utils/assets';
 
 export default function Hero() {
   return (
@@ -6,7 +6,7 @@ export default function Hero() {
       
       {/* Background Video */}
       <video
-        src={v2}
+        src={ASSETS.heroVideo}
         autoPlay
         muted
         loop

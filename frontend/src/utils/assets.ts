@@ -2,6 +2,7 @@ const R2_BASE_URL = import.meta.env.VITE_R2_ASSETS_URL || 'https://pub-f243a32e4
 
 export const ASSETS = {
   logo: '/images/Logo.png',
+  heroVideo: `${R2_BASE_URL}/v2%20-%20Trim.mp4`,
   storytelling: {
     story: `${R2_BASE_URL}/Story%20Telling/impact.png`,
     impact: `${R2_BASE_URL}/Story%20Telling/impact.png`,
