@@ -3,8 +3,7 @@ import { ASSETS } from '../utils/assets';
 export default function Hero() {
   return (
     <section className="hero-section" id="hero" style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
-      
-      {/* Background Video */}
+
       <video
         src={ASSETS.heroVideo}
         autoPlay
