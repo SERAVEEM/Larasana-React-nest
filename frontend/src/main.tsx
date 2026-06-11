@@ -31,6 +31,8 @@ import AdminOrders from './pages/admin/AdminOrders.tsx'
 import AdminOrderDetails from './pages/admin/AdminOrderDetails.tsx'
 import SplashScreen from './components/SplashScreen.tsx'
 
+
+//cek
 function RootApp() {
   const [showSplash, setShowSplash] = useState(() => {
     // Show splash screen only if it hasn't been shown in the current browser session
