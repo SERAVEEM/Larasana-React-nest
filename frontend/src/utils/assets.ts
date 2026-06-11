@@ -4,7 +4,7 @@ export const ASSETS = {
   logo: '/images/Logo.png',
   heroVideo: `${R2_BASE_URL}/Larasana%20Static%20Asset/v2%20-%20Trim.mp4`,
   storytelling: {
-    story: `${R2_BASE_URL}/Story%20Telling/impact.png`,
+    story: `${R2_BASE_URL}/Story%20Telling/story.png`,
     impact: `${R2_BASE_URL}/Story%20Telling/impact.png`,
   },
   story: {
