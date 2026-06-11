@@ -21,7 +21,7 @@ import PaymentPage from './pages/PaymentPage.tsx'
 import FinishPaymentPage from './pages/FinishPaymentPage.tsx'
 import MyOrdersPage from './pages/MyOrdersPage.tsx'
 
-// Admin Views
+
 import AdminLayout from './components/AdminLayout.tsx'
 import AdminDashboard from './pages/admin/AdminDashboard.tsx'
 import AdminProducts from './pages/admin/AdminProducts.tsx'

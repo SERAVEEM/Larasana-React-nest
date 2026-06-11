@@ -14,7 +14,8 @@ export const ASSETS = {
     larasana: `${R2_BASE_URL}/Story/LARASANA.png`,
   },
   loginRegister: {
-    bg: `${R2_BASE_URL}/login-register/33d7e2776de4144419b5c6d0a2dc6544-Photoroom.png`,
+    bg: `${R2_BASE_URL}/auth/33d7e2776de4144419b5c6d0a2dc6544-Photoroom.png
+`,
   },
   impact: {
     hhi: `${R2_BASE_URL}/Impact/HHI.png`,
