@@ -112,8 +112,8 @@ ul {
   /* Glass effect border container with robust fallbacks */
   background-color: rgba(255, 255, 255, 0.60) !important;
   background: linear-gradient(-45deg, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.35) 100%) !important;
-  backdrop-filter: blur(1.125rem) saturate(1.46) !important;
   -webkit-backdrop-filter: blur(1.125rem) saturate(1.46) !important;
+  backdrop-filter: blur(1.125rem) saturate(1.46) !important;
   border: 0.09375rem solid rgba(255, 255, 255, 0.55) !important;
   box-shadow:
     0 0.5rem 2rem rgba(0, 0, 0, 0.06),
