@@ -3,7 +3,7 @@ const R2_BASE_URL = import.meta.env.VITE_R2_ASSETS_URL || 'https://pub-f243a32e4
 export const ASSETS = {
   logo: '/images/Logo.png',
   storytelling: {
-    story: `${R2_BASE_URL}/Story%20Telling/story.png`,
+    story: `${R2_BASE_URL}/Story%20Telling/impact.png`,
     impact: `${R2_BASE_URL}/Story%20Telling/impact.png`,
   },
   story: {
@@ -17,16 +17,16 @@ export const ASSETS = {
     bg: `${R2_BASE_URL}/login-register/33d7e2776de4144419b5c6d0a2dc6544-Photoroom.png`,
   },
   impact: {
-    hhi: `${R2_BASE_URL}/impact/HHI.png`,
-    social: `${R2_BASE_URL}/impact/Social.png`,
-    unesco: `${R2_BASE_URL}/impact/UNESCO.png`,
-    wfi: `${R2_BASE_URL}/impact/WFI.png`,
-    ycab: `${R2_BASE_URL}/impact/YCAB.png`,
-    education: `${R2_BASE_URL}/impact/education.png`,
-    regeneration: `${R2_BASE_URL}/impact/regeneration.png`,
-    nausea: `${R2_BASE_URL}/impact/NAUSEA.png`,
-    maxmara: `${R2_BASE_URL}/impact/MAXMARA.png`,
-    constelation: `${R2_BASE_URL}/impact/CONSTELATION.png`,
+    hhi: `${R2_BASE_URL}/Impact/HHI.png`,
+    social: `${R2_BASE_URL}/Impact/Social.png`,
+    unesco: `${R2_BASE_URL}/Impact/UNESCO.png`,
+    wfi: `${R2_BASE_URL}/Impact/WFI.png`,
+    ycab: `${R2_BASE_URL}/Impact/YCAB.png`,
+    education: `${R2_BASE_URL}/Impact/education.png`,
+    regeneration: `${R2_BASE_URL}/Impact/regeneration.png`,
+    nausea: `${R2_BASE_URL}/Impact/NAUSEA.png`,
+    maxmara: `${R2_BASE_URL}/Impact/MAXMARA.png`,
+    constelation: `${R2_BASE_URL}/Impact/CONSTELATION.png`,
   },
   aboutUs: {
     first: `${R2_BASE_URL}/About%20Us/First.png`,
