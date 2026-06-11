@@ -55,10 +55,6 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   }
 ];
 
-const formatPrice = (value: number): string => {
-  return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-};
-
 export default function CheckoutPage() {
   const location = useLocation();
   const navigate = useNavigate();

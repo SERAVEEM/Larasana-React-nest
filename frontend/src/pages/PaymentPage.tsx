@@ -23,17 +23,18 @@ interface OrderDetails {
     totalAmount: number;
     status: string;
   };
-  payment: {
-    id: number;
-    method: string;
-    amount: number;
-    status: string;
-    paymentUrl: string | null;
-    qrImageUrl: string | null;
-    vaNumber: string | null;
-    expiryTime: string | null;
-  };
-}
+    payment: {
+      id: number;
+      method: string;
+      amount: number;
+      status: string;
+      paymentUrl: string | null;
+      qrImageUrl: string | null;
+      vaNumber: string | null;
+      expiryTime: string | null;
+      currency?: string;
+    };
+  }
 
 export default function PaymentPage() {
   const location = useLocation();
