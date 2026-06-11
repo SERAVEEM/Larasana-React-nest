@@ -8,7 +8,8 @@
     "start:commerce": "nest start commerce-service --watch -r tsconfig-paths/register",
     "start:notification": "nest start notification-service --watch -r tsconfig-paths/register",
     "dev": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"npm run start:gateway\" \"npm run start:users\" \"npm run start:commerce\" \"npm run start:notification\"",
-    "build": "nest build"
+    "build": "nest build api-gateway && nest build users-service && nest build commerce-service && nest build notification-service",
+    "start:prod": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"node dist/apps/api-gateway/src/main.js\" \"node dist/apps/users-service/src/main.js\" \"node dist/apps/commerce-service/src/main.js\" \"node dist/apps/notification-service/src/main.js\""
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
