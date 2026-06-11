@@ -270,7 +270,7 @@ ul {
   /* Glass effect */
   background: linear-gradient(-45deg,
       rgba(255, 255, 255, 0.80) 0%,
-      rgba(255, 255, 255, 0.40) 100%);
+      rgba(255, 255, 255, 0.40) 100%) !important;
   backdrop-filter: blur(1.5rem) saturate(1.46) !important; 
   -webkit-backdrop-filter: blur(1.5rem) saturate(1.46) !important;
   border-right: 0.09375rem solid rgba(255, 255, 255, 0.55) !important;
