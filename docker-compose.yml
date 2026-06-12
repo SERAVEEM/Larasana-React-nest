@@ -1,0 +1,94 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: larasana-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: larasana
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - larasana-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build: ./backendV2
+    container_name: larasana-api-gateway
+    restart: unless-stopped
+    command: node dist/apps/api-gateway/src/main.js
+    env_file:
+      - ./backendV2/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - larasana-network
+
+  users-service:
+    build: ./backendV2
+    container_name: larasana-users-service
+    restart: unless-stopped
+    command: node dist/apps/users-service/src/main.js
+    env_file:
+      - ./backendV2/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - larasana-network
+
+  commerce-service:
+    build: ./backendV2
+    container_name: larasana-commerce-service
+    restart: unless-stopped
+    command: node dist/apps/commerce-service/src/main.js
+    env_file:
+      - ./backendV2/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - larasana-network
+
+  notification-service:
+    build: ./backendV2
+    container_name: larasana-notification-service
+    restart: unless-stopped
+    command: node dist/apps/notification-service/src/main.js
+    env_file:
+      - ./backendV2/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - larasana-network
+
+  caddy:
+    image: caddy:alpine
+    container_name: larasana-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api-gateway
+    networks:
+      - larasana-network
+
+volumes:
+  mysql_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  larasana-network:
+    driver: bridge

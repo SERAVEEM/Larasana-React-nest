@@ -1,0 +1,5 @@
+# For local testing, bind Caddy to port 80.
+# When deploying to production on your cloud VM, replace ':80' with your subdomain (e.g., api.yourdomain.com) for automatic HTTPS.
+:80 {
+    reverse_proxy api-gateway:3000
+}
