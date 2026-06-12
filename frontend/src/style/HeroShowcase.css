@@ -73,12 +73,16 @@
   position: sticky;
   top: max(8rem, calc(50vh - 22rem));
   margin-top: calc(75rem - 48.4rem);
-  pointer-events: auto;
+  pointer-events: none; /* Block mouse interactions during entrance animation */
   display: flex;
   justify-content: center;
   align-items: flex-start;
   /* Crucial: Aligns from the top so margin-top works */
   gap: calc(2rem + 20px);
+}
+
+.CardFrame.is-ready {
+  pointer-events: auto; /* Enable mouse interactions once cards have entered the stage */
 }
 
 .hs-card-wrapper {
@@ -228,26 +232,30 @@
 }
 
 /* Hover effects */
-.hs-card-wrapper.far-left:hover {
+
+.CardFrame.is-ready .hs-card-wrapper:hover {
+  transition: transform 0.4s ease;
+}
+
+.CardFrame.is-ready .hs-card-wrapper.far-left:hover {
   transform: translateY(-0.5rem);
 }
 
-.hs-card-wrapper.left:hover {
+.CardFrame.is-ready .hs-card-wrapper.left:hover {
   transform: translateY(-0.5rem);
 }
 
-.hs-card-wrapper.center:hover {
+.CardFrame.is-ready .hs-card-wrapper.center:hover {
   transform: translateY(-0.5rem);
 }
 
-.hs-card-wrapper.right:hover {
+.CardFrame.is-ready .hs-card-wrapper.right:hover {
   transform: translateY(-0.5rem);
 }
 
-.hs-card-wrapper.far-right:hover {
+.CardFrame.is-ready .hs-card-wrapper.far-right:hover {
   transform: translateY(-0.5rem);
 }
-
 
 
 @media (prefers-reduced-motion: reduce) {
@@ -348,8 +356,8 @@
   transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Fast hover transitions once mounted */
-.CardFrame.is-mounted .hs-card-wrapper:hover {
+/* Fast hover transitions once ready */
+.CardFrame.is-ready .hs-card-wrapper:hover {
   transition: transform 0.4s ease;
 }
 

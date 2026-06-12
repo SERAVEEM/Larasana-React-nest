@@ -9,6 +9,9 @@ import farRightImg from '../assets/images/product/far right.png';
 import { client } from '../api/client';
 import '../style/HeroShowcase.css';
 
+
+
+
 const CARDS = [
   { id: 'card-1', image: farLeftImg, gradient: null, alt: 'Look 1', size: 'sm', position: 'far-left', name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
   { id: 'card-2', image: leftImg, gradient: null, alt: 'Look 2', size: 'md', position: 'left', name: 'Noir Enchanted Vest', price: '$400', rating: '5.0' },
@@ -34,6 +37,17 @@ const GRID_ITEMS: Array<{
 
 export default function HeroShowcase() {
   const [hasScrolledIntoView, setHasScrolledIntoView] = useState(false);
+  const [isEntranceDone, setIsEntranceDone] = useState(false);
+
+  useEffect(()=> {
+    if(!hasScrolledIntoView) return;
+
+    const timer = setTimeout(()=>{
+      setIsEntranceDone(true)
+    }, 6500);
+
+    return ()=> clearTimeout(timer);
+  }, [hasScrolledIntoView]);
   const [gridItems, setGridItems] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(5);
@@ -253,35 +267,40 @@ export default function HeroShowcase() {
       {/* Sticky Card Container */}
       <div className="hs-sticky-layer">
         <motion.div
-          className={`CardFrame ${hasScrolledIntoView ? 'is-mounted' : 'is-initial'}`}
+          className={`CardFrame ${hasScrolledIntoView ? 'is-mounted' : 'is-initial'} ${isEntranceDone ? 'is-ready' : ''}`}
         >
-          {CARDS.map((card) => (
-            <div
-              key={card.id}
-              className={`hs-card-wrapper ${card.position} ${card.size}`}
-            >
-              <motion.div
-                className="hs-card-bg-layer"
-                style={{ opacity: bgOpacity }}
+          {CARDS.map((card, index) => {
+            const item = itemsToRender[index];
+            const displayImage = item && !item.empty ? item.image : card.image;
+            const displayAlt = item && !item.empty ? item.name : card.alt;
+            return (
+              <div
+                key={card.id}
+                className={`hs-card-wrapper ${card.position} ${card.size}`}
               >
-                <div 
-                  className="hs-card-slant" 
-                  style={card.gradient ? { background: card.gradient } : {}}
-                />
-                <div 
-                  className="hs-card-main-body" 
-                  style={card.gradient ? { background: card.gradient } : {}}
-                />
-              </motion.div>
-              <div className="hs-card-img-layer">
-                {card.image ? (
-                  <img src={card.image} alt={card.alt} className="hs-card-img" />
-                ) : (
-                  <div className="hs-card-img placeholder" />
-                )}
+                <motion.div
+                  className="hs-card-bg-layer"
+                  style={{ opacity: bgOpacity }}
+                >
+                  <div 
+                    className="hs-card-slant" 
+                    style={card.gradient ? { background: card.gradient } : {}}
+                  />
+                  <div 
+                    className="hs-card-main-body" 
+                    style={card.gradient ? { background: card.gradient } : {}}
+                  />
+                </motion.div>
+                <div className="hs-card-img-layer">
+                  {displayImage ? (
+                    <img src={displayImage} alt={displayAlt} className="hs-card-img" />
+                  ) : (
+                    <div className="hs-card-img placeholder" />
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </motion.div>
       </div>
     </section>
