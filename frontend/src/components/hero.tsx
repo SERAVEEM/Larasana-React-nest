@@ -1,4 +1,5 @@
 import { ASSETS } from '../utils/assets';
+import '../style/hero.css';
 
 export default function Hero() {
   return (
@@ -37,6 +38,7 @@ export default function Hero() {
         }}
       >
         <h1 
+          className="hero-section__title"
           style={{
             fontFamily: "'Linotype Didot Bold', 'GFS Didot', serif",
             fontSize: 'clamp(3.5rem, 15vw, 16rem)',

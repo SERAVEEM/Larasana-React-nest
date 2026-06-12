@@ -1,0 +1,72 @@
+/* ===== Hero Section ===== */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+}
+
+.hero-section__canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.hero-section__mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* ===== Scroll Down Arrow ===== */
+.hero-section__scroll-down {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  cursor: pointer;
+  animation: bounceArrow 2s infinite ease-in-out;
+}
+
+.hero-section__scroll-down svg {
+  width: 2rem;
+  height: 2rem;
+  stroke: #999;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+@keyframes bounceArrow {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(0.625rem);
+  }
+}
+
+/* ===== Responsive Breakpoints ===== */
+@media (max-width: 48rem) {
+  .hero-section__title {
+    font-size: 6rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .hero-section__title {
+    font-size: 4rem;
+  }
+}

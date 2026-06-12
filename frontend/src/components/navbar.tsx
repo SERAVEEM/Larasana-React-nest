@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ASSETS } from '../utils/assets';
 import Hamburger from './hamburger';
+import '../style/navbar.css';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);

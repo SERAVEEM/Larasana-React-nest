@@ -96,7 +96,9 @@ const ImpactPages = () => {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8, delay: 0.35, ease: 'easeOut' }}
         >
-          Explore Our Product
+          <a href="/#hero-showcase" style={{ color: 'inherit', textDecoration: 'none' }}>
+            Explore Our Product
+          </a>
         </motion.button>
       </main>
 
