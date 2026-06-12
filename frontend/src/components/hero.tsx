@@ -1,12 +1,11 @@
 import { ASSETS } from '../utils/assets';
-import heroVideo from '../assets/video/v2 - Trim.mp4';
 
 export default function Hero() {
   return (
     <section className="hero-section" id="hero" style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
 
       <video
-        src={heroVideo}
+        src={ASSETS.heroVideo}
         autoPlay
         muted
         loop
