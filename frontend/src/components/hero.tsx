@@ -1,16 +1,34 @@
+import { useEffect, useRef } from 'react';
 import { ASSETS } from '../utils/assets';
 import '../style/hero.css';
 
 export default function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handleVideoReady = () => {
+    (window as any).__heroVideoReady = true;
+    window.dispatchEvent(new CustomEvent('hero-video-ready'));
+  };
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && video.readyState >= 3) {
+      handleVideoReady();
+    }
+  }, []);
+
   return (
     <section className="hero-section" id="hero" style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
 
       <video
+        ref={videoRef}
         src={ASSETS.heroVideo}
         autoPlay
         muted
         loop
         playsInline
+        preload="auto"
+        onCanPlay={handleVideoReady}
         style={{
           position: 'absolute',
           top: 0,

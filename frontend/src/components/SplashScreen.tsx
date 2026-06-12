@@ -14,24 +14,41 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     document.body.style.overflow = 'hidden';
     document.documentElement.classList.add('lenis-stopped');
 
+    const checkReady = () => {
+      const isPageLoaded = document.readyState === 'complete';
+      const isVideoReady = window.location.pathname !== '/' || (window as any).__heroVideoReady;
+      
+      if (isPageLoaded && isVideoReady) {
+        setIsLoaded(true);
+      }
+    };
+
     const handleLoad = () => {
-      setIsLoaded(true);
+      checkReady();
+    };
+
+    const handleVideoReady = () => {
+      checkReady();
     };
 
     // Check if document is already loaded
     if (document.readyState === 'complete') {
-      setIsLoaded(true);
+      checkReady();
     } else {
       window.addEventListener('load', handleLoad);
     }
 
-    // Fallback safety timer to guarantee the splash screen unmounts and unlocks page interaction (5s max)
+    window.addEventListener('hero-video-ready', handleVideoReady);
+
+    // Fallback safety timer: 15s on homepage for 80MB video asset, 5s on other pages
+    const timeoutDuration = window.location.pathname === '/' ? 15000 : 5000;
     const fallbackTimer = setTimeout(() => {
       setIsLoaded(true);
-    }, 5000);
+    }, timeoutDuration);
 
     return () => {
       window.removeEventListener('load', handleLoad);
+      window.removeEventListener('hero-video-ready', handleVideoReady);
       clearTimeout(fallbackTimer);
       document.body.style.overflow = '';
       document.documentElement.classList.remove('lenis-stopped');
