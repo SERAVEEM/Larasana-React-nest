@@ -205,7 +205,11 @@ export default function HeroShowcase() {
                 <div key={item.id} className="hs-grid-item empty" />
               ) : (
                 <Link key={item.id} to={`/product/${item.id}`} className="hs-grid-item">
-                  <img src={item.image} alt={item.name} className="hs-grid-item-img" />
+                  <img 
+                    src={item.image} 
+                    alt={item.name} 
+                    className={`hs-grid-item-img ${item.image && item.image.startsWith('http') ? 'standard-image' : ''}`} 
+                  />
 
                   <div 
                     className="hs-grid-heart"

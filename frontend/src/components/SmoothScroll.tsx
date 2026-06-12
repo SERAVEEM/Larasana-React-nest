@@ -11,7 +11,6 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    // Initialize Lenis with settings matching the About Us page
     const lenis = new Lenis({
       duration: 2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -41,7 +40,6 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
   useEffect(() => {
     if (lenisRef.current) {
       if (location.hash) {
-        // Wait a brief moment for the page to render and resize
         const timer = setTimeout(() => {
           const target = document.querySelector(location.hash);
           if (target) {
@@ -50,10 +48,8 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
         }, 100);
         return () => clearTimeout(timer);
       } else {
-        // Reset scroll position on route change
+
         lenisRef.current.scrollTo(0, { immediate: true });
-        
-        // Recalculate container dimensions after rendering completes
         const timer = setTimeout(() => {
           lenisRef.current?.resize();
         }, 50);

@@ -17,6 +17,8 @@ import { OrdersService } from './orders.service';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
 import { MidtransService } from './midtrans.service';
+import { UploadController } from './upload.controller';
+import { R2Service } from './r2.service';
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { MidtransService } from './midtrans.service';
     ShippingController,
     OrdersController,
     PaymentsController,
+    UploadController,
   ],
   providers: [
     ProductsService,
@@ -43,6 +46,7 @@ import { MidtransService } from './midtrans.service';
     OrdersService,
     PaymentsService,
     MidtransService,
+    R2Service,
   ],
 })
 export class CommerceAppModule {}

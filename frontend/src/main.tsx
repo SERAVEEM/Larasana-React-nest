@@ -32,10 +32,8 @@ import AdminOrderDetails from './pages/admin/AdminOrderDetails.tsx'
 import SplashScreen from './components/SplashScreen.tsx'
 
 
-//cek
 function RootApp() {
   const [showSplash, setShowSplash] = useState(() => {
-    // Show splash screen only if it hasn't been shown in the current browser session
     return sessionStorage.getItem('larasana_splash_shown') !== 'true';
   });
 
@@ -61,7 +59,6 @@ function RootApp() {
             <Route path="/payment" element={<><Navbar /><PaymentPage /><Footer /></>} />
             <Route path="/payment-success" element={<><Navbar /><FinishPaymentPage /><Footer /></>} />
             <Route path="/my-orders" element={<><Navbar /><MyOrdersPage /><Footer /></>} />
-            
             <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
             <Route path="/admin/products" element={<AdminLayout><AdminProducts /></AdminLayout>} />
             <Route path="/admin/products/new" element={<AdminLayout><AdminAddProduct /></AdminLayout>} />

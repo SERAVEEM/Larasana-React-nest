@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProductByIdAsync, saveProductAsync, deleteProductAsync } from '../../api/adminService';
+import { uploadImageAsync } from '../../api/uploadService';
 import type { Product } from '../../api/adminService';
 import '../../style/admin.css';
 import { showAlert } from '../../utils/alerts';
@@ -21,13 +22,26 @@ export default function AdminEditProduct() {
   const [price, setPrice] = useState('');
   const [weaverName, setWeaverName] = useState('');
   const [weaverBio, setWeaverBio] = useState('');
-  const [weaverImageUrl, setWeaverImageUrl] = useState('');
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-  const [productImage, setProductImage] = useState<string | null>(null);
-  const [qrImage, setQrImage] = useState<string | null>(null);
+
+  // Existing image URL from the product (kept if user doesn't change it)
+  const [existingImageUrl, setExistingImageUrl] = useState<string>('');
+  const [existingQrUrl, setExistingQrUrl] = useState<string>('');
+  const [existingWeaverUrl, setExistingWeaverUrl] = useState<string>('');
+
+  // New file objects if user picks new images
+  const [productFile, setProductFile] = useState<File | null>(null);
+  const [qrFile, setQrFile] = useState<File | null>(null);
+  const [weaverFile, setWeaverFile] = useState<File | null>(null);
+
+  // Preview URLs
+  const [productPreview, setProductPreview] = useState<string | null>(null);
+  const [qrPreview, setQrPreview] = useState<string | null>(null);
+  const [weaverPreview, setWeaverPreview] = useState<string | null>(null);
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState('');
 
   const availableSizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
@@ -48,10 +62,21 @@ export default function AdminEditProduct() {
             setPrice(data.numericPrice.toString());
             setWeaverName(data.weaverName || '');
             setWeaverBio(data.weaverBio || '');
-            setWeaverImageUrl(data.weaverImageUrl || '');
             setSelectedSizes(data.sizes);
-            setProductImage(data.image);
-            if (data.qrCode) setQrImage(data.qrCode);
+
+            // Set existing URLs for preview (and fallback if user doesn't change them)
+            setExistingImageUrl(data.image || '');
+            setProductPreview(data.image || null);
+
+            if (data.weaverImageUrl) {
+              setExistingWeaverUrl(data.weaverImageUrl);
+              setWeaverPreview(data.weaverImageUrl);
+            }
+
+            if (data.qrCode) {
+              setExistingQrUrl(data.qrCode);
+              setQrPreview(data.qrCode);
+            }
           }
           setLoading(false);
         }
@@ -73,42 +98,46 @@ export default function AdminEditProduct() {
     );
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, target: 'product' | 'qr') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, target: 'product' | 'qr' | 'weaver') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (target === 'product') {
-        setProductImage(reader.result as string);
-      } else {
-        setQrImage(reader.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
+    const previewUrl = URL.createObjectURL(file);
+    if (target === 'product') {
+      setProductFile(file);
+      setProductPreview(previewUrl);
+    } else if (target === 'weaver') {
+      setWeaverFile(file);
+      setWeaverPreview(previewUrl);
+    } else {
+      setQrFile(file);
+      setQrPreview(previewUrl);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
-  const handleDrop = (e: React.DragEvent, target: 'product' | 'qr') => {
+  const handleDrop = (e: React.DragEvent, target: 'product' | 'qr' | 'weaver') => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (target === 'product') {
-        setProductImage(reader.result as string);
-      } else {
-        setQrImage(reader.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
+    const previewUrl = URL.createObjectURL(file);
+    if (target === 'product') {
+      setProductFile(file);
+      setProductPreview(previewUrl);
+    } else if (target === 'weaver') {
+      setWeaverFile(file);
+      setWeaverPreview(previewUrl);
+    } else {
+      setQrFile(file);
+      setQrPreview(previewUrl);
+    }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
     if (!name || !price) {
@@ -117,31 +146,55 @@ export default function AdminEditProduct() {
     }
 
     setSaving(true);
-    saveProductAsync({
-      id,
-      name,
-      category,
-      description,
-      sku,
-      stock: 9999,
-      numericPrice: parseFloat(price) || 0,
-      sizes: selectedSizes,
-      image: productImage || '',
-      qrCode: qrImage || undefined,
-      sales: product?.sales || 0,
-      weaverName,
-      weaverBio,
-      weaverImageUrl,
-    } as any)
-      .then(() => {
-        setSaving(false);
-        navigate('/admin/products');
-      })
-      .catch(err => {
-        console.error('Failed to save product:', err);
-        setSaving(false);
-        showAlert('Failed to save product. Please try again.');
-      });
+
+    try {
+      // Step 1: Upload new images to R2 if user picked new files
+      let imageUrl = existingImageUrl; // Keep existing URL by default
+      let qrUrl: string | undefined = existingQrUrl || undefined;
+      let weaverImageUrl = existingWeaverUrl;
+
+      if (productFile) {
+        setUploadProgress('Uploading product image...');
+        imageUrl = await uploadImageAsync(productFile);
+      }
+
+      if (qrFile) {
+        setUploadProgress('Uploading QR code...');
+        qrUrl = await uploadImageAsync(qrFile);
+      }
+
+      if (weaverFile) {
+        setUploadProgress('Uploading weaver portrait...');
+        weaverImageUrl = await uploadImageAsync(weaverFile);
+      }
+
+      // Step 2: Save the product with updated URLs
+      setUploadProgress('Saving product...');
+      await saveProductAsync({
+        id,
+        name,
+        category,
+        description,
+        sku,
+        stock: 9999,
+        numericPrice: parseFloat(price) || 0,
+        sizes: selectedSizes,
+        image: imageUrl,
+        qrCode: qrUrl,
+        sales: product?.sales || 0,
+        weaverName,
+        weaverBio,
+        weaverImageUrl,
+      } as any);
+
+      navigate('/admin/products');
+    } catch (err) {
+      console.error('Failed to save product:', err);
+      showAlert('Failed to save product. Please try again.');
+    } finally {
+      setSaving(false);
+      setUploadProgress('');
+    }
   };
 
   const handleDelete = () => {
@@ -183,7 +236,6 @@ export default function AdminEditProduct() {
       {/* Title & Breadcrumbs */}
       <div className="admin-header-row">
         <div className="admin-title-group">
-          {/* Mockup title says "Add New Product" in mockup image, but let's make it "Edit Product" to be correct */}
           <h1 className="admin-page-title">Edit Product</h1>
           <div className="admin-breadcrumb">
             All Products &gt; <span className="admin-breadcrumb-active">Edit Product</span>
@@ -270,15 +322,40 @@ export default function AdminEditProduct() {
           </div>
 
           <div className="admin-form-group">
-            <label className="admin-label" htmlFor="edit-weaver-image">Weaver's Portrait Image URL</label>
-            <input 
-              id="edit-weaver-image"
-              type="text" 
-              className="admin-input" 
-              value={weaverImageUrl} 
-              onChange={e => setWeaverImageUrl(e.target.value)} 
-              placeholder="e.g. /images/weaver/yulia.png"
-            />
+            <span className="admin-dropzone-title">Weaver's Portrait Image</span>
+            <div 
+              className="admin-dropzone"
+              onDragOver={handleDragOver}
+              onDrop={e => handleDrop(e, 'weaver')}
+              onClick={() => document.getElementById('edit-weaver-img-input')?.click()}
+            >
+              <input 
+                id="edit-weaver-img-input"
+                type="file" 
+                accept="image/*" 
+                style={{ display: 'none' }} 
+                onChange={e => handleFileChange(e, 'weaver')}
+              />
+              {weaverPreview ? (
+                <img src={weaverPreview} alt="Weaver Preview" className="admin-dropzone-preview" style={{ maxHeight: '120px', borderRadius: '50%' }} />
+              ) : (
+                <>
+                  <span className="admin-dropzone-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M20 21a8 8 0 1 0-16 0" />
+                    </svg>
+                  </span>
+                  <span className="admin-dropzone-text">Drop weaver portrait here, or <span style={{ color: '#b8860b', textDecoration: 'underline' }}>browse</span></span>
+                  <span className="admin-dropzone-sub">Jpeg, png are allowed (max 5MB)</span>
+                </>
+              )}
+              {weaverFile && (
+                <span className="admin-dropzone-sub" style={{ color: '#2e7d32', marginTop: '4px' }}>
+                  ✓ New image: {weaverFile.name}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="admin-form-group">
@@ -318,8 +395,8 @@ export default function AdminEditProduct() {
           <div className="admin-form-group">
             <label className="admin-label">Product Image Preview</label>
             <div className="admin-preview-box">
-              {productImage ? (
-                <img src={productImage} alt="Preview" className="admin-preview-img" />
+              {productPreview ? (
+                <img src={productPreview} alt="Preview" className="admin-preview-img" />
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#bbb' }}>
                   No Image
@@ -352,7 +429,12 @@ export default function AdminEditProduct() {
                 </svg>
               </span>
               <span className="admin-dropzone-text">Drop your image here, or <span style={{ color: '#b8860b', textDecoration: 'underline' }}>browse</span></span>
-              <span className="admin-dropzone-sub">Jpeg, png are allowed</span>
+              <span className="admin-dropzone-sub">Jpeg, png are allowed (max 5MB)</span>
+              {productFile && (
+                <span className="admin-dropzone-sub" style={{ color: '#2e7d32', marginTop: '4px' }}>
+                  ✓ New image: {productFile.name}
+                </span>
+              )}
             </div>
           </div>
 
@@ -372,8 +454,8 @@ export default function AdminEditProduct() {
                 style={{ display: 'none' }} 
                 onChange={e => handleFileChange(e, 'qr')}
               />
-              {qrImage ? (
-                <img src={qrImage} alt="QR Code" className="admin-dropzone-preview" />
+              {qrPreview ? (
+                <img src={qrPreview} alt="QR Code" className="admin-dropzone-preview" />
               ) : (
                 <>
                   <span className="admin-dropzone-icon">
@@ -387,6 +469,11 @@ export default function AdminEditProduct() {
                   <span className="admin-dropzone-text">Drop your QR Code image here, or <span style={{ color: '#b8860b', textDecoration: 'underline' }}>browse</span></span>
                   <span className="admin-dropzone-sub">Jpeg, png are allowed</span>
                 </>
+              )}
+              {qrFile && (
+                <span className="admin-dropzone-sub" style={{ color: '#2e7d32', marginTop: '4px' }}>
+                  ✓ New QR: {qrFile.name}
+                </span>
               )}
             </div>
           </div>
@@ -408,7 +495,7 @@ export default function AdminEditProduct() {
               disabled={saving || deleting}
               style={{ height: '3.5rem', backgroundColor: '#fff', border: '1px solid #1a1a1a', fontWeight: 'bold' }}
             >
-              {saving ? 'Saving...' : 'Save Edit'}
+              {saving ? (uploadProgress || 'Saving...') : 'Save Edit'}
             </button>
           </div>
         </div>

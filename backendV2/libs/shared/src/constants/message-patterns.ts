@@ -75,6 +75,11 @@ export const ADMIN_PATTERNS = {
   TOGGLE_PRODUCT:        'admin.toggle_product',
 };
 
+export const UPLOAD_PATTERNS = {
+  UPLOAD_IMAGE:     'upload.image',
+  DELETE_IMAGE:     'upload.delete_image',
+};
+
 export const NOTIFICATION_PATTERNS = {
   SEND_OTP:           'notification.send_otp',
   SEND_RESET_LINK:    'notification.send_reset_link',

@@ -1,11 +1,12 @@
 import { ASSETS } from '../utils/assets';
+import heroVideo from '../assets/video/v2 - Trim.mp4';
 
 export default function Hero() {
   return (
     <section className="hero-section" id="hero" style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
 
       <video
-        src={ASSETS.heroVideo}
+        src={heroVideo}
         autoPlay
         muted
         loop
@@ -20,8 +21,7 @@ export default function Hero() {
           zIndex: 1
         }}
       />
-
-      {/* Text Mask Overlay using mix-blend-mode */}
+      
       <div 
         style={{
           position: 'absolute',
