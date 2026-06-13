@@ -47,7 +47,7 @@
 
 .footer-logo-text {
   font-family: 'Linotype Didot Bold', 'GFS Didot', serif;
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: bold;
   letter-spacing: 0.15em;
   color: #ffffff;
@@ -221,6 +221,11 @@ a.footer-info-value:hover {
   .footer-explore-links li a:hover {
     transform: none;
     /* Disable horizontal slide hover effect on mobile */
+  }
+
+  .footer-logo-text {
+    font-size: 2.2rem;
+    letter-spacing: 0.08em;
   }
 
   .footer-bottom {
