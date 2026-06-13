@@ -1,4 +1,4 @@
-const R2_BASE_URL = import.meta.env.VITE_R2_ASSETS_URL || 'https://pub-f243a32e4dee45969b6714c325a336f8.r2.dev';
+const R2_BASE_URL = import.meta.env.VITE_R2_ASSETS_URL || '/assets';
 
 export const ASSETS = {
   logo: '/images/Logo.png',
