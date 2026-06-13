@@ -693,7 +693,7 @@
 @media (max-width: 48rem) {
   /* 768px and below (mobile cards layout) */
   .CardFrame {
-    gap: -3.8rem;
+    gap: -1.8rem;
     height: 25rem;
     min-height: 25rem;
     top: calc(50vh - 12.5rem);
@@ -721,46 +721,33 @@
 
   .hs-card-wrapper.far-left,
   .hs-card-wrapper.far-right {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    width: 6.8rem !important;
-    height: 13rem !important;
-    margin-top: 1.8rem !important;
-    position: relative !important;
+    display: none !important;
   }
 
   .hs-card-wrapper.left,
   .hs-card-wrapper.right {
     opacity: 1 !important;
     pointer-events: auto !important;
-    width: 7.8rem !important;
-    height: 16rem !important;
+    width: 9rem !important;
+    height: 18rem !important;
     margin-top: 0 !important;
     position: relative !important;
   }
 
   .hs-card-wrapper.center {
-    width: 9rem !important;
-    height: 16rem !important;
+    width: 10.5rem !important;
+    height: 18rem !important;
     margin-top: 3.2rem !important;
     position: relative !important;
   }
 
   /* Adjust Mobile Entrance Animations */
   .CardFrame.is-initial .hs-card-wrapper.left {
-    transform: translateX(4.35rem) translateY(3.2rem) !important;
+    transform: translateX(5rem) translateY(3.2rem) !important;
   }
 
   .CardFrame.is-initial .hs-card-wrapper.right {
-    transform: translateX(-4.35rem) translateY(3.2rem) !important;
-  }
-
-  .CardFrame.is-initial .hs-card-wrapper.far-left {
-    transform: translateX(calc(4.35rem + 3.4rem)) !important;
-  }
-
-  .CardFrame.is-initial .hs-card-wrapper.far-right {
-    transform: translateX(calc(-4.35rem - 3.4rem)) !important;
+    transform: translateX(-5rem) translateY(3.2rem) !important;
   }
 
   .hs-description {
