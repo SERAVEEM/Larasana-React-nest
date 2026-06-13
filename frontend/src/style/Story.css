@@ -198,13 +198,15 @@
   transition: transform 0.8s ease-out;
 }
 
-.section-text:hover .section-desc-wrapper {
+.section-text:hover .section-desc-wrapper,
+.section-text.is-expanded .section-desc-wrapper {
   grid-template-rows: 1fr;
   margin-top: 1.5rem;
   opacity: 1;
 }
 
-.section-text:hover .section-description {
+.section-text:hover .section-description,
+.section-text.is-expanded .section-description {
   transform: translateY(0);
 }
 
@@ -263,15 +265,7 @@
     font-size: 2.5rem;
   }
 
-  .section-desc-wrapper {
-    grid-template-rows: 1fr;
-    margin-top: 1.5rem;
-    opacity: 1;
-  }
-
-  .section-description {
-    transform: translateY(0);
-  }
+  /* Description remains collapsed by default on mobile, expanding when active */
 
   .content-wrapper {
     gap: 8rem;

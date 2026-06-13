@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import "../style/Story.css";
 import { ASSETS } from '../utils/assets';
@@ -10,6 +11,10 @@ const fadeInUp = {
 };
 
 const StoryPage = () => {
+  const [isLegacyExpanded, setIsLegacyExpanded] = useState(false);
+  const [isHistoryExpanded, setIsHistoryExpanded] = useState(false);
+  const [isStoryExpanded, setIsStoryExpanded] = useState(false);
+
   return (
     <div className="story-page-container">
       <main className="story-main">
@@ -48,7 +53,11 @@ const StoryPage = () => {
               <img src={ASSETS.story.legacy} alt="The Legacy" className="section-img" />
               <p className="image-caption">Lombok, 2024</p>
             </div>
-            <div className="section-text">
+            <div 
+              className={`section-text ${isLegacyExpanded ? 'is-expanded' : ''}`}
+              onClick={() => setIsLegacyExpanded(!isLegacyExpanded)}
+              style={{ cursor: 'pointer' }}
+            >
               <h2 className="section-title">The Legacy</h2>
               <p className="section-tagline">Every Weave is a Memory, Every Fabric a Legacy</p>
               <div className="section-desc-wrapper">
@@ -65,13 +74,17 @@ const StoryPage = () => {
                   </p>
                 </div>
               </div>
-              <span className="info-link">Click for more Information!</span>
+              <span className="info-link">{isLegacyExpanded ? "Hide Information ↑" : "Click for more Information!"}</span>
             </div>
           </motion.section>
 
           {/* Section 2: The History */}
           <motion.section className="story-section history-section" {...fadeInUp}>
-            <div className="section-text">
+            <div 
+              className={`section-text ${isHistoryExpanded ? 'is-expanded' : ''}`}
+              onClick={() => setIsHistoryExpanded(!isHistoryExpanded)}
+              style={{ cursor: 'pointer' }}
+            >
               <h2 className="section-title">The History</h2>
               <p className="section-tagline">Woven Through Time, Carried Across Generations</p>
               <div className="section-desc-wrapper">
@@ -94,7 +107,7 @@ const StoryPage = () => {
                   </p>
                 </div>
               </div>
-              <span className="info-link">Click for more Information!</span>
+              <span className="info-link">{isHistoryExpanded ? "Hide Information ↑" : "Click for more Information!"}</span>
             </div>
             <div className="section-image-container">
               <img src={ASSETS.story.history} alt="The History" className="section-img" />
@@ -108,7 +121,11 @@ const StoryPage = () => {
               <img src={ASSETS.story.story} alt="The Story" className="section-img" />
               <p className="image-caption">Amaq, 2025</p>
             </div>
-            <div className="section-text">
+            <div 
+              className={`section-text ${isStoryExpanded ? 'is-expanded' : ''}`}
+              onClick={() => setIsStoryExpanded(!isStoryExpanded)}
+              style={{ cursor: 'pointer' }}
+            >
               <h2 className="section-title">The Story</h2>
               <p className="section-tagline">Every Weave is a Memory, Every Fabric a Legacy</p>
               <div className="section-desc-wrapper">
@@ -128,7 +145,7 @@ const StoryPage = () => {
                   </p>
                 </div>
               </div>
-              <span className="info-link">Click for more Information!</span>
+              <span className="info-link">{isStoryExpanded ? "Hide Information ↑" : "Click for more Information!"}</span>
             </div>
           </motion.section>
         </div>
@@ -140,8 +157,6 @@ const StoryPage = () => {
             the threads carry the voices of forgotten hands."
           </blockquote>
         </motion.section>
-
-
       </main>
     </div>
   );

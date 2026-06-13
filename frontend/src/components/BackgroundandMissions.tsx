@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import "../style/BackgroundandMissions.css";
 import { ASSETS } from "../utils/assets";
@@ -19,13 +20,20 @@ const staggerContainer = {
 };
 
 export default function BackgroundandMissions() {
+    const [isAboutExpanded, setIsAboutExpanded] = useState(false);
+    const [isMissionsExpanded, setIsMissionsExpanded] = useState(false);
+
     return (
         <div className="about-us-container">
             <motion.section 
                 className="about-section"
                 {...fadeInUp}
             >
-                <div className="about-text">
+                <div 
+                    className={`about-text ${isAboutExpanded ? 'is-expanded' : ''}`}
+                    onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+                    style={{ cursor: 'pointer' }}
+                >
                     <h2 className="about-title">About Us <span className="serif-text"></span></h2>
                     <div className="about-desc-wrapper">
                         <div className="about-desc-inner">
@@ -43,7 +51,7 @@ export default function BackgroundandMissions() {
                             </p>
                         </div>
                     </div>
-                    <p className="about-prompt">Read Our Story!</p>
+                    <p className="about-prompt">{isAboutExpanded ? "Hide Story ↑" : "Read Our Story!"}</p>
                 </div>
                 <div className="about-image">
                     <img src={ASSETS.aboutUs.first} alt="About Larasana" />
@@ -59,7 +67,11 @@ export default function BackgroundandMissions() {
                 <div className="missions-image">
                     <img src={ASSETS.aboutUs.second} alt="Larasana Missions" />
                 </div>
-                <div className="missions-text">
+                <div 
+                    className={`missions-text ${isMissionsExpanded ? 'is-expanded' : ''}`}
+                    onClick={() => setIsMissionsExpanded(!isMissionsExpanded)}
+                    style={{ cursor: 'pointer' }}
+                >
                     <h2 className="missions-title">Our Missions <span className="serif-text"></span></h2>
                     <div className="missions-desc-wrapper">
                         <div className="missions-desc-inner">
@@ -80,7 +92,7 @@ export default function BackgroundandMissions() {
                             </p>
                         </div>
                     </div>
-                    <p className="missions-prompt">Our Pillars!</p>
+                    <p className="missions-prompt">{isMissionsExpanded ? "Hide Pillars ↑" : "Our Pillars!"}</p>
                 </div>
             </motion.section>
 
@@ -202,4 +214,3 @@ export default function BackgroundandMissions() {
         </div>
     )
 }
-

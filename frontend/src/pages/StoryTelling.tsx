@@ -1,10 +1,17 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../style/StoryTelling.css";
 import { ASSETS } from "../utils/assets";
 
 export default function StoryTelling() {
+  const [activeZone, setActiveZone] = useState<'story' | 'impact' | null>(null);
+
+  const handleZoneClick = (zone: 'story' | 'impact') => {
+    setActiveZone(prev => prev === zone ? null : zone);
+  };
+
   return (
-    <div className="storytelling-page">
+    <div className={`storytelling-page ${activeZone ? `st-active-${activeZone}` : ''}`}>
       <div className="st-left-col">
         <h1 className="st-title">
           Preserving Culture, One <br />
@@ -18,7 +25,10 @@ export default function StoryTelling() {
       </div>
 
       <div className="st-interactive">
-        <div className="st-hover-zone st-hover-zone--story">
+        <div 
+          className={`st-hover-zone st-hover-zone--story ${activeZone === 'story' ? 'st-active' : ''}`}
+          onClick={() => handleZoneClick('story')}
+        >
           <span className="st-col-label st-col-label--story">STORY</span>
 
           <div className="st-card st-card--story">
@@ -33,7 +43,7 @@ export default function StoryTelling() {
                   <br />
                   and style into your everyday life.
                 </p>
-                <Link to="/Story" className="st-card__cta">
+                <Link to="/Story" className="st-card__cta" onClick={(e) => e.stopPropagation()}>
                   <span className="st-card__cta-line" />
                   STORY PAGES
                 </Link>
@@ -42,7 +52,10 @@ export default function StoryTelling() {
           </div>
         </div>
 
-        <div className="st-hover-zone st-hover-zone--impact">
+        <div 
+          className={`st-hover-zone st-hover-zone--impact ${activeZone === 'impact' ? 'st-active' : ''}`}
+          onClick={() => handleZoneClick('impact')}
+        >
           <span className="st-col-label st-col-label--impact">IMPACT</span>
 
           <div className="st-card st-card--impact">
@@ -57,7 +70,7 @@ export default function StoryTelling() {
                   <br />
                   for generations to come.
                 </p>
-                <Link to="/Impact" className="st-card__cta">
+                <Link to="/Impact" className="st-card__cta" onClick={(e) => e.stopPropagation()}>
                   <span className="st-card__cta-line" />
                   IMPACT PAGES
                 </Link>

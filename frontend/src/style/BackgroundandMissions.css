@@ -60,13 +60,15 @@
     transition: transform 0.8s ease-out;
 }
 
-.about-text:hover .about-desc-wrapper {
+.about-text:hover .about-desc-wrapper,
+.about-text.is-expanded .about-desc-wrapper {
     grid-template-rows: 1fr;
     margin-top: 2rem;
     opacity: 1;
 }
 
-.about-text:hover .about-desc {
+.about-text:hover .about-desc,
+.about-text.is-expanded .about-desc {
     transform: translateY(0);
 }
 
@@ -120,13 +122,15 @@
     transition: transform 0.8s ease-out;
 }
 
-.missions-text:hover .missions-desc-wrapper {
+.missions-text:hover .missions-desc-wrapper,
+.missions-text.is-expanded .missions-desc-wrapper {
     grid-template-rows: 1fr;
     margin-top: 2rem;
     opacity: 1;
 }
 
-.missions-text:hover .missions-desc {
+.missions-text:hover .missions-desc,
+.missions-text.is-expanded .missions-desc {
     transform: translateY(0);
 }
 
@@ -307,17 +311,7 @@
         text-align: center;
     }
 
-    .about-desc-wrapper,
-    .missions-desc-wrapper {
-        grid-template-rows: 1fr;
-        margin-top: 1.5rem;
-        opacity: 1;
-    }
-
-    .about-desc,
-    .missions-desc {
-        transform: translateY(0);
-    }
+    /* Descriptions remain collapsed by default on mobile and expand on click */
 
     .team-intro-content {
         flex-direction: column;

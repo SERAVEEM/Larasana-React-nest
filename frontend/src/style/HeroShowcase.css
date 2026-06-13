@@ -637,65 +637,130 @@
 }
 
 @media (max-width: 68.75rem) {
-
   /* 1100px and below (tablet cards layout) */
-  .CardFrame .hs-card-wrapper.far-left,
-  .CardFrame .hs-card-wrapper.far-right {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    width: 0 !important;
-    margin: 0 !important;
-    flex: 0 0 0 !important;
-    position: absolute !important;
+  .CardFrame {
+    gap: -2.5rem;
+    height: 32rem;
+    top: calc(50vh - 16rem);
+    margin-top: calc(60rem - 32rem);
   }
 
-  .CardFrame {
-    gap: 1.5rem;
-    height: auto;
-    min-height: 35rem;
-    top: calc(50vh - 17.5rem);
-    margin-top: calc(60rem - 35rem);
+  .hs-card-wrapper.far-left,
+  .hs-card-wrapper.far-right {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: 9.5rem !important;
+    height: 18rem !important;
+    margin-top: 2.5rem !important;
+    position: relative !important;
   }
 
   .hs-card-wrapper.left,
   .hs-card-wrapper.right {
-    width: 15rem;
-    height: 30rem;
-    margin-top: 0;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: 10.5rem !important;
+    height: 22rem !important;
+    margin-top: 0 !important;
+    position: relative !important;
   }
 
   .hs-card-wrapper.center {
-    width: 18rem;
-    height: 30rem;
-    margin-top: 4rem;
+    width: 12rem !important;
+    height: 22rem !important;
+    margin-top: 4.5rem !important;
+    position: relative !important;
+  }
+
+  /* Adjust Tablet Entrance Animations */
+  .CardFrame.is-initial .hs-card-wrapper.left {
+    transform: translateX(8.75rem) translateY(4.5rem) !important;
+  }
+
+  .CardFrame.is-initial .hs-card-wrapper.right {
+    transform: translateX(-8.75rem) translateY(4.5rem) !important;
+  }
+
+  .CardFrame.is-initial .hs-card-wrapper.far-left {
+    transform: translateX(calc(8.75rem + 7.5rem)) !important;
+  }
+
+  .CardFrame.is-initial .hs-card-wrapper.far-right {
+    transform: translateX(calc(-8.75rem - 7.5rem)) !important;
   }
 }
 
 @media (max-width: 48rem) {
-
   /* 768px and below (mobile cards layout) */
-  .CardFrame .hs-card-wrapper.left,
-  .CardFrame .hs-card-wrapper.right {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    width: 0 !important;
-    margin: 0 !important;
-    flex: 0 0 0 !important;
-    position: absolute !important;
+  .CardFrame {
+    gap: -3.8rem;
+    height: 25rem;
+    min-height: 25rem;
+    top: calc(50vh - 12.5rem);
+    margin-top: calc(60rem - 25rem);
   }
 
-  .CardFrame {
-    gap: 0;
-    min-height: 28rem;
-    top: calc(50vh - 14rem);
-    margin-top: calc(60rem - 28rem);
+  .hs-card-wrapper {
+    border-radius: 12px !important;
+  }
+
+  .hs-card-bg-layer,
+  .hs-card-slant,
+  .hs-card-main-body,
+  .hs-card-img-layer {
+    border-radius: 12px !important;
+  }
+
+  .hs-card-slant {
+    height: 2.5rem !important;
+  }
+
+  .hs-card-main-body {
+    top: 2.2rem !important;
+  }
+
+  .hs-card-wrapper.far-left,
+  .hs-card-wrapper.far-right {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: 6.8rem !important;
+    height: 13rem !important;
+    margin-top: 1.8rem !important;
+    position: relative !important;
+  }
+
+  .hs-card-wrapper.left,
+  .hs-card-wrapper.right {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: 7.8rem !important;
+    height: 16rem !important;
+    margin-top: 0 !important;
+    position: relative !important;
   }
 
   .hs-card-wrapper.center {
-    width: 80vw;
-    max-width: 18rem;
-    height: 28rem;
-    margin-top: 0;
+    width: 9rem !important;
+    height: 16rem !important;
+    margin-top: 3.2rem !important;
+    position: relative !important;
+  }
+
+  /* Adjust Mobile Entrance Animations */
+  .CardFrame.is-initial .hs-card-wrapper.left {
+    transform: translateX(4.35rem) translateY(3.2rem) !important;
+  }
+
+  .CardFrame.is-initial .hs-card-wrapper.right {
+    transform: translateX(-4.35rem) translateY(3.2rem) !important;
+  }
+
+  .CardFrame.is-initial .hs-card-wrapper.far-left {
+    transform: translateX(calc(4.35rem + 3.4rem)) !important;
+  }
+
+  .CardFrame.is-initial .hs-card-wrapper.far-right {
+    transform: translateX(calc(-4.35rem - 3.4rem)) !important;
   }
 
   .hs-description {
@@ -707,4 +772,4 @@
     top: 4rem;
     font-size: 2rem;
   }
-}
+}
