@@ -5,11 +5,6 @@ interface GoogleLoginButtonProps {
   onSuccess: (response: any) => void;
 }
 
-/**
- * GoogleLoginButton loads the Google Identity Services script (once) via
- * `loadGoogleScript` and renders the Google Sign‑In button. It calls the
- * provided `onSuccess` callback after authentication.
- */
 export default function GoogleLoginButton({ onSuccess }: GoogleLoginButtonProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
