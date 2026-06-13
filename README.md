@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://pub-f243a32e4dee45969b6714c325a336f8.r2.dev/brand/remove_bg-removebg-preview.png" alt="Larasana Logo" width="200" />
+  <img src="https://pub-f243a32e4dee45969b6714c325a336f8.r2.dev/brand/remove_bg-removebg-preview.png" alt="Larasana Logo" width="400" />
 </p>
 
 <p align="center">
