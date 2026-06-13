@@ -265,7 +265,10 @@ export default function HeroShowcase() {
       </div>
 
       {/* Sticky Card Container */}
-      <div className="hs-sticky-layer">
+      <motion.div 
+        className="hs-sticky-layer"
+        style={{ opacity: bgOpacity }}
+      >
         <motion.div
           className={`CardFrame ${hasScrolledIntoView ? 'is-mounted' : 'is-initial'} ${isEntranceDone ? 'is-ready' : ''}`}
         >
@@ -302,7 +305,7 @@ export default function HeroShowcase() {
             );
           })}
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }
