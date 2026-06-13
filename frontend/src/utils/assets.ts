@@ -2,13 +2,13 @@ const R2_BASE_URL = import.meta.env.VITE_R2_ASSETS_URL || '/assets';
 
 export const ASSETS = {
   logo: '/images/Logo.png',
-  heroVideo: `${R2_BASE_URL}/Larasana%20Static%20Asset/v2%20-%20Trim.mp4`,
+  heroVideo: `${R2_BASE_URL}/Larasana%20Static%20Asset/Larasana%20Static%20Asset_v2%20-%20Trim%20-%20Trim.webm`,
   storytelling: {
     story: `${R2_BASE_URL}/Story%20Telling/story.png`,
     impact: `${R2_BASE_URL}/Story%20Telling/impact.png`,
   },
   story: {
-    first: `${R2_BASE_URL}/Story/First.png`,
+    first: `${R2_BASE_URL}/Story/Story_First.webp`,
     legacy: `${R2_BASE_URL}/Story/Legacy.png`,
     history: `${R2_BASE_URL}/Story/History.png`,
     story: `${R2_BASE_URL}/Story/Story.png`,

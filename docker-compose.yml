@@ -23,6 +23,10 @@ services:
     command: node dist/apps/api-gateway/src/main.js
     env_file:
       - ./backendV2/.env
+    environment:
+      - USERS_SERVICE_HOST=users-service
+      - COMMERCE_SERVICE_HOST=commerce-service
+      - NOTIFICATION_SERVICE_HOST=notification-service
     depends_on:
       mysql:
         condition: service_healthy
@@ -36,6 +40,9 @@ services:
     command: node dist/apps/users-service/src/main.js
     env_file:
       - ./backendV2/.env
+    environment:
+      - DB_HOST=mysql
+      - NOTIFICATION_SERVICE_HOST=notification-service
     depends_on:
       mysql:
         condition: service_healthy
@@ -49,6 +56,8 @@ services:
     command: node dist/apps/commerce-service/src/main.js
     env_file:
       - ./backendV2/.env
+    environment:
+      - DB_HOST=mysql
     depends_on:
       mysql:
         condition: service_healthy

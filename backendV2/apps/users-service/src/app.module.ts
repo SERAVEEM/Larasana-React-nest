@@ -27,7 +27,10 @@ import { AdminService } from './admin.service';
       {
         name: SERVICES.NOTIFICATION,
         transport: Transport.TCP,
-        options: { host: '127.0.0.1', port: Number(process.env.NOTIFICATION_SERVICE_PORT ?? 3003) },
+        options: {
+          host: process.env.NOTIFICATION_SERVICE_HOST ?? '127.0.0.1',
+          port: Number(process.env.NOTIFICATION_SERVICE_PORT ?? 3003),
+        },
       },
     ]),
   ],
