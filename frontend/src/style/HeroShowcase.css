@@ -467,7 +467,7 @@
   height: 100%;
   object-fit: contain;
   object-position: top center;
-  transform: scale(1.45);
+  transform: scale(1.0);
   transform-origin: top center;
 }
 
@@ -609,7 +609,7 @@
   .hs-grid-item-img {
     height: 16rem;
     object-fit: contain;
-    transform: scale(1.2);
+    transform: scale(0.95);
   }
 }
 
