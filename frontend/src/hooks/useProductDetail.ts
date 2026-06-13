@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ServiceContainer } from '../core/di/ServiceContainer';
 import { ProductService } from '../core/services/ProductService';
 import type { Product, ProductListItem } from '../types/product';
-import weaverImg from '../assets/images/product/weaver_portrait.png';
 
 export function useProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -22,7 +21,6 @@ export function useProductDetail() {
 
   const prevIdRef = useRef(id);
 
-  // Monitor scroll for mobile sticky buy bar
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerWidth <= 768) {
