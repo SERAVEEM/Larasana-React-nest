@@ -28,7 +28,7 @@ async function bootstrap() {
         callback(null, true);
         return;
       }
-      const isAllowed = allowedOrigins.includes(origin) || origin.endsWith('.vercel.app');
+      const isAllowed = allowedOrigins.includes(origin) || /^https:\/\/larasana-[a-zA-Z0-9-]+\.vercel\.app$/.test(origin);
       if (isAllowed) {
         callback(null, true);
       } else {
@@ -36,6 +36,41 @@ async function bootstrap() {
       }
     },
     credentials: true,
+  });
+
+  // Client secret key validation middleware
+  app.use((req: any, res: any, next: any) => {
+    // Allow OPTIONS requests (CORS preflight checks)
+    if (req.method === 'OPTIONS') {
+      return next();
+    }
+
+    //  Allow Swagger API Documentation
+    if (req.path === '/api/docs' || req.path.startsWith('/api/docs/')) {
+      return next();
+    }
+
+    //  Allow Midtrans Webhook notifications
+    if (req.path.includes('/checkout/webhook/midtrans')) {
+      return next();
+    }
+
+    //  Validate Client Secret Key
+    const expectedKey = process.env.FRONTEND_CLIENT_SECRET;
+    if (!expectedKey) {
+      // If not configured in the environment, skip the check
+      return next();
+    }
+
+    const clientKey = req.headers['x-larasana-client-key'];
+    if (clientKey !== expectedKey) {
+      return res.status(403).json({
+        statusCode: 403,
+        message: 'Forbidden: Invalid or missing API Client Key',
+      });
+    }
+
+    next();
   });
 
   const config = new DocumentBuilder()

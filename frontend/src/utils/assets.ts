@@ -3,6 +3,8 @@ const R2_BASE_URL = import.meta.env.VITE_R2_ASSETS_URL || '/assets';
 export const ASSETS = {
   logo: '/images/Logo.png',
   heroVideo: `${R2_BASE_URL}/Larasana%20Static%20Asset/Larasana%20Static%20Asset_v2%20-%20Trim%20-%20Trim.webm`,
+  heroVideoWebm: `${R2_BASE_URL}/Larasana%20Static%20Asset/Larasana%20Static%20Asset_v2%20-%20Trim%20-%20Trim.webm`,
+  heroVideoMp4: `${R2_BASE_URL}/Larasana%20Static%20Asset/Larasana%20Static%20Asset%20V2%20-%20Trim%20-%20Trim.mp4`,
   storytelling: {
     story: `${R2_BASE_URL}/Story%20Telling/story.png`,
     impact: `${R2_BASE_URL}/Story%20Telling/impact.png`,

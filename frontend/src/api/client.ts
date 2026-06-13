@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-// Get base URL from environment variables, fallback to localhost gateway
+// Get base URL and client secret key from environment variables, fallback to localhost gateway
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const CLIENT_SECRET = import.meta.env.VITE_FRONTEND_CLIENT_SECRET || '';
 
 export const client = axios.create({
   baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'x-larasana-client-key': CLIENT_SECRET,
   },
   timeout: 10000, // 10 seconds timeout
 });
