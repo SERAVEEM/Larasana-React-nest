@@ -39,14 +39,14 @@ export default function HeroShowcase() {
   const [hasScrolledIntoView, setHasScrolledIntoView] = useState(false);
   const [isEntranceDone, setIsEntranceDone] = useState(false);
 
-  useEffect(()=> {
-    if(!hasScrolledIntoView) return;
+  useEffect(() => {
+    if (!hasScrolledIntoView) return;
 
-    const timer = setTimeout(()=>{
+    const timer = setTimeout(() => {
       setIsEntranceDone(true)
     }, 6500);
 
-    return ()=> clearTimeout(timer);
+    return () => clearTimeout(timer);
   }, [hasScrolledIntoView]);
   const [gridItems, setGridItems] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -103,7 +103,7 @@ export default function HeroShowcase() {
       if (card) {
         const cardWidth = card.getBoundingClientRect().width;
         // Match the gap defined in CSS (1.5rem = 24px)
-        const gap = 24; 
+        const gap = 24;
         gridRef.current.scrollTo({
           left: currentIndex * (cardWidth + gap),
           behavior: 'smooth'
@@ -192,7 +192,7 @@ export default function HeroShowcase() {
         </motion.h2>
       </div>
 
-    
+
       <div className="hs-bg-white" ref={whiteBgRef}>
         <motion.div
           className="hs-grid-carousel-container"
@@ -209,47 +209,62 @@ export default function HeroShowcase() {
             </svg>
           </button>
 
-          <div
-            ref={gridRef}
-            className="hs-product-grid"
-            style={{ '--slide-transform': `-${currentIndex * 20}%` } as React.CSSProperties}
-          >
-            {itemsToRender.map((item) => (
-              item.empty ? (
-                <div key={item.id} className="hs-grid-item empty" />
-              ) : (
-                <Link key={item.id} to={`/product/${item.id}`} className="hs-grid-item">
-                  <img 
-                    src={item.image} 
-                    alt={item.name} 
-                    className={`hs-grid-item-img ${item.image && item.image.startsWith('http') ? 'standard-image' : ''}`} 
-                  />
+          {/* Calculate the dynamic translation percentage based on visibleCount */}
+          {(() => {
+            const slidePercent = 100 / visibleCount;
+            return (
+              <div
+                ref={gridRef}
+                className="hs-product-grid"
+                style={{ '--slide-transform': `-${currentIndex * slidePercent}%` } as React.CSSProperties}
+              >
+                {itemsToRender.map((item) => (
+                  item.empty ? (
+                    <div 
+                      key={item.id} 
+                      className="hs-grid-item empty" 
+                      style={{ '--item-width': `${slidePercent}%` } as React.CSSProperties}
+                    />
+                  ) : (
+                    <Link 
+                      key={item.id} 
+                      to={`/product/${item.id}`} 
+                      className="hs-grid-item"
+                      style={{ '--item-width': `${slidePercent}%` } as React.CSSProperties}
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className={`hs-grid-item-img ${item.image && item.image.startsWith('http') ? 'standard-image' : ''}`}
+                      />
 
-                  <div 
-                    className="hs-grid-heart"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" />
-                    </svg>
-                  </div>
+                      <div
+                        className="hs-grid-heart"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" />
+                        </svg>
+                      </div>
 
-                  <div className="hs-grid-info">
-                    <div className="hs-grid-info-top">
-                      <h3 className="hs-grid-title">{item.name}</h3>
-                      <span className="hs-grid-price">{item.price}</span>
-                    </div>
-                    <div className="hs-grid-rating">
-                      ★ {item.rating}
-                    </div>
-                  </div>
-                </Link>
-              )
-            ))}
-          </div>
+                      <div className="hs-grid-info">
+                        <div className="hs-grid-info-top">
+                          <h3 className="hs-grid-title">{item.name}</h3>
+                          <span className="hs-grid-price">{item.price}</span>
+                        </div>
+                        <div className="hs-grid-rating">
+                          ★ {item.rating}
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                ))}
+              </div>
+            );
+          })()}
 
           <button
             className="hs-carousel-btn next"
@@ -269,6 +284,30 @@ export default function HeroShowcase() {
         className="hs-sticky-layer"
         style={{ opacity: bgOpacity }}
       >
+        {/* Mobile card navigation controls */}
+        <div className="hs-mobile-card-controls">
+          <button 
+            className="hs-mobile-card-btn prev"
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            aria-label="Previous card"
+          >
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <button 
+            className="hs-mobile-card-btn next"
+            onClick={handleNext}
+            disabled={currentIndex === itemsToRender.length - 1}
+            aria-label="Next card"
+          >
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </div>
+
         <motion.div
           className={`CardFrame ${hasScrolledIntoView ? 'is-mounted' : 'is-initial'} ${isEntranceDone ? 'is-ready' : ''}`}
         >
@@ -276,21 +315,22 @@ export default function HeroShowcase() {
             const item = itemsToRender[index];
             const displayImage = item && !item.empty ? item.image : card.image;
             const displayAlt = item && !item.empty ? item.name : card.alt;
+            const isActive = index === currentIndex;
             return (
               <div
                 key={card.id}
-                className={`hs-card-wrapper ${card.position} ${card.size}`}
+                className={`hs-card-wrapper ${card.position} ${card.size} ${isActive ? 'is-active' : ''}`}
               >
                 <motion.div
                   className="hs-card-bg-layer"
                   style={{ opacity: bgOpacity }}
                 >
-                  <div 
-                    className="hs-card-slant" 
+                  <div
+                    className="hs-card-slant"
                     style={card.gradient ? { background: card.gradient } : {}}
                   />
-                  <div 
-                    className="hs-card-main-body" 
+                  <div
+                    className="hs-card-main-body"
                     style={card.gradient ? { background: card.gradient } : {}}
                   />
                 </motion.div>
