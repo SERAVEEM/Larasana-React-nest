@@ -9,7 +9,7 @@
     "start:notification": "nest start notification-service --watch -r tsconfig-paths/register",
     "dev": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"npm run start:gateway\" \"npm run start:users\" \"npm run start:commerce\" \"npm run start:notification\"",
     "build": "nest build api-gateway && nest build users-service && nest build commerce-service && nest build notification-service",
-    "start:prod": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"node dist/apps/api-gateway/src/main.js\" \"node dist/apps/users-service/src/main.js\" \"node dist/apps/commerce-service/src/main.js\" \"node dist/apps/notification-service/src/main.js\""
+    "start:prod": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"node dist/api-gateway/apps/api-gateway/src/main.js\" \"node dist/users-service/apps/users-service/src/main.js\" \"node dist/commerce-service/apps/commerce-service/src/main.js\" \"node dist/notification-service/apps/notification-service/src/main.js\""
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1066.0",

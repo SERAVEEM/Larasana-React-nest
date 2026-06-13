@@ -20,7 +20,7 @@ services:
     build: ./backendV2
     container_name: larasana-api-gateway
     restart: unless-stopped
-    command: node dist/apps/api-gateway/src/main.js
+    command: node dist/api-gateway/apps/api-gateway/src/main.js
     env_file:
       - ./backendV2/.env
     environment:
@@ -37,7 +37,7 @@ services:
     build: ./backendV2
     container_name: larasana-users-service
     restart: unless-stopped
-    command: node dist/apps/users-service/src/main.js
+    command: node dist/users-service/apps/users-service/src/main.js
     env_file:
       - ./backendV2/.env
     environment:
@@ -53,7 +53,7 @@ services:
     build: ./backendV2
     container_name: larasana-commerce-service
     restart: unless-stopped
-    command: node dist/apps/commerce-service/src/main.js
+    command: node dist/commerce-service/apps/commerce-service/src/main.js
     env_file:
       - ./backendV2/.env
     environment:
@@ -68,7 +68,7 @@ services:
     build: ./backendV2
     container_name: larasana-notification-service
     restart: unless-stopped
-    command: node dist/apps/notification-service/src/main.js
+    command: node dist/notification-service/apps/notification-service/src/main.js
     env_file:
       - ./backendV2/.env
     depends_on:
