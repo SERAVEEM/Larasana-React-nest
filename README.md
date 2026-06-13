@@ -1,5 +1,23 @@
 <p align="center">
-  <img src="docs/assets/logo.png" alt="Larasana Logo" width="300" />
+  <img src="https://pub-f243a32e4dee45969b6714c325a336f8.r2.dev/brand/remove_bg-removebg-preview.png" alt="Larasana Logo" width="200" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/SERAVEEM/Larasana-React-nest"><img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build Status" /></a>
+  <a href="https://github.com/SERAVEEM/Larasana-React-nest"><img src="https://img.shields.io/badge/tests-passing-brightgreen" alt="Tests Status" /></a>
+  <a href="https://github.com/SERAVEEM/Larasana-React-nest/pulls"><img src="https://img.shields.io/badge/Review-Approved-brightgreen?logo=github" alt="Review Status" /></a>
+  <a href="https://github.com/SERAVEEM/Larasana-React-nest/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
+  <a href="https://github.com/SERAVEEM/Larasana-React-nest/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" /></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19.x-61DAFB?style=flat&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-6.x-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite-8.x-646CFF?style=flat&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/NestJS-10.x-E0234E?style=flat&logo=nestjs&logoColor=white" alt="NestJS" />
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white" alt="MySQL" />
+  <img src="https://img.shields.io/badge/Vercel-Deployed-000000?style=flat&logo=vercel&logoColor=white" alt="Vercel" />
+  <img src="https://img.shields.io/badge/Railway-Deployed-131415?style=flat&logo=railway&logoColor=white" alt="Railway" />
 </p>
 
 ---
@@ -20,7 +38,7 @@ Beyond standard e-commerce features, LARASANA weaves a rich narrative layer arou
 The user interface is designed with a premium, high-contrast visual aesthetic utilizing high-fidelity motion graphics, immersive typography, and staggered layouts to evoke a luxury fashion house experience.
 
 <p align="center">
-  <img src="https://pub-f243a32e4dee45969b6714c325a336f8.r2.dev/Impact/regeneration.png" alt="LARASANA Brand Identity and Visual Layouts" width="90%" />
+  <img src="https://pub-f243a32e4dee45969b6714c325a336f8.r2.dev/About%20Us/First.png" alt="LARASANA Brand Identity and Visual Layouts" width="90%" />
 </p>
 
 ---
