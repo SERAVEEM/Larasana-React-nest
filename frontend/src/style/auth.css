@@ -65,7 +65,7 @@
   text-align: center;
   line-height: 1.1;
   margin-bottom: 0.625rem;
-  letter-spacing: -6%;
+  letter-spacing: -2%;
 }
 
 .auth-heading--join {
@@ -75,13 +75,12 @@
 
 .auth-subheading {
   font-family: 'GFS Didot', serif;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 400;
-  letter-spacing: -8%;
+  letter-spacing: -2%;
   color: #888;
   text-align: center;
   margin-bottom: 2rem;
-  line-height: 1.6;
 }
 
 .auth-form {
@@ -192,7 +191,7 @@
   cursor: pointer;
   letter-spacing: 0.06em;
   transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.3rem;
 }
 
 .auth-btn:hover {
@@ -208,16 +207,16 @@
 
 .auth-switch {
   font-family: 'GFS Didot', serif;
-  font-size: 0.8125rem;
-  font-weight: 400;
+  font-size: 1rem;
+  font-weight: 500;
   color: #777;
   text-align: center;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.2rem;
 }
 
 .auth-switch__link {
   color: #9a8a2e;
-  transition: color 0.2s ease;
+  transition: color 0.8s ease;
 }
 
 .auth-switch__link:hover {
@@ -234,21 +233,15 @@
 
 .auth-divider__line {
   flex: 1;
-  height: 0.0625rem;
-  background: #e5ddd0;
+  height: 0.1rem;
+  background: #D9D9D9;
 }
 
 .auth-divider__text {
   font-family: 'GFS Didot', serif;
-  font-size: 0.75rem;
-  font-weight: 400;
+  font-size: 0.9rem;
+  font-weight: 500;
   color: #aaa;
-}
-
-.auth-social {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
 }
 
 .auth-social__btn {
@@ -284,7 +277,6 @@
   flex: 1;
   position: relative;
   overflow: hidden;
-  /* LAYER 1 (Bottom): The gradient sits behind the photo */
   background: linear-gradient(to top left, #FFFFFF 0%, #404040 86%);
 }
 
