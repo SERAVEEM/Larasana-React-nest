@@ -79,6 +79,14 @@ export default function Hamburger() {
               <Link className="hamburger-overlay__link" to="/" onClick={() => setIsOpen(false)}>
                 Home
               </Link>
+
+              <Link className="hamburger-overlay__link" to="/Story" onClick={() => setIsOpen(false)}>
+                Story
+              </Link>
+
+              <Link className="hamburger-overlay__link" to="/Impact" onClick={() => setIsOpen(false)}>
+                Impact
+              </Link>
               
               <Link className="hamburger-overlay__link" to="/aboutus" onClick={() => setIsOpen(false)}>
                 About Us
