@@ -1,13 +1,20 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../style/StoryTelling.css";
 import { ASSETS } from "../utils/assets";
 
 export default function StoryTelling() {
   const [activeZone, setActiveZone] = useState<'story' | 'impact' | null>(null);
+  const navigate = useNavigate();
 
   const handleZoneClick = (zone: 'story' | 'impact') => {
-    setActiveZone(prev => prev === zone ? null : zone);
+    // Check if the device has a pointer/mouse (supports hover) or if it's already active (mobile)
+    const isHoverSupported = window.matchMedia('(hover: hover)').matches;
+    if (isHoverSupported || activeZone === zone) {
+      navigate(zone === 'story' ? '/Story' : '/Impact');
+    } else {
+      setActiveZone(zone);
+    }
   };
 
   return (
