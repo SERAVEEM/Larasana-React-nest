@@ -63,8 +63,7 @@
 
 /*card section*/
 
-/* We override the .sm, .md, .lg from the component 
-   and just rely on the positions for height and staggered offset */
+
 
 /* We will apply a unified 3D perspective to the container */
 .CardFrame {
@@ -73,16 +72,15 @@
   position: sticky;
   top: max(8rem, calc(50vh - 22rem));
   margin-top: calc(75rem - 48.4rem);
-  pointer-events: none; /* Block mouse interactions during entrance animation */
+  pointer-events: none;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  /* Crucial: Aligns from the top so margin-top works */
   gap: calc(2rem + 20px);
 }
 
 .CardFrame.is-ready {
-  pointer-events: auto; /* Enable mouse interactions once cards have entered the stage */
+  pointer-events: auto;
 }
 
 .hs-card-wrapper {
@@ -113,13 +111,11 @@
   height: 5rem;
   background: #ffffff;
   border-radius: 24px 24px 0 0;
-  /* Transform origin and skew will be applied dynamically based on position! */
 }
 
 .hs-card-main-body {
   position: absolute;
   top: 4.5rem;
-  /* Slight overlap with slant to hide the seam perfectly */
   left: 0;
   right: 0;
   bottom: 0;
@@ -127,7 +123,7 @@
   border-radius: 0 0 24px 24px;
 }
 
-/* Image Layer stays perfectly flat */
+
 .hs-card-img-layer {
   position: absolute;
   top: 0;
@@ -135,9 +131,7 @@
   right: 0;
   bottom: 0;
   border-radius: 0 0 24px 24px;
-  /* Only round the bottom */
   overflow: hidden;
-  /* Clips the bottom so model doesn't spill out */
   z-index: 10;
 }
 
@@ -145,9 +139,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Anchor to top so models' heads are always visible; body fills down */
   object-position: top center;
-  /* Sync image transition with parent entrance animation */
   transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -266,14 +258,6 @@
   }
 }
 
-/* ===================================================
-   ENTRANCE ANIMATION: "DEAL FROM CENTER"
-   - Center rises from below
-   - Left/Right slide out from center — faster
-   - Far-Left/Far-Right slide out from behind Left/Right cards
-=================================================== */
-
-/* 1. Center card — rises from below (untouched) */
 .CardFrame.is-initial .hs-card-wrapper.center {
   opacity: 0;
   transform: translateY(100vh);
@@ -283,7 +267,6 @@
   transform: scaleX(1);
 }
 
-/* 2a. Left/Right — start hidden behind the center card, same as before */
 .CardFrame.is-initial .hs-card-wrapper.left {
   opacity: 0;
   transform: translateX(calc(19.4rem + 10px)) translateY(7.4rem);
@@ -302,8 +285,6 @@
   transform: scaleX(1);
 }
 
-/* 2b. Far-Left/Far-Right — start hidden directly BEHIND the Left/Right cards.
-       translateX value = left card width + gap ≈ 21.5rem (one card over, not two) */
 .CardFrame.is-initial .hs-card-wrapper.far-left {
   opacity: 0;
   transform: translateX(calc(19.4rem + 10px));
@@ -322,7 +303,6 @@
   transform: scaleX(1);
 }
 
-/* 3. Per-card transition durations — centre is untouched (6s default) */
 .CardFrame .hs-card-wrapper {
   transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 3s ease-out;
@@ -332,7 +312,6 @@
   transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Left/Right — opacity finishes before far cards appear (delay 1.8s + 0.8s = 2.6s < 2.8s far delay) */
 .CardFrame .hs-card-wrapper.left,
 .CardFrame .hs-card-wrapper.right {
   transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1),
@@ -486,11 +465,8 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  /* Shows the full transparent PNG model natively without scaling hacks */
   object-position: top center;
-  /* Anchors the top of the head to the top of the box */
   transform: scale(1.45);
-  /* Zooms in a bit to find the sweet spot between contain and cover */
   transform-origin: top center;
 }
 
@@ -637,7 +613,6 @@
 }
 
 @media (max-width: 68.75rem) {
-  /* 1100px and below (tablet cards layout) */
   .CardFrame {
     gap: -2.5rem;
     height: 32rem;
@@ -759,4 +734,4 @@
     top: 4rem;
     font-size: 2rem;
   }
-}
+}

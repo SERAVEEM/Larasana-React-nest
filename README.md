@@ -20,7 +20,7 @@ Beyond standard e-commerce features, LARASANA weaves a rich narrative layer arou
 The user interface is designed with a premium, high-contrast visual aesthetic utilizing high-fidelity motion graphics, immersive typography, and staggered layouts to evoke a luxury fashion house experience.
 
 <p align="center">
-  <img src="docs/assets/brand_identity.png" alt="LARASANA Brand Identity and Visual Layouts" width="90%" />
+  <img src="https://pub-f243a32e4dee45969b6714c325a336f8.r2.dev/Impact/regeneration.png" alt="LARASANA Brand Identity and Visual Layouts" width="90%" />
 </p>
 
 ---
@@ -65,9 +65,62 @@ The platform is engineered using a decoupled, service-oriented architecture desi
 
 LARASANA utilizes a **Decoupled Single Page Application (SPA) & Microservices Backend** architecture. Below is the system blueprint representing how components interact:
 
-<p align="center">
-  <img src="docs/assets/architecture_diagram.png" alt="LARASANA Service Architecture Blueprint" width="90%" />
-</p>
+```mermaid
+graph TD
+    %% Styling
+    classDef client fill:#f9f9fb,stroke:#4f46e5,stroke-width:2px,color:#1f2937;
+    classDef gateway fill:#e0e7ff,stroke:#4338ca,stroke-width:2px,color:#1f2937;
+    classDef service fill:#f3f4f6,stroke:#6b7280,stroke-width:2px,color:#1f2937;
+    classDef db fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#1f2937;
+    classDef ext fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#1f2937;
+
+    subgraph Client ["Client Tier (Frontend)"]
+        FE[React 19 SPA / Vite]:::client
+    end
+
+    subgraph Gateway ["Gateway Tier"]
+        GW[API Gateway / Port 3000]:::gateway
+    end
+
+    subgraph Microservices ["Microservices (Internal Broker TCP)"]
+        US[Users Service / Port 3001]:::service
+        CS[Commerce Service / Port 3002]:::service
+        NS[Notification Service / Port 3003]:::service
+    end
+
+    subgraph Storage ["Storage Tier"]
+        DB[(MySQL Database)]:::db
+    end
+
+    subgraph External ["External Third-Party APIs"]
+        GAuth[Google OAuth 2.0]:::ext
+        EasyPost[EasyPost API]:::ext
+        Midtrans[Midtrans Payment Gateway]:::ext
+    end
+
+    %% Client Interactions
+    FE -->|HTTPS Request with Client Secret Key| GW
+    FE -->|Authenticate Token / Login SSO| GAuth
+
+    %% Gateway Routing
+    GW -->|TCP Proxy| US
+    GW -->|TCP Proxy| CS
+
+    %% Service Database Connectivity
+    US -->|TypeORM ORM Query| DB
+    CS -->|TypeORM ORM Query| DB
+    NS -->|Read configuration / triggers| DB
+
+    %% Service-to-Service Async notifications
+    CS -->|TCP notification call| NS
+    US -->|TCP OTP call| NS
+
+    %% External Calls
+    US -->|Verify Token ID| GAuth
+    CS -->|Query Live Rates| EasyPost
+    CS -->|Generate Snap Payment / Charge VA| Midtrans
+    Midtrans -->|Callback Webhook Notification| GW
+```
 
 ### A. Frontend Architecture
 The client is structured as a client-side routed SPA. The root layout is decorated with global contexts using the Provider Pattern (`HelmetProvider` -> `BrowserRouter` -> `SmoothScroll`). Logic modules are encapsulated inside container pages, which interface with presentational UI components.
@@ -119,7 +172,6 @@ app.enableCors({
       callback(null, true);
       return;
     }
-    // Match exact whitelisted local origins or vercel preview/production subdomains
     const isAllowed = allowedOrigins.includes(origin) || /^https:\/\/larasana-[a-zA-Z0-9-]+\.vercel\.app$/.test(origin);
     if (isAllowed) {
       callback(null, true);
@@ -166,9 +218,62 @@ Cloudflare's default public subdomains (`*.r2.dev`) are blocked at the DNS level
 
 The checkout transaction sequence coordinates third-party shipping and payment APIs. Below is the sequential process flow showing interactions:
 
-<p align="center">
-  <img src="docs/assets/checkout_dataflow.png" alt="Checkout and Payment Gateway Lifecycle" width="90%" />
-</p>
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Customer (Browser)
+    participant FE as React Client
+    participant GW as API Gateway (NestJS)
+    participant CS as Commerce Service
+    participant EP as EasyPost API
+    participant MT as Midtrans API
+    participant NS as Notification Service
+    participant DB as MySQL DB
+
+    User->>FE: Select Size & Click "Buy Now"
+    FE->>FE: Verify JWT Access Token & Validate Shipping Address
+    FE->>GW: POST /shipping/rates (with destination address details)
+    GW->>CS: TCP: resolve-shipping-rates
+    alt International Shipping (Not ID)
+        CS->>EP: POST /v2/shipments (weight, size, address)
+        EP-->>CS: Return carrier rates (DHL, FedEx, etc.)
+    else Domestic Shipping (Indonesia)
+        CS->>DB: Query domestic shipping rates table
+        DB-->>CS: Return fixed rates
+    end
+    CS-->>GW: Return rate options
+    GW-->>FE: Present shipping rates to user
+    User->>FE: Select rate, choose payment method, & Click "Checkout Now"
+    FE->>GW: POST /checkout/order (with items, courier, & payment type)
+    GW->>CS: TCP: create-order
+    CS->>DB: Insert Order record (Status: PENDING)
+    CS->>MT: POST /charge or /snap/token (order ID, gross amount)
+    MT-->>CS: Return Snap redirect URL or VA numbers
+    CS-->>GW: Return payment details & countdown (15m)
+    GW-->>FE: Render payment instructions (QRIS/VA) to User
+    loop Polling status (every 3 seconds)
+        FE->>GW: GET /checkout/payment-status/:orderId
+        GW->>CS: TCP: get-payment-status
+        CS->>DB: Check Order Status in DB
+        DB-->>CS: PENDING
+        CS-->>FE: PENDING
+    end
+    User->>MT: Authorize Payment (e-wallet scan or bank transfer)
+    MT-->>User: Success response
+    MT->>GW: POST /checkout/webhook/midtrans (signed notification payload)
+    GW->>CS: TCP: handle-midtrans-callback
+    CS->>DB: Update Order Status to PAID & stock allocation
+    CS->>NS: TCP: send-order-confirmation-email
+    NS->>User: Send Email OTP / Confirmation notification
+    loop Polling status detects payment completion
+        FE->>GW: GET /checkout/payment-status/:orderId
+        GW->>CS: TCP: get-payment-status
+        CS->>DB: Check Order Status (PAID)
+        DB-->>CS: PAID
+        CS-->>FE: SUCCESS
+    end
+    FE->>User: Redirect to /payment-success
+```
 
 ### Transaction Lifecycle Steps:
 1. **User Action**: The user selects a size on the Product Detail Page and clicks **Buy Now**.
