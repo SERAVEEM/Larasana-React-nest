@@ -134,7 +134,7 @@
   margin-top: 1rem;
   text-align: left;
   font-weight: 400;
-  margin-left: 1rem;
+  margin-left: 0.1rem;
 }
 
 .image-caption-history {
@@ -198,14 +198,26 @@
   transition: transform 0.8s ease-out;
 }
 
-.section-text:hover .section-desc-wrapper,
+/* Hover reveal effect on desktop viewports */
+@media (hover: hover) and (min-width: 993px) {
+  .section-text:hover .section-desc-wrapper {
+    grid-template-rows: 1fr;
+    margin-top: 1.5rem;
+    opacity: 1;
+  }
+
+  .section-text:hover .section-description {
+    transform: translateY(0);
+  }
+}
+
+/* Click expanded state (applies to all viewports if toggled) */
 .section-text.is-expanded .section-desc-wrapper {
   grid-template-rows: 1fr;
   margin-top: 1.5rem;
   opacity: 1;
 }
 
-.section-text:hover .section-description,
 .section-text.is-expanded .section-description {
   transform: translateY(0);
 }
@@ -240,11 +252,13 @@
 
 .main-quote {
   font-family: 'Gelasio', serif;
-  font-size: 4rem;
+  font-size: clamp(3.2rem, 5.5vw, 5.5rem);
   font-style: italic;
-  color: #1a1a1a;
+  color: #0a0a0a;
   margin: 0;
   font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
 }
 
 
@@ -254,11 +268,16 @@
   .story-section {
     flex-direction: column !important;
     gap: 3rem;
-    text-align: center;
+    text-align: left;
+    align-items: flex-start !important;
+  }
+
+  .history-section {
+    flex-direction: column-reverse !important;
   }
 
   .section-text {
-    align-items: center;
+    align-items: flex-start;
   }
 
   .section-title {
@@ -280,6 +299,12 @@
     aspect-ratio: 2 / 3 !important;
     flex: none !important;
     margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+
+  .image-caption-history {
+    text-align: left !important;
+    margin-left: 1rem !important;
     margin-right: 0 !important;
   }
 
@@ -288,7 +313,8 @@
   }
 
   .main-quote {
-    font-size: 2.5rem !important;
+    font-size: 3.2rem !important;
+    line-height: 1.3;
   }
 }
 
@@ -302,7 +328,8 @@
   }
 
   .main-quote {
-    font-size: 1.6rem !important;
+    font-size: 2.2rem !important;
+    line-height: 1.35;
   }
 
   .quote-section {

@@ -53,7 +53,7 @@ const StoryPage = () => {
               <img src={ASSETS.story.legacy} alt="The Legacy" className="section-img" />
               <p className="image-caption">Lombok, 2024</p>
             </div>
-            <div 
+            <div
               className={`section-text ${isLegacyExpanded ? 'is-expanded' : ''}`}
               onClick={() => setIsLegacyExpanded(!isLegacyExpanded)}
               style={{ cursor: 'pointer' }}
@@ -64,7 +64,7 @@ const StoryPage = () => {
                 <div className="section-desc-inner">
                   <p className="section-description">
                     From the heart of lombok, every thread carries the whispers <br />
-                     of history and the spirit of its people. The artistry of weaving <br />
+                    of history and the spirit of its people. The artistry of weaving <br />
                     is more than craft - it is a living legacy, passed down through <br />
                     generations with devotion and pride
                     <br /><br />
@@ -80,7 +80,7 @@ const StoryPage = () => {
 
           {/* Section 2: The History */}
           <motion.section className="story-section history-section" {...fadeInUp}>
-            <div 
+            <div
               className={`section-text ${isHistoryExpanded ? 'is-expanded' : ''}`}
               onClick={() => setIsHistoryExpanded(!isHistoryExpanded)}
               style={{ cursor: 'pointer' }}
@@ -121,7 +121,7 @@ const StoryPage = () => {
               <img src={ASSETS.story.story} alt="The Story" className="section-img" />
               <p className="image-caption">Amaq, 2025</p>
             </div>
-            <div 
+            <div
               className={`section-text ${isStoryExpanded ? 'is-expanded' : ''}`}
               onClick={() => setIsStoryExpanded(!isStoryExpanded)}
               style={{ cursor: 'pointer' }}

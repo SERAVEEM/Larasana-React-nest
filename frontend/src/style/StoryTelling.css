@@ -468,4 +468,8 @@
   .st-active-impact .st-line {
     opacity: 0;
   }
+
+  .st-card--story .st-card__img {
+    object-position: center 15%;
+  }
 }

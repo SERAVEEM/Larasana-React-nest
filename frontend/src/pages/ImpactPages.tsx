@@ -1,7 +1,7 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import '../style/impactPages.css';
 import { ASSETS } from '../utils/assets';
-
 
 const fadeInUpInitial = { opacity: 0, y: 50 };
 const fadeInUpWhileInView = { opacity: 1, y: 0 };
@@ -34,6 +34,7 @@ const partnerLogos = [
   { name: 'YCAB Ventures', image: ASSETS.impact.ycab },
   { name: 'UNESCO', image: ASSETS.impact.unesco }
 ] as const;
+
 const programsData = [
   {
     category: 'Collaboration',
@@ -56,6 +57,26 @@ const programsData = [
 ];
 
 const ImpactPages = () => {
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect device size to toggle interactions (hover for desktop, click for mobile)
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  const toggleSection = (id: string) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   return (
     <div className="impact-page">
       <main className="impact-hero">
@@ -113,10 +134,18 @@ const ImpactPages = () => {
               loading="lazy"
             />
           ))}
+          {/* Duplicate logos for mobile infinite marquee loop */}
+          {partnerLogos.map((logo, index) => (
+            <img
+              key={`${logo.name}-${index}-dup`}
+              src={logo.image}
+              alt={logo.name}
+              className={`impact-partners__logo impact-partners__logo--dup ${logo.name === 'Wonderful Indonesia' ? 'impact-partners__logo--wi' : ''}`}
+              loading="lazy"
+            />
+          ))}
         </div>
       </section>
-
-    
 
       <section className="impact-programs-wrapper">
         <motion.h2 
@@ -150,55 +179,63 @@ const ImpactPages = () => {
       </section>
 
       <section className="impact-sections-wrapper">
-        {impactSections.map((section, index) => (
-          <article
-            key={section.id}
-            id={section.id}
-            className="impact-section impact-section--with-image"
-          >
-            <div className="impact-section__inner">
-              <motion.div
-                className="impact-section__text"
-                initial={fadeInUpInitial}
-                whileInView={fadeInUpWhileInView}
-                viewport={fadeInUpViewport}
-                transition={{
-                  duration: 1,
-                  ease: 'easeInOut',
-                  delay: 0.1 * (index + 1),
-                }}
-              >
-                <h2 className="impact-section__title">{section.title}</h2>
-                <div className="impact-section__desc-wrapper">
-                  <div className="impact-section__desc-inner">
-                    <p className="impact-section__desc">{section.description}</p>
+        {impactSections.map((section, index) => {
+          const isExpanded = !!expandedSections[section.id];
+          return (
+            <article
+              key={section.id}
+              id={section.id}
+              className="impact-section impact-section--with-image"
+            >
+              <div className="impact-section__inner">
+                <motion.div
+                  className="impact-section__text"
+                  onClick={() => toggleSection(section.id)}
+                  style={{ cursor: isMobile ? 'pointer' : 'default' }}
+                  initial={fadeInUpInitial}
+                  whileInView={fadeInUpWhileInView}
+                  viewport={fadeInUpViewport}
+                  transition={{
+                    duration: 1,
+                    ease: 'easeInOut',
+                    delay: 0.1 * (index + 1),
+                  }}
+                >
+                  <h2 className="impact-section__title">{section.title}</h2>
+                  <div className={`impact-section__desc-wrapper ${isExpanded ? 'is-expanded' : ''}`}>
+                    <div className="impact-section__desc-inner">
+                      <p className="impact-section__desc">{section.description}</p>
+                    </div>
                   </div>
-                </div>
-                <p className="impact-section__prompt">
-                  Click For More Information!
-                </p>
-              </motion.div>
+                  <p className="impact-section__prompt">
+                    {isMobile 
+                      ? (isExpanded ? 'Click to hide details' : 'Click For More Information!')
+                      : 'Click for more information!'
+                    }
+                  </p>
+                </motion.div>
 
-              <motion.div
-                className="impact-section__image-wrap"
-                initial={{ opacity: 0, x: 60 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 1, ease: 'easeOut' }}
-              >
-                <img
-                  src={section.image}
-                  alt={section.title}
-                  className="impact-section__image"
-                  loading="lazy"
-                />
-              </motion.div>
-            </div>
-            {index < impactSections.length - 1 && (
-              <hr className="impact-divider" />
-            )}
-          </article>
-        ))}
+                <motion.div
+                  className="impact-section__image-wrap"
+                  initial={{ opacity: 0, x: 60 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ duration: 1, ease: 'easeOut' }}
+                >
+                  <img
+                    src={section.image}
+                    alt={section.title}
+                    className="impact-section__image"
+                    loading="lazy"
+                  />
+                </motion.div>
+              </div>
+              {index < impactSections.length - 1 && (
+                <hr className="impact-divider" />
+              )}
+            </article>
+          );
+        })}
       </section>
     </div>
   );

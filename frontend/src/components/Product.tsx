@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import type { FC } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { client } from '../api/client';
+import { ServiceContainer } from '../core/di/ServiceContainer';
+import { ProductService } from '../core/services/ProductService';
 
 import '../style/HeroShowcase.css';
 
@@ -20,22 +21,22 @@ const cardVariants = {
 };
 
 const Product: FC = () => {
+  const productService = ServiceContainer.resolve<ProductService>('ProductService');
   const [products, setProducts] = useState<ProductCard[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
   const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
-    client.get('/products')
-      .then((res) => {
+    productService.getPublicProducts()
+      .then((items) => {
         if (active) {
-          const rawList = res.data.data || [];
-          const formatted = rawList.map((p: any) => ({
-            id: p.id.toString(),
-            image: p.thumbnailUrl || (p.images && p.images[0]?.url) || '/images/product/far left.png',
+          const formatted = items.map((p) => ({
+            id: p.id,
+            image: p.image || '/images/product/far left.png',
             name: p.name,
-            price: '$' + Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-            rating: p.averageRating ? Number(p.averageRating).toFixed(1) : '5.0',
+            price: p.price,
+            rating: p.averageRating.toFixed(1),
           }));
           setProducts(formatted);
         }
@@ -46,10 +47,9 @@ const Product: FC = () => {
 
     const token = localStorage.getItem('larasana_auth_token');
     if (token) {
-      client.get('/favorites')
-        .then((res) => {
+      productService.getFavorites()
+        .then((favs) => {
           if (active) {
-            const favs = res.data.data || [];
             const ids = new Set<number>(favs.map((f: any) => Number(f.productId)));
             setFavoriteIds(ids);
           }
@@ -60,7 +60,7 @@ const Product: FC = () => {
     return () => {
       active = false;
     };
-  }, []);
+  }, [productService]);
 
   const handleFavoriteToggle = async (productId: number) => {
     const token = localStorage.getItem('larasana_auth_token');
@@ -71,21 +71,16 @@ const Product: FC = () => {
 
     try {
       const isFav = favoriteIds.has(productId);
-      if (isFav) {
-        await client.delete(`/favorites/${productId}`);
-        setFavoriteIds(prev => {
-          const next = new Set(prev);
+      await productService.toggleFavorite(productId.toString(), !isFav);
+      setFavoriteIds(prev => {
+        const next = new Set(prev);
+        if (isFav) {
           next.delete(productId);
-          return next;
-        });
-      } else {
-        await client.post(`/favorites/${productId}`);
-        setFavoriteIds(prev => {
-          const next = new Set(prev);
+        } else {
           next.add(productId);
-          return next;
-        });
-      }
+        }
+        return next;
+      });
     } catch (err) {
       console.error('Failed to toggle favorite:', err);
     }

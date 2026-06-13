@@ -1,8 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { client } from '../api/client';
+import { ServiceContainer } from '../core/di/ServiceContainer';
+import { CheckoutService } from '../core/services/CheckoutService';
+import { ProductService } from '../core/services/ProductService';
+import { Address } from '../core/domain/models/Address';
+import { ShippingOption } from '../core/domain/models/ShippingOption';
+import { Product } from '../core/domain/models/Product';
 import { showAlert } from '../utils/alerts';
-import type { Address, ShippingOption, CheckoutStepState } from '../types/checkout';
+import type { CheckoutStepState } from '../types/checkout';
 
 export const PAYMENT_METHODS = [
   {
@@ -29,13 +34,17 @@ export function useCheckout() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Resolve services from Dependency Injection Container
+  const checkoutService = ServiceContainer.resolve<CheckoutService>('CheckoutService');
+  const productService = ServiceContainer.resolve<ProductService>('ProductService');
+
   // Retrieve state passed from Product Detail page
   const { productId = '1', selectedSize = 'XL' } = (location.state || {}) as {
     productId?: string;
     selectedSize?: string;
   };
 
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [checkoutState, setCheckoutState] = useState<CheckoutStepState>('loading_details');
   const loading = checkoutState === 'loading_details';
 
@@ -53,7 +62,7 @@ export function useCheckout() {
 
   // State for new address form
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
-  const [newAddress, setNewAddress] = useState<Omit<Address, 'id'>>({
+  const [newAddress, setNewAddress] = useState<Omit<Address, 'id' | 'isIndonesian' | 'formattedRecipient' | 'fullAddressSummary' | 'isValidPhone' | 'isValidStreetAddress'>>({
     label: '',
     name: '',
     street: '',
@@ -72,13 +81,13 @@ export function useCheckout() {
   // Load cities list if Indonesian address is selected and form is shown
   useEffect(() => {
     if (newAddress.country === 'ID' && citiesList.length === 0 && showAddAddressForm) {
-      client.get('/shipping/cities')
+      checkoutService.getCitiesList()
         .then(res => {
-          setCitiesList(res.data || []);
+          setCitiesList(res || []);
         })
         .catch(err => console.error('Failed to load cities:', err));
     }
-  }, [newAddress.country, citiesList.length, showAddAddressForm]);
+  }, [newAddress.country, citiesList.length, showAddAddressForm, checkoutService]);
 
   useEffect(() => {
     setCitySearchQuery(newAddress.city);
@@ -106,59 +115,40 @@ export function useCheckout() {
     }
 
     // Fetch product details
-    let apiId = productId;
-    if (productId.startsWith('grid-')) {
-      apiId = productId.replace('grid-', '');
-    } else if (productId.startsWith('p')) {
-      apiId = productId.replace('p', '');
-    }
-
-    client.get(`/products/${apiId}`)
-      .then((res) => {
+    productService.getProductById(productId)
+      .then((p) => {
         if (active) {
-          const p = res.data;
-          const imageList = p.images && p.images.length > 0
-            ? p.images.map((img: any) => img.url)
-            : [p.thumbnailUrl || '/images/product/far left.png'];
-
-          setProduct({
-            id: p.id.toString(),
-            name: p.name,
-            price: Number(p.price),
-            images: imageList,
-          });
+          if (p) {
+            setProduct(p);
+          } else {
+            // Fallback product instantiation
+            setProduct(new Product({
+              id: productId,
+              name: 'Noir Enchanted Vest',
+              numericPrice: 120.00,
+              image: '/images/product/far left.png'
+            }));
+          }
           setCheckoutState('idle');
         }
       })
       .catch((err) => {
         console.error('Failed to fetch checkout product details:', err);
         if (active) {
-          setProduct({
+          setProduct(new Product({
             id: productId,
             name: 'Noir Enchanted Vest',
-            price: 120.00,
-            images: ['/images/product/far left.png']
-          });
+            numericPrice: 120.00,
+            image: '/images/product/far left.png'
+          }));
           setCheckoutState('idle');
         }
       });
 
     // Fetch user addresses
-    client.get('/addresses')
-      .then((res) => {
-        if (active && res.data && res.data.length > 0) {
-          const mapped: Address[] = res.data.map((addr: any) => ({
-            id: String(addr.id),
-            label: addr.label,
-            name: addr.recipientName,
-            street: addr.fullAddress,
-            district: addr.district,
-            city: addr.city,
-            province: addr.province,
-            postalCode: addr.postalCode,
-            country: addr.country || 'ID',
-            phone: addr.phone
-          }));
+    checkoutService.getAddresses()
+      .then((mapped) => {
+        if (active && mapped.length > 0) {
           setAddresses(mapped);
           setSelectedAddressId(mapped[0].id);
         }
@@ -168,36 +158,18 @@ export function useCheckout() {
     return () => {
       active = false;
     };
-  }, [productId, navigate]);
+  }, [productId, navigate, productService, checkoutService]);
 
   // Fetch shipping options whenever selected address changes
   const fetchShipping = (addressId: string) => {
     setShippingLoading(true);
     setShippingError(false);
-    const url = addressId ? `/shipping?addressId=${addressId}` : '/shipping';
 
-    client.get(url)
-      .then((res) => {
-        if (res.data && res.data.length > 0) {
-          const mapped: ShippingOption[] = res.data.map((ship: any) => ({
-            id: String(ship.id),
-            name: ship.label,
-            price: Number(ship.baseCost),
-            eta: ship.estimatedDays,
-            logo: ship.courier.toUpperCase()
-          }));
+    checkoutService.getShippingOptions(addressId)
+      .then((mapped) => {
+        if (mapped.length > 0) {
           setShippingOptions(mapped);
           setSelectedShippingId(mapped[0].id);
-        } else {
-          // Rich fallback mock rates
-          const fallback: ShippingOption[] = [
-            { id: 'mock-1', name: 'JNE Regular (REG)', price: 1.50, eta: '3-5 hari', logo: 'JNE' },
-            { id: 'mock-2', name: 'JNE YES (1 Day Service)', price: 3.20, eta: '1 hari', logo: 'JNE' },
-            { id: 'mock-3', name: 'POS Kilat Khusus', price: 1.20, eta: '4-7 hari', logo: 'POS' },
-            { id: 'mock-4', name: 'TIKI Regular', price: 1.40, eta: '4-6 hari', logo: 'TIKI' },
-          ];
-          setShippingOptions(fallback);
-          setSelectedShippingId(fallback[0].id);
         }
         setShippingLoading(false);
       })
@@ -215,7 +187,7 @@ export function useCheckout() {
     return () => { active = false; };
   }, [selectedAddressId]);
 
-  const selectedAddress = addresses.find(a => a.id === selectedAddressId) || {
+  const selectedAddress = addresses.find(a => a.id === selectedAddressId) || new Address({
     id: '',
     label: 'No Address',
     name: '',
@@ -226,9 +198,9 @@ export function useCheckout() {
     postalCode: '',
     country: 'ID',
     phone: ''
-  };
+  });
 
-  const isIndonesian = selectedAddress?.country === 'ID';
+  const isIndonesian = selectedAddress.isIndonesian;
 
   const formatPrice = (value: number): string => {
     if (isIndonesian) {
@@ -238,10 +210,10 @@ export function useCheckout() {
     return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  const selectedShipping = shippingOptions.find(s => s.id === selectedShippingId) || { id: '', name: 'No Carrier', price: 0, eta: '', logo: '' };
+  const selectedShipping = shippingOptions.find(s => s.id === selectedShippingId) || new ShippingOption({ id: '', name: 'No Carrier', price: 0, eta: '', logo: '' });
   const selectedPayment = PAYMENT_METHODS.find(p => p.id === selectedPaymentId) || PAYMENT_METHODS[0];
 
-  const basePrice = product ? product.price : 120.00;
+  const basePrice = product ? product.numericPrice : 120.00;
   const shippingFee = selectedShipping.price;
   const totalPrice = basePrice + shippingFee;
 
@@ -257,50 +229,37 @@ export function useCheckout() {
   const handleAddAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     if (checkoutState !== 'idle') return;
-    if (!newAddress.label || !newAddress.name || !newAddress.street || !newAddress.phone) return;
 
-    // Client-side phone format validation
-    const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,10}$/;
-    if (!phoneRegex.test(newAddress.phone)) {
+    // Instantiate Address domain model to encapsulate fields and validations
+    const tempAddress = new Address({
+      id: '',
+      label: newAddress.label,
+      name: newAddress.name,
+      street: newAddress.street,
+      district: newAddress.district || '-',
+      city: newAddress.city || '-',
+      province: newAddress.province || '-',
+      postalCode: newAddress.postalCode || '00000',
+      country: newAddress.country || 'ID',
+      phone: newAddress.phone
+    });
+
+    if (!tempAddress.label || !tempAddress.name || !tempAddress.street || !tempAddress.phone) return;
+
+    // Validate using domain model behaviors (OOP Encapsulation)
+    if (!tempAddress.isValidPhone()) {
       showAlert('Format nomor HP tidak valid. Gunakan format Indonesia (e.g. 081234567890).');
       return;
     }
 
-    // Client-side street address length validation
-    if (newAddress.street.length < 10) {
+    if (!tempAddress.isValidStreetAddress()) {
       showAlert('Alamat lengkap minimal 10 karakter.');
       return;
     }
 
     setCheckoutState('saving_address');
     try {
-      const payload = {
-        label: newAddress.label,
-        recipientName: newAddress.name,
-        phone: newAddress.phone,
-        fullAddress: newAddress.street,
-        district: newAddress.district || '-',
-        city: newAddress.city || '-',
-        province: newAddress.province || '-',
-        postalCode: newAddress.postalCode || '00000',
-        country: newAddress.country || 'ID'
-      };
-
-      const res = await client.post('/addresses', payload);
-
-      const added: Address = {
-        id: String(res.data.id),
-        label: res.data.label,
-        name: res.data.recipientName,
-        street: res.data.fullAddress,
-        district: res.data.district,
-        city: res.data.city,
-        province: res.data.province,
-        postalCode: res.data.postalCode,
-        country: res.data.country || 'ID',
-        phone: res.data.phone
-      };
-
+      const added = await checkoutService.addAddress(tempAddress);
       setAddresses([...addresses, added]);
       setSelectedAddressId(added.id);
       setShowAddAddressForm(false);
@@ -324,11 +283,12 @@ export function useCheckout() {
       showAlert('Silakan pilih kurir pengiriman terlebih dahulu.');
       return;
     }
+    if (!product) return;
 
     setCheckoutState('submitting_checkout');
     try {
       const payMethod = selectedPayment.name === 'QRIS' ? 'qris' : 'bank_transfer';
-      const res = await client.post('/checkout', {
+      const res = await checkoutService.submitCheckout({
         items: [{ productId: Number(product.id), quantity: 1 }],
         addressId: Number(selectedAddressId),
         shippingMethodId: Number(selectedShippingId),
@@ -336,18 +296,18 @@ export function useCheckout() {
       });
 
       setCheckoutState('checkout_completed');
-      if (res.data.payment?.paymentUrl) {
-        window.location.href = res.data.payment.paymentUrl;
+      if (res.payment?.paymentUrl) {
+        window.location.href = res.payment.paymentUrl;
       } else {
         navigate('/payment', {
           state: {
-            order: res.data.order,
-            payment: res.data.payment,
+            order: res.order,
+            payment: res.payment,
             product: {
               id: productId,
               name: product.name,
               price: basePrice,
-              image: product.images[0],
+              image: product.image,
               size: selectedSize
             },
             pricing: {

@@ -60,14 +60,26 @@
     transition: transform 0.8s ease-out;
 }
 
-.about-text:hover .about-desc-wrapper,
+/* Hover reveal effect on desktop viewports */
+@media (hover: hover) and (min-width: 1025px) {
+    .about-text:hover .about-desc-wrapper {
+        grid-template-rows: 1fr;
+        margin-top: 2rem;
+        opacity: 1;
+    }
+
+    .about-text:hover .about-desc {
+        transform: translateY(0);
+    }
+}
+
+/* Click expanded state (applies to all viewports if toggled) */
 .about-text.is-expanded .about-desc-wrapper {
     grid-template-rows: 1fr;
     margin-top: 2rem;
     opacity: 1;
 }
 
-.about-text:hover .about-desc,
 .about-text.is-expanded .about-desc {
     transform: translateY(0);
 }
@@ -122,14 +134,26 @@
     transition: transform 0.8s ease-out;
 }
 
-.missions-text:hover .missions-desc-wrapper,
+/* Hover reveal effect on desktop viewports */
+@media (hover: hover) and (min-width: 1025px) {
+    .missions-text:hover .missions-desc-wrapper {
+        grid-template-rows: 1fr;
+        margin-top: 2rem;
+        opacity: 1;
+    }
+
+    .missions-text:hover .missions-desc {
+        transform: translateY(0);
+    }
+}
+
+/* Click expanded state (applies to all viewports if toggled) */
 .missions-text.is-expanded .missions-desc-wrapper {
     grid-template-rows: 1fr;
     margin-top: 2rem;
     opacity: 1;
 }
 
-.missions-text:hover .missions-desc,
 .missions-text.is-expanded .missions-desc {
     transform: translateY(0);
 }
@@ -305,10 +329,14 @@
 /* Responsive */
 @media (max-width: 1024px) {
 
-    .about-section,
+    .about-section {
+        flex-direction: column-reverse !important;
+        text-align: left;
+    }
+
     .missions-section {
         flex-direction: column;
-        text-align: center;
+        text-align: left;
     }
 
     /* Descriptions remain collapsed by default on mobile and expand on click */

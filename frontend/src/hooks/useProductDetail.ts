@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { client } from '../api/client';
+import { ServiceContainer } from '../core/di/ServiceContainer';
+import { ProductService } from '../core/services/ProductService';
 import type { Product, ProductListItem } from '../types/product';
 import weaverImg from '../assets/images/product/weaver_portrait.png';
 
 export function useProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  const productService = ServiceContainer.resolve<ProductService>('ProductService');
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,14 +44,18 @@ export function useProductDetail() {
 
   // Fetch product list for catalog navigation on mount
   useEffect(() => {
-    client.get('/products')
-      .then((res) => {
-        setProductList(res.data.data || []);
+    productService.getPublicProducts()
+      .then((products) => {
+        setProductList(products.map(p => ({
+          id: Number(p.id),
+          name: p.name,
+          price: p.numericPrice
+        })));
       })
       .catch((err) => {
         console.error('Failed to load product list for navigation:', err);
       });
-  }, []);
+  }, [productService]);
 
   // Fetch individual product details and check like status on id change
   useEffect(() => {
@@ -79,33 +86,15 @@ export function useProductDetail() {
       apiId = id.replace('p', '');
     }
 
-    client.get(`/products/${apiId}`)
-      .then((res) => {
+    productService.getProductById(apiId)
+      .then((p) => {
         if (active) {
-          const p = res.data;
-          const formattedPrice = '$' + Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          const sizeList = p.sizes ? (typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes) : ['S', 'M', 'L', 'XL', 'XXL'];
-          const imageList = p.images && p.images.length > 0
-            ? p.images.map((img: any) => img.url)
-            : [p.thumbnailUrl || '/images/product/far left.png'];
-
-          setProduct({
-            id: p.id.toString(),
-            name: p.name,
-            price: formattedPrice,
-            description: p.description,
-            images: imageList,
-            sizes: sizeList,
-            qrCode: p.qrCodeUrl || '/images/product/authenticity_qr.png',
-            weaver: {
-              name: p.weaverName || 'Yulia Andirtia',
-              bio: p.weaverBio || 'Crafted by Yulia Andirtia from the edge of Lombok, this vest carries fragments of ancestral memory through every woven thread. Inspired by volcanic landscapes, island folklore, and starlit nights, this piece reflects the harmony between timeless heritage and contemporary elegance.',
-              image: p.weaverImageUrl || weaverImg
+          if (p) {
+            setProduct(p as any);
+            setActiveImageIndex(0);
+            if (p.sizes.length > 0) {
+              setSelectedSize(p.sizes[0]);
             }
-          });
-          setActiveImageIndex(0);
-          if (sizeList.length > 0) {
-            setSelectedSize(sizeList[0]);
           }
           setLoading(false);
         }
@@ -117,10 +106,10 @@ export function useProductDetail() {
 
     const token = localStorage.getItem('larasana_auth_token');
     if (token) {
-      client.get(`/favorites/check/${apiId}`)
-        .then((res) => {
+      productService.checkFavoriteStatus(apiId)
+        .then((isFavorited) => {
           if (active) {
-            setIsLiked(res.data.isFavorited);
+            setIsLiked(isFavorited);
           }
         })
         .catch((err) => console.error('Failed to check favorite status:', err));
@@ -185,13 +174,9 @@ export function useProductDetail() {
     if (!product) return;
 
     try {
-      if (isLiked) {
-        await client.delete(`/favorites/${product.id}`);
-        setIsLiked(false);
-      } else {
-        await client.post(`/favorites/${product.id}`);
-        setIsLiked(true);
-      }
+      const nextLiked = !isLiked;
+      await productService.toggleFavorite(product.id, nextLiked);
+      setIsLiked(nextLiked);
     } catch (err) {
       console.error('Failed to toggle favorite:', err);
     }

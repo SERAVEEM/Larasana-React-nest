@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { client } from '../api/client';
+import { ServiceContainer } from '../core/di/ServiceContainer';
+import { CheckoutService } from '../core/services/CheckoutService';
 import { showAlert } from '../utils/alerts';
 import type { OrderDetails, PaymentState } from '../types/payment';
 
 export function usePayment() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const checkoutService = ServiceContainer.resolve<CheckoutService>('CheckoutService');
 
   const orderDetails = (location.state as OrderDetails) || ({
     product: {
@@ -92,9 +95,9 @@ export function usePayment() {
     if (!orderDetails.order?.id || paymentState === 'success' || paymentState === 'expired') return;
 
     const interval = setInterval(() => {
-      client.get(`/checkout/payment-status/${orderDetails.order.id}`)
+      checkoutService.getPaymentStatus(orderDetails.order.id)
         .then((res) => {
-          if (res.data.paymentStatus === 'paid' || res.data.orderStatus === 'processing') {
+          if (res.paymentStatus === 'paid' || res.orderStatus === 'processing') {
             clearInterval(interval);
             setPaymentState('success');
             navigate('/payment-success', {
@@ -112,7 +115,7 @@ export function usePayment() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [orderDetails, navigate, totalAmount, paymentState]);
+  }, [orderDetails, navigate, totalAmount, paymentState, checkoutService]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -125,8 +128,8 @@ export function usePayment() {
     setPaymentState('verifying');
 
     try {
-      const res = await client.get(`/checkout/payment-status/${orderDetails.order.id}`);
-      if (res.data.paymentStatus === 'paid' || res.data.orderStatus === 'processing') {
+      const res = await checkoutService.getPaymentStatus(orderDetails.order.id);
+      if (res.paymentStatus === 'paid' || res.orderStatus === 'processing') {
         setPaymentState('success');
         navigate('/payment-success', {
           state: {

@@ -1,6 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
-import { getProductsAsync, getOrdersAsync, getDashboardStatsAsync, formatUSD } from '../api/adminService';
-import type { Product, Order, DashboardStats } from '../api/adminService';
+import { ServiceContainer } from '../core/di/ServiceContainer';
+import { ProductService } from '../core/services/ProductService';
+import { OrderService } from '../core/services/OrderService';
+import { Product } from '../core/domain/models/Product';
+import { Order } from '../core/domain/models/Order';
+import type { DashboardStats } from '../api/adminService';
 
 export type FilterType = 'Daily' | 'Weekly' | 'Monthly' | 'Yearly';
 export type GraphFilterType = 'Weekly' | 'Monthly' | 'Yearly';
@@ -9,17 +13,26 @@ export function useAdminDashboard() {
   const [timeFilter, setTimeFilter] = useState<FilterType>('Monthly');
   const [graphFilter, setGraphFilter] = useState<GraphFilterType>('Monthly');
 
+  // Resolve services from Dependency Injection Container
+  const productService = ServiceContainer.resolve<ProductService>('ProductService');
+  const orderService = ServiceContainer.resolve<OrderService>('OrderService');
+
   // Load products, orders, and dashboard stats asynchronously
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch all dashboard metrics from the backend DB on mount
+  // Fetch all dashboard metrics from the services on mount
   useEffect(() => {
     let active = true;
     setLoading(true);
-    Promise.all([getProductsAsync(), getOrdersAsync(), getDashboardStatsAsync()])
+    
+    Promise.all([
+      productService.getProducts(), 
+      orderService.getOrders(), 
+      orderService.getDashboardStats()
+    ])
       .then(([productsData, ordersData, statsData]) => {
         if (active) {
           setProducts(productsData);
@@ -34,10 +47,18 @@ export function useAdminDashboard() {
           setLoading(false);
         }
       });
+
     return () => {
       active = false;
     };
-  }, []);
+  }, [productService, orderService]);
+
+  // Helper format function for currency inside hook
+  const formatUSD = (value: number | string): string => {
+    const num = Number(value);
+    if (isNaN(num)) return '$0.00';
+    return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
 
   // Compute metrics dynamically based on actual database state
   const totalRevenue = useMemo(() => {
