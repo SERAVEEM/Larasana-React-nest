@@ -29,3 +29,8 @@ frontend/src/assets/video/
 
 skills/SKILL.md
 .agent/
+
+skills/*
+
+
+.env.development 

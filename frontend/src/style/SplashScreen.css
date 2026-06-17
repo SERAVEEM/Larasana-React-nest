@@ -41,4 +41,39 @@
   transform: translateY(0);
 }
 
+/* Premium Logo Typography with Hardware-Accelerated Shimmer CSS */
+.splash-screen__logo {
+  font-family: 'Linotype Didot Bold', 'GFS Didot', serif;
+  font-size: clamp(2.2rem, 8vw, 4.5rem);
+  font-weight: bold;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+  text-align: center;
+  background: linear-gradient(
+    90deg,
+    #222222 0%,
+    #555555 25%,
+    #ffffff 50%,
+    #555555 75%,
+    #222222 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: logoShimmer 2s linear infinite;
+  display: inline-block;
+  will-change: background-position;
+}
+
+@keyframes logoShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 

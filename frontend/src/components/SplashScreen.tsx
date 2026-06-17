@@ -123,35 +123,9 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       aria-hidden={slideUp}
     >
       <div className="splash-screen__content">
-        <svg viewBox="0 0 1000 200" className="splash-screen__svg" style={{ width: '95vw', maxWidth: '900px' }}>
-          <defs>
-            <linearGradient id="shimmer" x1="-100%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#222222" />
-              <stop offset="25%" stopColor="#555555" />
-              <stop offset="50%" stopColor="#ffffff" />
-              <stop offset="75%" stopColor="#555555" />
-              <stop offset="100%" stopColor="#222222" />
-              <animate attributeName="x1" from="-100%" to="100%" dur="2s" repeatCount="indefinite" />
-              <animate attributeName="x2" from="0%" to="200%" dur="2s" repeatCount="indefinite" />
-            </linearGradient>
-          </defs>
-          <text 
-            x="50%" 
-            y="50%" 
-            textAnchor="middle" 
-            dominantBaseline="central" 
-            fill="url(#shimmer)" 
-            style={{
-              fontFamily: "'Linotype Didot Bold', 'GFS Didot', serif",
-              fontSize: '72px',
-              fontWeight: 'bold',
-              letterSpacing: '0.25em',
-              textTransform: 'uppercase'
-            }}
-          >
-            Larasana
-          </text>
-        </svg>
+        <h1 className="splash-screen__logo">
+          Larasana
+        </h1>
         
 
       </div>
