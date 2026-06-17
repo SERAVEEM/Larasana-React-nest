@@ -39,7 +39,7 @@ export default function HeroShowcase() {
   const whiteBgRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // 1. Detect device viewport to branch layout
+  // 1. Detect device viewport to branch 
   useEffect(() => {
     const checkDevice = () => {
       setIsMobile(window.innerWidth <= 768);

@@ -8,7 +8,44 @@ interface SplashScreenProps {
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [slideUp, setSlideUp] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isFontReady, setIsFontReady] = useState(false);
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
+  // 1. Font loading validation
+  useEffect(() => {
+    let active = true;
+
+    const checkFonts = async () => {
+      if (document.fonts) {
+        try {
+          // Attempt to load the brand custom fonts and fallback serif
+          await Promise.all([
+            document.fonts.load("bold 72px 'Linotype Didot Bold'"),
+            document.fonts.load("72px 'GFS Didot'")
+          ]);
+        } catch (e) {
+          console.warn("Font loading failed, proceeding with fallback fonts:", e);
+        }
+      }
+      if (active) {
+        setIsFontReady(true);
+      }
+    };
+
+    checkFonts();
+
+    // 3-second safety fallback for font loading
+    const fontTimer = setTimeout(() => {
+      if (active) setIsFontReady(true);
+    }, 3000);
+
+    return () => {
+      active = false;
+      clearTimeout(fontTimer);
+    };
+  }, []);
+
+  // 2. Page and video download progress tracking
   useEffect(() => {
     // Lock scrolling on document body and html (Lenis) while splash screen is active
     document.body.style.overflow = 'hidden';
@@ -28,7 +65,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     };
 
     const handleVideoReady = () => {
-      checkReady();
+      setIsLoaded(true);
     };
 
     // Check if document is already loaded
@@ -40,8 +77,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
     window.addEventListener('hero-video-ready', handleVideoReady);
 
-    // Fallback safety timer: 15s on homepage for 80MB video asset, 5s on other pages
-    const timeoutDuration = window.location.pathname === '/' ? 15000 : 5000;
+    // Fallback safety timer: 60s on homepage for video, 5s on other pages
+    const timeoutDuration = window.location.pathname === '/' ? 60000 : 5000;
     const fallbackTimer = setTimeout(() => {
       setIsLoaded(true);
     }, timeoutDuration);
@@ -55,29 +92,35 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     };
   }, []);
 
+  // 3. Start minimum display timer once the entrance animation starts (fonts are ready)
   useEffect(() => {
-    if (isLoaded) {
-      // Ensure the splash screen is visible for a minimum of 1.5s so the animation plays smoothly
-      const minDurationTimer = setTimeout(() => {
-        setSlideUp(true);
-      }, 1500);
+    if (isFontReady) {
+      const timer = setTimeout(() => {
+        setMinTimeElapsed(true);
+      }, 4000); // 4s to let the entrance and shimmer animations play fully
 
-      return () => clearTimeout(minDurationTimer);
+      return () => clearTimeout(timer);
     }
-  }, [isLoaded]);
+  }, [isFontReady]);
+
+  // 4. Coordinate transition sequence: slide up only when everything is loaded AND the minimum animation time has elapsed
+  useEffect(() => {
+    if (isLoaded && isFontReady && minTimeElapsed) {
+      setSlideUp(true);
+    }
+  }, [isLoaded, isFontReady, minTimeElapsed]);
 
   const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
-    // Unmount once the slide-up transform (or opacity for reduced motion) finishes
-    if (e.propertyName === 'transform' || e.propertyName === 'opacity') {
+    if (e.target === e.currentTarget && (e.propertyName === 'transform' || e.propertyName === 'opacity')) {
       onComplete();
     }
   };
 
   return (
     <div 
-      className={`splash-screen ${slideUp ? 'splash-screen--slide-up' : ''}`}
+      className={`splash-screen ${slideUp ? 'splash-screen--slide-up' : ''} ${isFontReady ? 'splash-screen--ready' : ''}`}
       onTransitionEnd={handleTransitionEnd}
-      aria-hidden="true"
+      aria-hidden={slideUp}
     >
       <div className="splash-screen__content">
         <svg viewBox="0 0 1000 200" className="splash-screen__svg" style={{ width: '95vw', maxWidth: '900px' }}>
@@ -109,6 +152,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             Larasana
           </text>
         </svg>
+        
+
       </div>
     </div>
   );

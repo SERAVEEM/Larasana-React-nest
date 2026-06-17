@@ -12,16 +12,52 @@ export default function Hero() {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (video && video.readyState >= 3) {
-      handleVideoReady();
+    if (!video) return;
+
+    const handleProgress = () => {
+      if (video.duration && video.buffered.length > 0) {
+        let maxBuffered = 0;
+        for (let i = 0; i < video.buffered.length; i++) {
+          const end = video.buffered.end(i);
+          if (end > maxBuffered) {
+            maxBuffered = end;
+          }
+        }
+        
+        const percent = Math.min(100, Math.round((maxBuffered / video.duration) * 100));
+        window.dispatchEvent(new CustomEvent('hero-video-progress', { detail: { percent } }));
+        
+        if (percent >= 100) {
+          handleVideoReady();
+        }
+      } else if (video.readyState >= 3) {
+        window.dispatchEvent(new CustomEvent('hero-video-progress', { detail: { percent: 100 } }));
+        handleVideoReady();
+      }
+    };
+
+    if (video.readyState >= 3) {
+      handleProgress();
     }
 
-    // Safety fallback: if video doesn't load in 3 seconds, proceed anyway
-    const timer = setTimeout(() => {
-      handleVideoReady();
-    }, 3000);
+    video.addEventListener('progress', handleProgress);
+    video.addEventListener('timeupdate', handleProgress);
+    video.addEventListener('canplaythrough', handleProgress);
+    video.addEventListener('loadedmetadata', handleProgress);
 
-    return () => clearTimeout(timer);
+    // Network safety fallback: 60s to prevent getting stuck if download hangs
+    const safetyTimer = setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('hero-video-progress', { detail: { percent: 100 } }));
+      handleVideoReady();
+    }, 60000);
+
+    return () => {
+      video.removeEventListener('progress', handleProgress);
+      video.removeEventListener('timeupdate', handleProgress);
+      video.removeEventListener('canplaythrough', handleProgress);
+      video.removeEventListener('loadedmetadata', handleProgress);
+      clearTimeout(safetyTimer);
+    };
   }, []);
 
   return (

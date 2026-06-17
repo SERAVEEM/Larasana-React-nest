@@ -36,12 +36,9 @@ const AdminOrders = lazy(() => import('./pages/admin/AdminOrders.tsx'));
 const AdminOrderDetails = lazy(() => import('./pages/admin/AdminOrderDetails.tsx'));
 
 function RootApp() {
-  const [showSplash, setShowSplash] = useState(() => {
-    return sessionStorage.getItem('larasana_splash_shown') !== 'true';
-  });
+  const [showSplash, setShowSplash] = useState(true);
 
   const handleSplashComplete = () => {
-    sessionStorage.setItem('larasana_splash_shown', 'true');
     setShowSplash(false);
   };
 

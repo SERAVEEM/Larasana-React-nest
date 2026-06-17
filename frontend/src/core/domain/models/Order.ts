@@ -108,7 +108,7 @@ export class Order {
 
   getFormattedAmount(currency: 'USD' | 'IDR'): string {
     if (currency === 'IDR') {
-      const idrValue = this.numericAmount * 15000;
+      const idrValue = this.numericAmount * 18000;
       return 'Rp ' + idrValue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
     return this.amount;
