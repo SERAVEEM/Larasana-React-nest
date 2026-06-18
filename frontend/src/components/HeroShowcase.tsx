@@ -240,7 +240,7 @@ export default function HeroShowcase() {
                       <div className="hs-details-rating">★ {activeItem.rating}</div>
                     </div>
                     <div className="hs-details-price">{activeItem.price}</div>
-                    
+
                     <div className="hs-details-actions">
                       <Link to={`/product/${activeItem.id}`} className="hs-details-cta">
                         Discover Piece
@@ -379,15 +379,15 @@ export default function HeroShowcase() {
           >
             {itemsToRender.map((item) => (
               item.empty ? (
-                <div 
-                  key={item.id} 
+                <div
+                  key={item.id}
                   className="hs-grid-item empty"
                   style={{ '--item-width': `${slidePercent}%` } as React.CSSProperties}
                 />
               ) : (
-                <Link 
-                  key={item.id} 
-                  to={`/product/${item.id}`} 
+                <Link
+                  key={item.id}
+                  to={`/product/${item.id}`}
                   className="hs-grid-item"
                   style={{ '--item-width': `${slidePercent}%` } as React.CSSProperties}
                 >

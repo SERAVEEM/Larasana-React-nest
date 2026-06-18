@@ -397,3 +397,73 @@ When deploying to live servers, configure these variables directly in your cloud
 * **`VITE_API_BASE_URL`**: `https://larasana-react-nest-production.up.railway.app/api/v1` *(points to your Railway URL)*
 * **`VITE_FRONTEND_CLIENT_SECRET`**: `9f7a84e27b134d98a0d0c3ebf5d21a94b8e0f1712a45c36b8e8f810e20349b1a` *(matches Railway)*
 * **`VITE_GOOGLE_CLIENT_ID`**: `187543062960-7uub7cnc0dknlm30ee2h427rvccast7i.apps.googleusercontent.com` *(must be whitelisted in Google Developer Console origins)*
+
+---
+
+## 9. Frontend Design Tokens System
+
+To maintain visual consistency and pixel-perfect design alignment, LARASANA enforces a centralized CSS variables configuration in `index.css`:
+
+### A. Spacing Scale (4pt Grid)
+All element layouts, margins, gaps, and paddings must align to a strict 4px grid. Inline styles using raw values are discouraged. Use these tokens instead:
+* `--space-1` (4px), `--space-2` (8px), `--space-3` (12px), `--space-4` (16px), `--space-5` (20px), `--space-6` (24px)
+* `--space-8` (32px), `--space-10` (40px), `--space-12` (48px), `--space-16` (64px), `--space-24` (96px)
+
+### B. Typography Hierarchy (Fluid Clamp)
+Text elements use fluid typography to scale smoothly between mobile and desktop devices without breaking layouts:
+* `--text-xs`: `clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)` (captions/labels)
+* `--text-sm`: `clamp(0.875rem, 0.8rem + 0.35vw, 1rem)` (metadata)
+* `--text-base`: `clamp(1rem, 0.9rem + 0.5vw, 1.125rem)` (body copy)
+* `--text-lg` to `--text-4xl`: Large headings and showcase titles.
+
+### C. Color Architecture
+* **Primitives**: Brands (`--color-brand-500`, etc.), Neutrals (`--color-neutral-0` [white] to `--color-neutral-950` [rich black]).
+* **Semantic Aliases**: Components reference ONLY these alias tokens:
+  * `--bg-surface`: Background color (`--color-neutral-0`).
+  * `--text-primary`: Primary reading text color (`--color-neutral-900`).
+  * `--accent`: Primary gold brand color (`--color-brand-500`).
+
+---
+
+## 10. Motion Architecture & Performance Guidelines
+
+Motion design is key to the premium experience on LARASANA. To keep scroll actions fluid (maintaining 60fps), follow these motion rules:
+
+### A. Compositor-Only Transitions
+* Avoid animating properties that trigger document reflows (e.g. `width`, `height`, `margin`, `padding`, `top`, `left`, `gap`).
+* **Do transition**: `transform` (translates, scaling) and `opacity`.
+
+### B. Resolving Transition Conflicts (GSAP & CSS)
+When employing libraries like GreenSock (GSAP) to animate layout wrappers, the browser's own CSS `transition` rules will interfere with GSAP's style calculations, causing stuttering or static displays.
+* **Rule**: When GSAP controls transforms on desktop/tablet, disable CSS transitions using targeted media query overrides:
+  ```css
+  @media (min-width: 48.01rem) {
+    .your-animating-class {
+      transition: none !important;
+    }
+  }
+  ```
+
+### C. Timeline Choreography (GSAP Contexts)
+* Register all plugins globally (`gsap.registerPlugin(ScrollTrigger)`).
+* Wrap animations in `@gsap/react` hooks or `gsap.context()` blocks to ensure all ScrollTriggers and event listeners revert cleanly on component unmount to prevent memory leaks.
+
+---
+
+## 11. Development Non-Negotiables & Async States
+
+Ensure these rules are respected before submitting frontend pull requests:
+
+### A. Enforce the Service Layer
+* **Never call Axios or Fetch directly inside UI components**. All network calls must pass through the `/core/services` layer (using wrappers derived from `BaseService`).
+
+### B. Native Keys for List Rendering
+* When rendering collections of items (e.g. catalog cards, orders, cart lists), always use stable database UUIDs or keys. Do not use array indexes. This is critical for transitions and entrance staggers.
+
+### C. Required Async States (Loading / Success / Error / Empty)
+Every page that fetches data must handle all four states:
+1. **Loading**: Render a premium shimmer skeleton layout matching the structure columns of the success layout.
+2. **Success**: Populate the layout cleanly once the database returns records.
+3. **Error**: Display a user-friendly error card with a retry option (never swallow errors silently or dump raw console logs).
+4. **Empty**: Show an empty state card encouraging users to shop or take action.
+
