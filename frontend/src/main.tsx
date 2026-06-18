@@ -5,15 +5,17 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import 'lenis/dist/lenis.css';
 import './style/index.css';
 
-// Home page components (keep static so landing page loads instantly)
+// Home page components needed for first paint
 import LandingPages from './pages/LandingPages.tsx';
-import StoryTelling from './pages/StoryTelling.tsx';
-import HeroShowcasePage from './pages/HeroShowcasePage.tsx';
 import Navbar from './components/navbar.tsx';
-import Footer from './components/Footer.tsx';
 import SmoothScroll from './components/SmoothScroll.tsx';
 import SplashScreen from './components/SplashScreen.tsx';
-import AdminLayout from './components/AdminLayout.tsx';
+
+// Below-the-fold and secondary-route components (lazy loaded)
+const StoryTelling = lazy(() => import('./pages/StoryTelling.tsx'));
+const HeroShowcasePage = lazy(() => import('./pages/HeroShowcasePage.tsx'));
+const Footer = lazy(() => import('./components/Footer.tsx'));
+const AdminLayout = lazy(() => import('./components/AdminLayout.tsx'));
 
 // Lazy loaded page components
 const LoginPage = lazy(() => import('./pages/LoginPage.tsx'));
@@ -36,10 +38,24 @@ const AdminOrders = lazy(() => import('./pages/admin/AdminOrders.tsx'));
 const AdminOrderDetails = lazy(() => import('./pages/admin/AdminOrderDetails.tsx'));
 
 function RootApp() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    try {
+      // Skip splash screen if already shown in the current browser session
+      return !sessionStorage.getItem('larasana_splash_shown');
+    } catch {
+      return true;
+    }
+  });
 
   const handleSplashComplete = () => {
     setShowSplash(false);
+    try {
+      sessionStorage.setItem('larasana_splash_shown', 'true');
+    } catch {
+      // Ignore
+    }
+    // Notify other components that the splash screen has completed
+    window.dispatchEvent(new CustomEvent('splash-completed'));
   };
 
   return (

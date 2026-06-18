@@ -1,44 +1,52 @@
 import { useEffect } from 'react';
-import ScrollReveal from 'scrollreveal';
 import Hero from '../components/hero';
 
 export default function LandingPages() {
   useEffect(() => {
-    // ===== ScrollReveal =====
-    const sr = ScrollReveal({
-      origin: 'bottom',
-      distance: '40px',
-      duration: 800,
-      delay: 200,
-      easing: 'cubic-bezier(0.5, 0, 0, 1)',
-      reset: false,
-    });
+    // Dynamically import ScrollReveal to keep it out of the critical bundle
+    let sr: any;
+    let cancelled = false;
 
-    // Reveal elements
-    sr.reveal('.hero-section__title', {
-      origin: 'bottom',
-      distance: '60px',
-      duration: 1200,
-      delay: 300,
-    });
+    import('scrollreveal').then((mod) => {
+      if (cancelled) return;
+      const ScrollReveal = mod.default;
 
-    sr.reveal('.hero-section__scroll-down', {
-      origin: 'bottom',
-      distance: '20px',
-      duration: 800,
-      delay: 800,
-    });
+      sr = ScrollReveal({
+        origin: 'bottom',
+        distance: '40px',
+        duration: 800,
+        delay: 200,
+        easing: 'cubic-bezier(0.5, 0, 0, 1)',
+        reset: false,
+      });
 
-    sr.reveal('.navbar', {
-      origin: 'top',
-      distance: '20px',
-      duration: 800,
-      delay: 100,
+      // Reveal elements
+      sr.reveal('.hero-section__title', {
+        origin: 'bottom',
+        distance: '60px',
+        duration: 1200,
+        delay: 300,
+      });
+
+      sr.reveal('.hero-section__scroll-down', {
+        origin: 'bottom',
+        distance: '20px',
+        duration: 800,
+        delay: 800,
+      });
+
+      sr.reveal('.navbar', {
+        origin: 'top',
+        distance: '20px',
+        duration: 800,
+        delay: 100,
+      });
     });
 
     // Cleanup
     return () => {
-      sr.destroy();
+      cancelled = true;
+      if (sr) sr.destroy();
     };
   }, []);
 

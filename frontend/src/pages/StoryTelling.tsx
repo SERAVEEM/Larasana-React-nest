@@ -39,7 +39,7 @@ export default function StoryTelling() {
           <span className="st-col-label st-col-label--story">STORY</span>
 
           <div className="st-card st-card--story">
-            <img src={ASSETS.storytelling.story} alt="Story" className="st-card__img" />
+            <img src={ASSETS.storytelling.story} alt="Story" className="st-card__img" loading="lazy" />
             <div className="st-card__overlay">
               <div className="st-card__content">
                 <h2 className="st-card__title">STORY</h2>
@@ -66,7 +66,7 @@ export default function StoryTelling() {
           <span className="st-col-label st-col-label--impact">IMPACT</span>
 
           <div className="st-card st-card--impact">
-            <img src={ASSETS.storytelling.impact} alt="Impact" className="st-card__img" />
+            <img src={ASSETS.storytelling.impact} alt="Impact" className="st-card__img" loading="lazy" />
             <div className="st-card__overlay">
               <div className="st-card__content">
                 <h2 className="st-card__title">IMPACT</h2>

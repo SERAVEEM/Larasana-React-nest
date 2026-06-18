@@ -45,27 +45,20 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     };
   }, []);
 
-  // 2. Page and video download progress tracking
+  // 2. Page load tracking (video check removed — video loads after splash)
   useEffect(() => {
     // Lock scrolling on document body and html (Lenis) while splash screen is active
     document.body.style.overflow = 'hidden';
     document.documentElement.classList.add('lenis-stopped');
 
     const checkReady = () => {
-      const isPageLoaded = document.readyState === 'complete';
-      const isVideoReady = window.location.pathname !== '/' || (window as any).__heroVideoReady;
-      
-      if (isPageLoaded && isVideoReady) {
+      if (document.readyState === 'complete') {
         setIsLoaded(true);
       }
     };
 
     const handleLoad = () => {
       checkReady();
-    };
-
-    const handleVideoReady = () => {
-      setIsLoaded(true);
     };
 
     // Check if document is already loaded
@@ -75,17 +68,13 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       window.addEventListener('load', handleLoad);
     }
 
-    window.addEventListener('hero-video-ready', handleVideoReady);
-
-    // Fallback safety timer: 60s on homepage for video, 5s on other pages
-    const timeoutDuration = window.location.pathname === '/' ? 60000 : 5000;
+    // Fallback safety timer: 5s to prevent getting stuck
     const fallbackTimer = setTimeout(() => {
       setIsLoaded(true);
-    }, timeoutDuration);
+    }, 5000);
 
     return () => {
       window.removeEventListener('load', handleLoad);
-      window.removeEventListener('hero-video-ready', handleVideoReady);
       clearTimeout(fallbackTimer);
       document.body.style.overflow = '';
       document.documentElement.classList.remove('lenis-stopped');

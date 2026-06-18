@@ -315,7 +315,7 @@ export default function HeroShowcase() {
                 </motion.div>
                 <div className="hs-card-img-layer">
                   {activeItem.image ? (
-                    <img src={activeItem.image} alt={activeItem.name} className="hs-card-img" />
+                    <img src={activeItem.image} alt={activeItem.name} className="hs-card-img" loading="lazy" />
                   ) : (
                     <div className="hs-card-img placeholder" />
                   )}
@@ -395,6 +395,7 @@ export default function HeroShowcase() {
                     src={item.image}
                     alt={item.name}
                     className={`hs-grid-item-img ${item.image && item.image.startsWith('http') ? 'standard-image' : ''}`}
+                    loading="lazy"
                   />
 
                   <div
@@ -465,7 +466,7 @@ export default function HeroShowcase() {
                 </motion.div>
                 <div className="hs-card-img-layer">
                   {displayImage ? (
-                    <img src={displayImage} alt={displayAlt} className="hs-card-img" />
+                    <img src={displayImage} alt={displayAlt} className="hs-card-img" loading="lazy" />
                   ) : (
                     <div className="hs-card-img placeholder" />
                   )}

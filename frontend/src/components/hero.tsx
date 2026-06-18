@@ -1,16 +1,46 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ASSETS } from '../utils/assets';
 import '../style/hero.css';
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(() => {
+    try {
+      return !!sessionStorage.getItem('larasana_splash_shown');
+    } catch {
+      return false;
+    }
+  });
 
   const handleVideoReady = () => {
-    (window as any).__heroVideoReady = true;
+    const win = window as unknown as { __heroVideoReady?: boolean };
+    win.__heroVideoReady = true;
     window.dispatchEvent(new CustomEvent('hero-video-ready'));
   };
 
   useEffect(() => {
+    if (shouldLoad) return;
+
+    const handleSplashComplete = () => {
+      setShouldLoad(true);
+    };
+
+    window.addEventListener('splash-completed', handleSplashComplete);
+
+    // Safety fallback: load video after 4 seconds regardless
+    const timer = setTimeout(() => {
+      setShouldLoad(true);
+    }, 4000);
+
+    return () => {
+      window.removeEventListener('splash-completed', handleSplashComplete);
+      clearTimeout(timer);
+    };
+  }, [shouldLoad]);
+
+  useEffect(() => {
+    if (!shouldLoad) return;
+
     const video = videoRef.current;
     if (!video) return;
 
@@ -45,11 +75,11 @@ export default function Hero() {
     video.addEventListener('canplaythrough', handleProgress);
     video.addEventListener('loadedmetadata', handleProgress);
 
-    // Network safety fallback: 60s to prevent getting stuck if download hangs
+    // Network safety fallback: 10s to prevent getting stuck if download hangs
     const safetyTimer = setTimeout(() => {
       window.dispatchEvent(new CustomEvent('hero-video-progress', { detail: { percent: 100 } }));
       handleVideoReady();
-    }, 60000);
+    }, 10000);
 
     return () => {
       video.removeEventListener('progress', handleProgress);
@@ -58,33 +88,35 @@ export default function Hero() {
       video.removeEventListener('loadedmetadata', handleProgress);
       clearTimeout(safetyTimer);
     };
-  }, []);
+  }, [shouldLoad]);
 
   return (
     <section className="hero-section" id="hero" style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
 
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        onCanPlay={handleVideoReady}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          zIndex: 1
-        }}
-      >
-        <source src={ASSETS.heroVideoWebm} type="video/webm" />
-        <source src={ASSETS.heroVideoMp4} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      {shouldLoad && (
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          onCanPlay={handleVideoReady}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 1
+          }}
+        >
+          <source src={ASSETS.heroVideoWebm} type="video/webm" />
+          <source src={ASSETS.heroVideoMp4} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
       
       <div 
         style={{
