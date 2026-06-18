@@ -18,11 +18,8 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     const checkFonts = async () => {
       if (document.fonts) {
         try {
-          // Attempt to load the brand custom fonts and fallback serif
-          await Promise.all([
-            document.fonts.load("bold 72px 'Linotype Didot Bold'"),
-            document.fonts.load("72px 'GFS Didot'")
-          ]);
+          // Wait for any pending font loads to finish
+          await document.fonts.ready;
         } catch (e) {
           console.warn("Font loading failed, proceeding with fallback fonts:", e);
         }
@@ -34,10 +31,10 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
 
     checkFonts();
 
-    // 3-second safety fallback for font loading
+    // 1-second safety fallback (font-display:swap prevents invisible text anyway)
     const fontTimer = setTimeout(() => {
       if (active) setIsFontReady(true);
-    }, 3000);
+    }, 1000);
 
     return () => {
       active = false;
@@ -96,8 +93,20 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   useEffect(() => {
     if (isLoaded && isFontReady && minTimeElapsed) {
       setSlideUp(true);
+
+      // Check for prefers-reduced-motion to avoid getting stuck when transitions are instant
+      const hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (hasReducedMotion) {
+        onComplete();
+      } else {
+        // Fallback safety timer: ensure onComplete is called even if onTransitionEnd fails to fire
+        const timer = setTimeout(() => {
+          onComplete();
+        }, 1500); // 1.2s transition + 300ms buffer
+        return () => clearTimeout(timer);
+      }
     }
-  }, [isLoaded, isFontReady, minTimeElapsed]);
+  }, [isLoaded, isFontReady, minTimeElapsed, onComplete]);
 
   const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && (e.propertyName === 'transform' || e.propertyName === 'opacity')) {
