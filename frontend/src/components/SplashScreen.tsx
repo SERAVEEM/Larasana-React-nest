@@ -94,17 +94,11 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     if (isLoaded && isFontReady && minTimeElapsed) {
       setSlideUp(true);
 
-      // Check for prefers-reduced-motion to avoid getting stuck when transitions are instant
-      const hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (hasReducedMotion) {
+      // Fallback safety timer: ensure onComplete is called even if onTransitionEnd fails to fire
+      const timer = setTimeout(() => {
         onComplete();
-      } else {
-        // Fallback safety timer: ensure onComplete is called even if onTransitionEnd fails to fire
-        const timer = setTimeout(() => {
-          onComplete();
-        }, 1500); // 1.2s transition + 300ms buffer
-        return () => clearTimeout(timer);
-      }
+      }, 1500); // 1.2s transition + 300ms buffer
+      return () => clearTimeout(timer);
     }
   }, [isLoaded, isFontReady, minTimeElapsed, onComplete]);
 
