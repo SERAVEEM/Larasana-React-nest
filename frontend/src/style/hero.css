@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: #000;
+  background: var(--color-neutral-950);
 }
 
 .hero-section__canvas {
@@ -32,7 +32,7 @@
 /* ===== Scroll Down Arrow ===== */
 .hero-section__scroll-down {
   position: absolute;
-  bottom: 2.5rem;
+  bottom: var(--space-10);
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
@@ -43,7 +43,7 @@
 .hero-section__scroll-down svg {
   width: 2rem;
   height: 2rem;
-  stroke: #999;
+  stroke: var(--color-neutral-500);
   stroke-width: 1.5;
   fill: none;
 }
