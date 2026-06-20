@@ -101,7 +101,7 @@ export function usePayment() {
     const clientKey = String(client.defaults.headers['x-larasana-client-key'] || '');
     const baseUrl = client.defaults.baseURL || 'http://localhost:3000/api/v1';
 
-    let fallbackInterval: NodeJS.Timeout | null = null;
+    let fallbackInterval: ReturnType<typeof setInterval> | null = null;
 
     const connectSse = async () => {
       try {
