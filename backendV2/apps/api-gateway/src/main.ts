@@ -5,10 +5,12 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { GatewayAppModule } from './app.module';
 import { RpcExceptionFilter } from './common/rpc-exception.filter';
 import { TimeoutInterceptor } from './common/timeout.interceptor';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(GatewayAppModule);
 
+  app.use(helmet());
   app.setGlobalPrefix('api/v1');
 
   app.useGlobalFilters(new RpcExceptionFilter());
