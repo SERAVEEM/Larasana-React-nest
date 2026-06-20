@@ -32,5 +32,7 @@ skills/SKILL.md
 
 skills/*
 
-
-.env.development 
+# Local env files
+.env
+.env.*
+!.env.example

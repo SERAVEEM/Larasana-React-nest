@@ -406,7 +406,7 @@ GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
 ```env
 VITE_API_BASE_URL="http://localhost:3000/api/v1"
 VITE_GOOGLE_CLIENT_ID="your_google_client_id.apps.googleusercontent.com"
-VITE_FRONTEND_CLIENT_SECRET="larasana_dev_secret_key"
+VITE_FRONTEND_CLIENT_SECRET="your_client_secret_placeholder"
 ```
 
 ---
@@ -418,7 +418,7 @@ When deploying to live servers, configure these variables directly in your cloud
 * **`DB_HOST`** / **`DB_PORT`** / **`DB_USERNAME`** / **`DB_PASSWORD`** / **`DB_NAME`**: *(Your production database credentials, e.g. Clever Cloud)*
 * **`PORT`**: `3000` *(tells Railway to expose public traffic to port 3000)*
 * **`GATEWAY_PORT`**: `${{PORT}}` *(binds your API Gateway port directly to the Railway container port)*
-* **`FRONTEND_CLIENT_SECRET`**: `9f7a84e27b134d98a0d0c3ebf5d21a94b8e0f1712a45c36b8e8f810e20349b1a` *(matches Vercel)*
+* **`FRONTEND_CLIENT_SECRET`**: *(A secure 64-character SHA-256 hash or random string matching Vercel)*
 * **`JWT_ACCESS_SECRET`** / **`JWT_REFRESH_SECRET`**: *(Your production secret strings for JWT signing)*
 * **`GOOGLE_CLIENT_ID`**: *(Your Google Cloud Console Client ID)*
 * **`MIDTRANS_SERVER_KEY`** / **`MIDTRANS_CLIENT_KEY`**: *(Your Production/Sandbox Midtrans Credentials)*
@@ -426,8 +426,8 @@ When deploying to live servers, configure these variables directly in your cloud
 
 #### 2. Frontend (Vercel Project Variables)
 * **`VITE_API_BASE_URL`**: `https://larasana-react-nest-production.up.railway.app/api/v1` *(points to your Railway URL)*
-* **`VITE_FRONTEND_CLIENT_SECRET`**: `9f7a84e27b134d98a0d0c3ebf5d21a94b8e0f1712a45c36b8e8f810e20349b1a` *(matches Railway)*
-* **`VITE_GOOGLE_CLIENT_ID`**: `187543062960-7uub7cnc0dknlm30ee2h427rvccast7i.apps.googleusercontent.com` *(must be whitelisted in Google Developer Console origins)*
+* **`VITE_FRONTEND_CLIENT_SECRET`**: *(A secure 64-character SHA-256 hash or random string matching Railway)*
+* **`VITE_GOOGLE_CLIENT_ID`**: `your_google_client_id.apps.googleusercontent.com` *(must be whitelisted in Google Developer Console origins)*
 
 ---
 
