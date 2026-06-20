@@ -296,14 +296,13 @@ sequenceDiagram
     CS->>DB: Insert Order record (Status: PENDING)
     CS->>MT: POST /charge or /snap/token (order ID, gross amount)
     MT-->>CS: Return Snap redirect URL or VA numbers
-    CS-->>GW: Return payment details & countdown (15m)
     GW-->>FE: Render payment instructions (QRIS/VA) to User
-    loop Polling status (every 3 seconds)
-        FE->>GW: GET /checkout/payment-status/:orderId
-        GW->>CS: TCP: get-payment-status
-        CS->>DB: Check Order Status in DB
-        DB-->>CS: PENDING
-        CS-->>FE: PENDING
+    rect rgb(20, 20, 25)
+        Note over FE,GW: Real-time Status Stream (SSE)
+        FE->>GW: GET /checkout/payment-status/:orderId/stream (SSE)
+        GW->>CS: TCP: get-payment-status (Initial check)
+        CS-->>GW: Return status PENDING
+        GW-->>FE: Stream status PENDING
     end
     User->>MT: Authorize Payment (e-wallet scan or bank transfer)
     MT-->>User: Success response
@@ -311,13 +310,20 @@ sequenceDiagram
     GW->>CS: TCP: handle-midtrans-callback
     CS->>DB: Update Order Status to PAID & stock allocation
     CS->>NS: TCP: send-order-confirmation-email
-    NS->>User: Send Email OTP / Confirmation notification
-    loop Polling status detects payment completion
-        FE->>GW: GET /checkout/payment-status/:orderId
-        GW->>CS: TCP: get-payment-status
-        CS->>DB: Check Order Status (PAID)
-        DB-->>CS: PAID
-        CS-->>FE: SUCCESS
+    NS->>User: Send Email Confirmation
+    rect rgb(20, 20, 25)
+        Note over CS,FE: Payment Event Streamed Real-time
+        CS-->>GW: TCP: notifyPaymentUpdate(paid)
+        GW-->>FE: Stream status PAID
+    end
+    alt SSE Stream Interrupted / Fails
+        loop Fallback Polling (every 3 seconds)
+            FE->>GW: GET /checkout/payment-status/:orderId
+            GW->>CS: TCP: get-payment-status
+            CS->>DB: Check Order Status in DB
+            DB-->>CS: PENDING / PAID
+            CS-->>FE: Return current status
+        end
     end
     FE->>User: Redirect to /payment-success
 ```
@@ -329,12 +335,11 @@ sequenceDiagram
    * **Biteship**: If `BITESHIP_API_KEY` is configured in the environment, the query is resolved by the [BiteshipProvider](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/commerce-service/src/shipping/providers/biteship.provider.ts) for both domestic and international shipping.
    * **Domestic (RajaOngkir)**: If the destination is Indonesia (`ID`) and Biteship is not active, the [RajaOngkirProvider](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/commerce-service/src/shipping/providers/rajaongkir.provider.ts) resolves the rates (JNE, POS, TIKI) using cached city mappings. If this fails or is down, it falls back to static domestic shipping rates.
    * **International (EasyPost)**: If the destination is international and Biteship is not active, the [EasyPostProvider](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/commerce-service/src/shipping/providers/easypost.provider.ts) resolves the rates (DHL, FedEx, EMS). If this fails, it falls back to static international shipping rates.
-
 4. **Order Posting**: The user selects a courier and a payment type (QRIS / VA / Card) and clicks **Checkout Now**. The request is sent to the API Gateway, which proxies it to the Commerce Service via TCP.
 5. **Gateway Payment Generation**: The Commerce Service records a pending order, computes total costs, and initiates a payload to **Midtrans API** (Snap endpoint for QRIS, or Core API `/charge` endpoint for Virtual Account details).
 6. **Token Presentation**: Gateway responds with payment details (QRIS image URLs, VA numbers, or redirect links) which are displayed on the client.
-7. **Expiry & Polling Loop**: The `PaymentPage.tsx` calculates a 15-minute countdown and spins up a polling loop (`setInterval` every 3 seconds) that queries `/checkout/payment-status/:orderId`.
-8. **Confirmation Redirect**: When the user pays via their e-wallet or bank, Midtrans sends a secure signed webhook to the backend. The backend updates the order status. On the next polling cycle, the client detects the status change and redirects the user to `/payment-success`.
+7. **Expiry & SSE Stream**: The `usePayment.ts` hook calculates a 15-minute countdown and establishes a real-time Server-Sent Events (SSE) connection to `/checkout/payment-status/:orderId/stream`. If the stream is interrupted or fails to connect, it dynamically falls back to a 3-second polling loop.
+8. **Confirmation Redirect**: When the user pays via their e-wallet or bank, Midtrans sends a secure signed webhook to the gateway. The gateway updates the order status and streams the new status via SSE. The client receives the `paid` status and redirects the user to `/payment-success` instantly.
 
 ---
 
@@ -406,7 +411,7 @@ GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
 ```env
 VITE_API_BASE_URL="http://localhost:3000/api/v1"
 VITE_GOOGLE_CLIENT_ID="your_google_client_id.apps.googleusercontent.com"
-VITE_FRONTEND_CLIENT_SECRET="larasana_dev_secret_key"
+VITE_FRONTEND_CLIENT_SECRET="your_client_secret_placeholder"
 ```
 
 ---
@@ -418,7 +423,7 @@ When deploying to live servers, configure these variables directly in your cloud
 * **`DB_HOST`** / **`DB_PORT`** / **`DB_USERNAME`** / **`DB_PASSWORD`** / **`DB_NAME`**: *(Your production database credentials, e.g. Clever Cloud)*
 * **`PORT`**: `3000` *(tells Railway to expose public traffic to port 3000)*
 * **`GATEWAY_PORT`**: `${{PORT}}` *(binds your API Gateway port directly to the Railway container port)*
-* **`FRONTEND_CLIENT_SECRET`**: `9f7a84e27b134d98a0d0c3ebf5d21a94b8e0f1712a45c36b8e8f810e20349b1a` *(matches Vercel)*
+* **`FRONTEND_CLIENT_SECRET`**: *(A secure 64-character SHA-256 hash or random string matching Vercel)*
 * **`JWT_ACCESS_SECRET`** / **`JWT_REFRESH_SECRET`**: *(Your production secret strings for JWT signing)*
 * **`GOOGLE_CLIENT_ID`**: *(Your Google Cloud Console Client ID)*
 * **`MIDTRANS_SERVER_KEY`** / **`MIDTRANS_CLIENT_KEY`**: *(Your Production/Sandbox Midtrans Credentials)*
@@ -426,8 +431,8 @@ When deploying to live servers, configure these variables directly in your cloud
 
 #### 2. Frontend (Vercel Project Variables)
 * **`VITE_API_BASE_URL`**: `https://larasana-react-nest-production.up.railway.app/api/v1` *(points to your Railway URL)*
-* **`VITE_FRONTEND_CLIENT_SECRET`**: `9f7a84e27b134d98a0d0c3ebf5d21a94b8e0f1712a45c36b8e8f810e20349b1a` *(matches Railway)*
-* **`VITE_GOOGLE_CLIENT_ID`**: `187543062960-7uub7cnc0dknlm30ee2h427rvccast7i.apps.googleusercontent.com` *(must be whitelisted in Google Developer Console origins)*
+* **`VITE_FRONTEND_CLIENT_SECRET`**: *(A secure 64-character SHA-256 hash or random string matching Railway)*
+* **`VITE_GOOGLE_CLIENT_ID`**: `your_google_client_id.apps.googleusercontent.com` *(must be whitelisted in Google Developer Console origins)*
 
 ---
 
