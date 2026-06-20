@@ -527,8 +527,9 @@ All logic patches must preserve and expand the test suite coverage:
 Here is a preview of the successful execution of the Jest and Vitest test suites:
 
 <p align="center">
-  <img src="./docs/assets/test_results.png" alt="LARASANA Test Suite Results" width="90%" />
+  <img src="./docs/assets/test result.png" alt="LARASANA Test Suite Results" width="90%" />
 </p>
+
 
 
 
