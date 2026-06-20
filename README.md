@@ -66,16 +66,23 @@ The platform is engineered using a decoupled, service-oriented architecture desi
 * **Database & ORM**:
   * **Database Engine**: **MySQL** / MariaDB (schema constraints, foreign keys, and indexes are restored via `larasana_db.sql`).
   * **ORM**: **TypeORM 0.3.x** / `@nestjs/typeorm` (manages schema synchronization, data-mapper queries, and transaction tables).
-* **Security & Authentication**:
+* **Security & Reliability**:
+  * HTTP security headers protection using **Helmet**.
+  * Global and endpoint-specific rate limiting via **@nestjs/throttler** (default 20 req/min, Login/OTP attempts throttled strictly).
+  * Global timeout interceptor (8 seconds) and idempotent request retries to handle transient failures.
   * Hashing credentials via `bcrypt` (adaptive salt-rounds hashing).
-  * JSON Web Tokens (JWT) using Passport strategies (Access Token [15 min expiry] and DB-persisted Refresh Token [7 day expiry] flow).
-  * Authentication guards managed via `@nestjs/passport` and `passport-jwt`.
+  * Double JSON Web Token (JWT) Access/Refresh Token cycle via `@nestjs/passport` and `passport-jwt` with strict validation.
 * **Transactional Emailing**: **Nodemailer 6.x** (connects to SMTP engines to send secure HTML OTPs and Password Reset links).
+* **Health & Reliability Monitoring**: **@nestjs/terminus** health indicator endpoints resolving DB connectivity and service liveness.
 
 ### C. Third-Party Integrations
 * **Payment Gateway**: **Midtrans API** (Snap API for redirection, and Core API for direct Virtual Account integrations including BCA, BNI, BRI, Mandiri, Gopay, and ShopeePay).
-* **Logistics & Rates**: **EasyPost API** (queries shipping details, package dimensions, and weight variables to determine international carrier rates).
+* **Logistics & Rates**:
+  * **EasyPost API**: Resolves shipping options and prices for international parcels.
+  * **RajaOngkir API**: Resolves domestic courier costs (JNE, POS, TIKI) within Indonesia with integrated 24-hour cache caching.
+  * **Biteship API**: Preferred domestic/global courier partner providing live rate lookups.
 * **Identity Provider**: **Google OAuth Library** (`google-auth-library` for secure token decryption and verification on SSO login requests).
+
 
 ---
 
@@ -144,11 +151,12 @@ graph TD
 The client is structured as a client-side routed SPA. The root layout is decorated with global contexts using the Provider Pattern (`HelmetProvider` -> `BrowserRouter` -> `SmoothScroll`). Logic modules are encapsulated inside container pages, which interface with presentational UI components.
 
 ### B. Backend Microservices Architecture
-The backend services are partitioned into four distinct runtimes:
-1. **API Gateway (Port 3000)**: Renders the REST API endpoints (`/api/v1`) to the client. Serves as the orchestrating proxy that routes incoming HTTP requests to internal services via TCP. It maps RPC validation schemas (`ValidationPipe`), controls CORS policies, handles JWT authentication, and exposes the **Swagger API Docs** (`/api/docs`).
-2. **Users Service (Port 3001)**: Resolves user accounts, manages registrations, hashes credentials, coordinates Google Login tokens, and aggregates admin control operations (user/seller reviews and dashboard stats).
-3. **Commerce Service (Port 3002)**: Powers the shop catalog. Controls product stocks, favorites lists, user shipping addresses, courier rates, checkout processes, and payment gateway interactions.
-4. **Notification Service (Port 3003)**: Operates independently to construct and email transactional OTP tokens and reset links to customers.
+The backend services are partitioned into four distinct runtimes, leveraging a **Hybrid Service Architecture** to isolate internal messaging from monitoring endpoints:
+1. **API Gateway (Port 3000)**: Renders the REST API endpoints (`/api/v1`) to the client. Serves as the orchestrating proxy that routes incoming HTTP requests to internal services via TCP. It maps RPC validation schemas (`ValidationPipe`), controls CORS policies, handles JWT authentication, executes rate-limiting checks, and exposes the **Swagger API Docs** (`/api/docs`). Exposes simple HTTP `/health` check.
+2. **Users Service (Port 3001 & 4001)**: Resolves user accounts, manages registrations, hashes credentials, coordinates Google Login tokens, and aggregates admin control operations. Configured as a hybrid app handling internal TCP (3001) and HTTP health monitoring (4001).
+3. **Commerce Service (Port 3002 & 4002)**: Powers the shop catalog, product stocks, favorites, checkout, and payment gateways. Internally refactored into modular sub-modules (`Products`, `Favorites`, `Addresses`, `Shipping`, `Orders`, `Upload`) for high maintainability. Configured as a hybrid app handling internal TCP (3002) and HTTP health monitoring (4002) with active database ping checks.
+4. **Notification Service (Port 3003 & 4003)**: Operates independently to construct and email transactional OTP tokens and reset links to customers. Configured as a hybrid app handling internal TCP (3003) and HTTP health monitoring (4003).
+
 
 ---
 
@@ -169,6 +177,9 @@ The frontend and backend codebases adopt structured design patterns to maintain 
   * Employs React Context Providers at the root level to distribute routing states, SEO metadata headers, and scrolling options without manual prop drilling.
 * **Container / Presentational Component Pattern**:
   * Segregates logical container files (like `ProductDetailPage.tsx` which handles database fetches and URL parameter parsing) from pure visual presentational files (like `Product.tsx` which handles rendering and local UI interactions).
+* **Strategy Pattern (Shipping Providers)**:
+  * Backend shipping rate resolution extracts provider-specific logic (RajaOngkir, EasyPost, Biteship) into modular strategy classes implementing a unified `ShippingProvider` interface. This allows the core `ShippingService` to act as a lightweight orchestrator, resolving rates dynamically depending on address characteristics (e.g. domestic vs international) and API configuration.
+
 
 ---
 
@@ -230,7 +241,19 @@ Cloudflare's default public subdomains (`*.r2.dev`) are blocked at the DNS level
   }
   ```
 
+### E. Security Headers (Helmet)
+The API Gateway integrates `helmet` middleware globally in [main.ts](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/api-gateway/src/main.ts#L13) to protect Express HTTP headers. It strips dangerous disclosure headers (e.g., `X-Powered-By`) and enforces security standards like `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, and `Strict-Transport-Security`.
+
+### F. Rate Limiting (API Throttling)
+To prevent brute-force attacks and abuse of sensitive OTP endpoints, `@nestjs/throttler` is integrated.
+* **Global Limit**: Exposes a default limit of `20 requests per minute` across standard API routes.
+* **Sensitive Route Hardening**: Stricter throttling rules are decorated on high-risk endpoints in [auth.controller.ts](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/api-gateway/src/auth/auth.controller.ts):
+  * **Login**: Restricted to `5 attempts per minute`.
+  * **Send OTP**: Restricted to `3 requests per 10 minutes`.
+  * **Verify OTP**: Restricted to `5 attempts per 10 minutes`.
+
 ---
+
 
 ## 6. Transaction & Payment Data Flow
 
@@ -244,6 +267,8 @@ sequenceDiagram
     participant GW as API Gateway (NestJS)
     participant CS as Commerce Service
     participant EP as EasyPost API
+    participant RO as RajaOngkir API
+    participant BS as Biteship API
     participant MT as Midtrans API
     participant NS as Notification Service
     participant DB as MySQL DB
@@ -252,14 +277,18 @@ sequenceDiagram
     FE->>FE: Verify JWT Access Token & Validate Shipping Address
     FE->>GW: POST /shipping/rates (with destination address details)
     GW->>CS: TCP: resolve-shipping-rates
-    alt International Shipping (Not ID)
-        CS->>EP: POST /v2/shipments (weight, size, address)
-        EP-->>CS: Return carrier rates (DHL, FedEx, etc.)
-    else Domestic Shipping (Indonesia)
-        CS->>DB: Query domestic shipping rates table
-        DB-->>CS: Return fixed rates
+    alt Biteship API Configured
+        CS->>BS: POST /v1/rates/couriers (BiteshipProvider)
+        BS-->>CS: Return courier rates
+    else Domestic Shipping (Country == ID)
+        CS->>RO: POST /starter/cost (RajaOngkirProvider)
+        RO-->>CS: Return courier rates
+    else International Shipping
+        CS->>EP: POST /v2/shipments (EasyPostProvider)
+        EP-->>CS: Return carrier rates
     end
     CS-->>GW: Return rate options
+
     GW-->>FE: Present shipping rates to user
     User->>FE: Select rate, choose payment method, & Click "Checkout Now"
     FE->>GW: POST /checkout/order (with items, courier, & payment type)
@@ -296,9 +325,11 @@ sequenceDiagram
 ### Transaction Lifecycle Steps:
 1. **User Action**: The user selects a size on the Product Detail Page and clicks **Buy Now**.
 2. **Checkout Validation**: The `CheckoutPage.tsx` checks for active JWT tokens, validates local address inputs (Indonesian phone number patterns and minimum address length bounds), and retrieves user records.
-3. **Logistics Rate Resolution**: Choosing or updating an address triggers a query to the `/shipping` API:
-   * **International**: If the address country is not Indonesia (`ID`), the Commerce Service queries **EasyPost API** (`https://api.easypost.com/v2/shipments`) using the shipment's weight, generating real-time rates (DHL, FedEx, EMS).
-   * **Domestic**: If domestic, the service queries local shipping methods directly from the MySQL database.
+3. **Logistics Rate Resolution**: Choosing or updating an address triggers a query to the `/shipping` API, handled by the [ShippingService](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/commerce-service/src/shipping.service.ts) using the **Strategy Pattern**:
+   * **Biteship**: If `BITESHIP_API_KEY` is configured in the environment, the query is resolved by the [BiteshipProvider](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/commerce-service/src/shipping/providers/biteship.provider.ts) for both domestic and international shipping.
+   * **Domestic (RajaOngkir)**: If the destination is Indonesia (`ID`) and Biteship is not active, the [RajaOngkirProvider](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/commerce-service/src/shipping/providers/rajaongkir.provider.ts) resolves the rates (JNE, POS, TIKI) using cached city mappings. If this fails or is down, it falls back to static domestic shipping rates.
+   * **International (EasyPost)**: If the destination is international and Biteship is not active, the [EasyPostProvider](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/commerce-service/src/shipping/providers/easypost.provider.ts) resolves the rates (DHL, FedEx, EMS). If this fails, it falls back to static international shipping rates.
+
 4. **Order Posting**: The user selects a courier and a payment type (QRIS / VA / Card) and clicks **Checkout Now**. The request is sent to the API Gateway, which proxies it to the Commerce Service via TCP.
 5. **Gateway Payment Generation**: The Commerce Service records a pending order, computes total costs, and initiates a payload to **Midtrans API** (Snap endpoint for QRIS, or Core API `/charge` endpoint for Virtual Account details).
 6. **Token Presentation**: Gateway responds with payment details (QRIS image URLs, VA numbers, or redirect links) which are displayed on the client.
@@ -466,4 +497,38 @@ Every page that fetches data must handle all four states:
 2. **Success**: Populate the layout cleanly once the database returns records.
 3. **Error**: Display a user-friendly error card with a retry option (never swallow errors silently or dump raw console logs).
 4. **Empty**: Show an empty state card encouraging users to shop or take action.
+
+---
+
+## 12. Resilience, Testing & Reliability
+
+To maintain service stability, prevent cascading failures in our microservice stack, and verify logic regressions, the following guidelines are established:
+
+### A. API Resilience Mechanisms
+1. **Global Timeout (8s)**: All REST requests going through the API Gateway are piped through a global [TimeoutInterceptor](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/api-gateway/src/common/timeout.interceptor.ts) which limits calls to a maximum of 8 seconds to prevent hanging microservice sockets.
+2. **Selective GET Retries**: Idempotent read operations (`GET` requests on products, shipping, favorites, addresses, etc.) in the gateway proxy are configured with a `retry({ count: 2, delay: 300 })` filter to handle transient failures or container restarts during deployment. Do **not** apply retries to mutation methods (`POST`, `PATCH`, `DELETE`).
+3. **Cities Lookup Cache (24h TTL)**: The RajaOngkir city lookup method implements a local 24-hour cache limit. The cache is refreshed from the external API only if it is empty or expired, preventing rate limit depletion.
+
+### B. Health Monitoring
+Each microservice deploys `@nestjs/terminus` health checks exposed on dedicated HTTP ports:
+* **API Gateway**: HTTP `GET http://localhost:3000/api/v1/health` (liveness-only)
+* **Users Service**: HTTP `GET http://localhost:4001/health` (liveness + TypeORM database connection ping)
+* **Commerce Service**: HTTP `GET http://localhost:4002/health` (liveness + TypeORM database connection ping)
+* **Notification Service**: HTTP `GET http://localhost:4003/health` (liveness-only)
+
+### C. Testing Standards
+All logic patches must preserve and expand the test suite coverage:
+* **Backend Tests**: Run `npm test` inside `backendV2` to execute Jest unit tests covering:
+  * Midtrans signature authentication ([midtrans.service.spec.ts](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/commerce-service/src/midtrans.service.spec.ts)).
+  * Static fallback shipping ID resolution and Strategy Pattern delegation routing ([shipping.service.spec.ts](file:///d:/LARASANA%20Updated/Frontend/backendV2/apps/commerce-service/src/shipping.service.spec.ts)).
+* **Frontend Tests**: Run `npm test` inside `frontend` to execute Vitest unit tests covering:
+  * User address length and Indonesian phone format constraints ([Address.spec.ts](file:///d:/LARASANA%20Updated/Frontend/frontend/src/core/domain/models/Address.spec.ts)).
+
+Here is a preview of the successful execution of the Jest and Vitest test suites:
+
+<p align="center">
+  <img src="./docs/assets/test_results.png" alt="LARASANA Test Suite Results" width="90%" />
+</p>
+
+
 
