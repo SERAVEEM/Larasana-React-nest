@@ -39,10 +39,10 @@ export class CheckoutService extends BaseService {
 
     // Rich fallback mock rates
     return [
-      new ShippingOption({ id: 'mock-1', name: 'JNE Regular (REG)', price: 1.50, eta: '3-5 hari', logo: 'JNE' }),
-      new ShippingOption({ id: 'mock-2', name: 'JNE YES (1 Day Service)', price: 3.20, eta: '1 hari', logo: 'JNE' }),
-      new ShippingOption({ id: 'mock-3', name: 'POS Kilat Khusus', price: 1.20, eta: '4-7 hari', logo: 'POS' }),
-      new ShippingOption({ id: 'mock-4', name: 'TIKI Regular', price: 1.40, eta: '4-6 hari', logo: 'TIKI' }),
+      new ShippingOption({ id: '401', name: 'JNE Regular (REG)', price: 1.50, eta: '3-5 hari', logo: 'JNE' }),
+      new ShippingOption({ id: '404', name: 'JNE YES (1 Day Service)', price: 3.20, eta: '1 hari', logo: 'JNE' }),
+      new ShippingOption({ id: '402', name: 'POS Kilat Khusus', price: 1.20, eta: '4-7 hari', logo: 'POS' }),
+      new ShippingOption({ id: '403', name: 'TIKI Regular', price: 1.40, eta: '4-6 hari', logo: 'TIKI' }),
     ];
   }
 

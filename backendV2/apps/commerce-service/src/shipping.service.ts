@@ -128,7 +128,7 @@ export class ShippingService {
 
       // 3. Map results to ShippingMethod structure
       const rates: ShippingMethod[] = [];
-      let rateId = 300;
+      let rateId = 3000;
 
       courierResults.forEach((resultList) => {
         resultList.forEach((res: any) => {
@@ -217,7 +217,7 @@ export class ShippingService {
       const rates = resJson.rates || [];
 
       return rates.map((r: any, idx: number) => ({
-        id: 200 + idx,
+        id: 2000 + idx,
         courier: r.carrier.toUpperCase(),
         service: r.service.toUpperCase(),
         label: `${r.carrier} ${r.service}`,
@@ -326,7 +326,7 @@ export class ShippingService {
         const estimatedDays = p.duration || '3-5 business days';
 
         return {
-          id: 500 + idx,
+          id: 5000 + idx,
           courier: String(p.courier_code).toUpperCase(),
           service: String(p.courier_service_name).toUpperCase(),
           label: `${String(p.courier_name)} ${String(p.courier_service_name)}`,
@@ -339,6 +339,79 @@ export class ShippingService {
       console.error('Failed to query Biteship rates:', err);
       return [];
     }
+  }
+
+  private getDomesticFallbacks(): ShippingMethod[] {
+    return [
+      {
+        id: 401,
+        courier: 'JNE',
+        service: 'REG',
+        label: 'JNE Regular (Domestic Fallback)',
+        baseCost: 1.50,
+        estimatedDays: '3-5 hari',
+        isActive: true,
+      } as any,
+      {
+        id: 402,
+        courier: 'POS',
+        service: 'KILAT',
+        label: 'POS Kilat Khusus (Domestic Fallback)',
+        baseCost: 1.20,
+        estimatedDays: '4-7 hari',
+        isActive: true,
+      } as any,
+      {
+        id: 403,
+        courier: 'TIKI',
+        service: 'REG',
+        label: 'TIKI Regular (Domestic Fallback)',
+        baseCost: 1.40,
+        estimatedDays: '4-6 hari',
+        isActive: true,
+      } as any,
+      {
+        id: 404,
+        courier: 'JNE',
+        service: 'YES',
+        label: 'JNE YES (Domestic Fallback)',
+        baseCost: 3.20,
+        estimatedDays: '1-2 hari',
+        isActive: true,
+      } as any,
+    ];
+  }
+
+  private getInternationalFallbacks(): ShippingMethod[] {
+    return [
+      {
+        id: 101,
+        courier: 'DHL',
+        service: 'INT',
+        label: 'DHL Express International',
+        baseCost: 25.00,
+        estimatedDays: '3-5 business days',
+        isActive: true,
+      } as any,
+      {
+        id: 102,
+        courier: 'FEDEX',
+        service: 'PRIORITY',
+        label: 'FedEx International Priority',
+        baseCost: 35.00,
+        estimatedDays: '2-3 business days',
+        isActive: true,
+      } as any,
+      {
+        id: 103,
+        courier: 'EMS',
+        service: 'INT',
+        label: 'EMS International',
+        baseCost: 15.00,
+        estimatedDays: '7-10 business days',
+        isActive: true,
+      } as any,
+    ];
   }
 
   async getAll(data?: { addressId?: number }): Promise<ShippingMethod[]> {
@@ -360,35 +433,7 @@ export class ShippingService {
           }
 
           // Fallback static domestic rates if live RajaOngkir/Biteship fails or is down
-          return [
-            {
-              id: 301,
-              courier: 'JNE',
-              service: 'REG',
-              label: 'JNE Regular (Domestic Fallback)',
-              baseCost: 1.50,
-              estimatedDays: '3-5 hari',
-              isActive: true,
-            } as any,
-            {
-              id: 302,
-              courier: 'POS',
-              service: 'KILAT',
-              label: 'POS Kilat Khusus (Domestic Fallback)',
-              baseCost: 1.20,
-              estimatedDays: '4-7 hari',
-              isActive: true,
-            } as any,
-            {
-              id: 303,
-              courier: 'TIKI',
-              service: 'REG',
-              label: 'TIKI Regular (Domestic Fallback)',
-              baseCost: 1.40,
-              estimatedDays: '4-6 hari',
-              isActive: true,
-            } as any,
-          ];
+          return this.getDomesticFallbacks();
         } else {
           const apiKey = process.env.EASYPOST_API_KEY;
           if (apiKey && apiKey.trim() !== '') {
@@ -396,35 +441,7 @@ export class ShippingService {
             if (rates.length > 0) return rates;
           }
 
-          return [
-            {
-              id: 101,
-              courier: 'DHL',
-              service: 'INT',
-              label: 'DHL Express International',
-              baseCost: 25.00,
-              estimatedDays: '3-5 business days',
-              isActive: true,
-            } as any,
-            {
-              id: 102,
-              courier: 'FEDEX',
-              service: 'PRIORITY',
-              label: 'FedEx International Priority',
-              baseCost: 35.00,
-              estimatedDays: '2-3 business days',
-              isActive: true,
-            } as any,
-            {
-              id: 103,
-              courier: 'EMS',
-              service: 'INT',
-              label: 'EMS International',
-              baseCost: 15.00,
-              estimatedDays: '7-10 business days',
-              isActive: true,
-            } as any,
-          ];
+          return this.getInternationalFallbacks();
         }
       }
     }
@@ -436,7 +453,20 @@ export class ShippingService {
   }
 
   async findById(id: number, addressId?: number): Promise<ShippingMethod> {
-    if (id >= 500) {
+    // 1. Check static international fallbacks range (101-103)
+    if (id >= 101 && id <= 103) {
+      const match = this.getInternationalFallbacks().find((c) => c.id === id);
+      if (match) return match as any;
+    }
+
+    // 2. Check static domestic fallbacks range (401-404)
+    if (id >= 401 && id <= 404) {
+      const match = this.getDomesticFallbacks().find((c) => c.id === id);
+      if (match) return match as any;
+    }
+
+    // 3. Biteship live rates (>= 5000)
+    if (id >= 5000) {
       if (addressId) {
         const address = await this.addressRepo.findOne({ where: { id: addressId } });
         if (address) {
@@ -449,14 +479,15 @@ export class ShippingService {
         id,
         courier: 'DHL',
         service: 'INT',
-        label: 'DHL Express International (Biteship)',
+        label: 'DHL Express International (Biteship Fallback)',
         baseCost: 25.00,
         estimatedDays: '3-5 business days',
         isActive: true,
       } as any;
     }
 
-    if (id >= 300) {
+    // 4. RajaOngkir live rates (>= 3000)
+    if (id >= 3000) {
       if (addressId) {
         const address = await this.addressRepo.findOne({ where: { id: addressId } });
         if (address) {
@@ -469,14 +500,15 @@ export class ShippingService {
         id,
         courier: 'JNE',
         service: 'REG',
-        label: 'JNE Regular (RajaOngkir)',
+        label: 'JNE Regular (RajaOngkir Fallback)',
         baseCost: 1.00,
         estimatedDays: '3-5 business days',
         isActive: true,
       } as any;
     }
 
-    if (id >= 200) {
+    // 5. EasyPost live rates (>= 2000)
+    if (id >= 2000) {
       if (addressId) {
         const address = await this.addressRepo.findOne({ where: { id: addressId } });
         if (address) {
@@ -489,45 +521,11 @@ export class ShippingService {
         id,
         courier: 'DHL',
         service: 'INT',
-        label: 'DHL Express International',
+        label: 'DHL Express International (EasyPost Fallback)',
         baseCost: 25.00,
         estimatedDays: '3-5 business days',
         isActive: true,
       } as any;
-    }
-
-    if (id >= 101 && id <= 103) {
-      const mockCarriers = [
-        {
-          id: 101,
-          courier: 'DHL',
-          service: 'INT',
-          label: 'DHL Express International',
-          baseCost: 25.00,
-          estimatedDays: '3-5 business days',
-          isActive: true,
-        },
-        {
-          id: 102,
-          courier: 'FEDEX',
-          service: 'PRIORITY',
-          label: 'FedEx International Priority',
-          baseCost: 35.00,
-          estimatedDays: '2-3 business days',
-          isActive: true,
-        },
-        {
-          id: 103,
-          courier: 'EMS',
-          service: 'INT',
-          label: 'EMS International',
-          baseCost: 15.00,
-          estimatedDays: '7-10 business days',
-          isActive: true,
-        },
-      ];
-      const match = mockCarriers.find((c) => c.id === id);
-      if (match) return match as any;
     }
 
     const method = await this.shippingRepo.findOne({ where: { id, isActive: true } });
