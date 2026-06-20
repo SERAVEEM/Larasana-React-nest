@@ -48,8 +48,51 @@ export default function CheckoutPage() {
 
   if (loading || !product) {
     return (
-      <div className="co-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div style={{ fontSize: '1.2rem', color: '#666', fontFamily: "'Inter', sans-serif" }}>Loading Checkout Details...</div>
+      <div className="co-wrapper">
+        <div className="co-header-space" />
+        <div className="co-container">
+          <div className="co-content-grid">
+            {/* Left Column: Product Image Skeleton */}
+            <div className="co-image-column">
+              <div className="co-image-card skeleton-shimmer" style={{ width: '100%', height: '480px', borderRadius: '24px' }}>
+                {/* Visual shimmer container */}
+              </div>
+            </div>
+
+            {/* Right Column: Checkout Details Skeleton */}
+            <div className="co-details-column">
+              {/* Title Block */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.2rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', width: '60%' }}>
+                  <div className="skeleton-shimmer" style={{ width: '90%', height: '2.5rem' }} />
+                  <div style={{ display: 'flex', gap: '0.8rem' }}>
+                    <div className="skeleton-shimmer" style={{ width: '120px', height: '1.2rem', borderRadius: '99px' }} />
+                    <div className="skeleton-shimmer" style={{ width: '40px', height: '1.2rem', borderRadius: '99px' }} />
+                  </div>
+                </div>
+                <div className="skeleton-shimmer" style={{ width: '25%', height: '2rem' }} />
+              </div>
+
+              {/* Sections Placeholders */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.6rem' }}>
+                {/* Address Card */}
+                <div className="skeleton-shimmer" style={{ height: '7rem', borderRadius: '20px' }} />
+
+                {/* Shipping Card */}
+                <div className="skeleton-shimmer" style={{ height: '7rem', borderRadius: '20px' }} />
+
+                {/* Payment Card */}
+                <div className="skeleton-shimmer" style={{ height: '7rem', borderRadius: '20px' }} />
+
+                {/* Summary Card */}
+                <div className="skeleton-shimmer" style={{ height: '9.5rem', borderRadius: '20px' }} />
+
+                {/* Checkout CTA */}
+                <div className="skeleton-shimmer" style={{ height: '3.5rem', borderRadius: '30px', marginTop: '0.8rem' }} />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
