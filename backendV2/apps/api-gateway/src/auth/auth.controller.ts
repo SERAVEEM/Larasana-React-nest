@@ -7,7 +7,7 @@ import {
   ApiBadRequestResponse, ApiUnauthorizedResponse, ApiConflictResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Throttle, SkipThrottle } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 import { SERVICES, AUTH_PATTERNS } from '../../../../libs/shared/src';
 import { JwtAuthGuard } from '../common/guards';
 import { GetUser } from '../common/get-user.decorator';
