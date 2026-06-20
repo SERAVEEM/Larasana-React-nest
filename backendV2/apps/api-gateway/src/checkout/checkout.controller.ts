@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Body, Param, UseGuards, Inject, ParseIntPipe, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiOkResponse, ApiCreatedResponse, ApiUnauthorizedResponse, ApiBadRequestResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import { retry } from 'rxjs/operators';
 import { SERVICES, PAYMENTS_PATTERNS } from '../../../../libs/shared/src';
 import { JwtAuthGuard } from '../common/guards';
 import { GetUser } from '../common/get-user.decorator';
@@ -37,7 +38,7 @@ export class CheckoutGatewayController {
     @Param('orderId', ParseIntPipe) orderId: number,
     @Query('simulate') simulate?: string,
   ) {
-    return this.client.send(PAYMENTS_PATTERNS.GET_STATUS, { userId: user.sub, orderId, simulate });
+    return this.client.send(PAYMENTS_PATTERNS.GET_STATUS, { userId: user.sub, orderId, simulate }).pipe(retry({ count: 2, delay: 300 }));
   }
 
   @Post('webhook/midtrans')

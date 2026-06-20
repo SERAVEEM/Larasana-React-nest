@@ -1,6 +1,7 @@
 import { Controller, Get, Patch, Param, Query, Body, UseGuards, Inject, ParseIntPipe, HttpCode, HttpStatus, Post, Put, Delete } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiOkResponse, ApiCreatedResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import { retry } from 'rxjs/operators';
 import { SERVICES, ADMIN_PATTERNS, PRODUCTS_PATTERNS } from '../../../../libs/shared/src';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -33,19 +34,19 @@ export class AdminGatewayController {
   @Get('dashboard')
   @ApiOperation({ summary: 'Statistik dashboard admin' })
   @ApiOkResponse({ type: DashboardStatsResponseDto, description: 'Berhasil mengambil statistik dashboard' })
-  dashboard() { return this.client.send(ADMIN_PATTERNS.DASHBOARD, {}); }
+  dashboard() { return this.client.send(ADMIN_PATTERNS.DASHBOARD, {}).pipe(retry({ count: 2, delay: 300 })); }
 
   @Get('users')
   @ApiOperation({ summary: 'List semua user' })
   @ApiOkResponse({ type: PaginatedUsersResponseDto, description: 'Daftar user berhalaman' })
-  getUsers(@Query() q: any) { return this.client.send(ADMIN_PATTERNS.GET_USERS, q); }
+  getUsers(@Query() q: any) { return this.client.send(ADMIN_PATTERNS.GET_USERS, q).pipe(retry({ count: 2, delay: 300 })); }
 
   @Get('users/:id')
   @ApiParam({ name: 'id' })
   @ApiOperation({ summary: 'Detail satu user' })
   @ApiOkResponse({ type: User, description: 'Detail user ditemukan' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  getUserDetail(@Param('id', ParseIntPipe) id: number) { return this.client.send(ADMIN_PATTERNS.GET_USER_DETAIL, { userId: id }); }
+  getUserDetail(@Param('id', ParseIntPipe) id: number) { return this.client.send(ADMIN_PATTERNS.GET_USER_DETAIL, { userId: id }).pipe(retry({ count: 2, delay: 300 })); }
 
   @Patch('users/:id/toggle-active')
   @HttpCode(HttpStatus.OK)
@@ -59,7 +60,7 @@ export class AdminGatewayController {
   @Get('sellers')
   @ApiOperation({ summary: 'List seller' })
   @ApiOkResponse({ type: PaginatedUsersResponseDto, description: 'Daftar seller berhalaman' })
-  getSellers(@Query() q: any) { return this.client.send(ADMIN_PATTERNS.GET_SELLERS, q); }
+  getSellers(@Query() q: any) { return this.client.send(ADMIN_PATTERNS.GET_SELLERS, q).pipe(retry({ count: 2, delay: 300 })); }
 
   @Patch('sellers/:userId/review')
   @HttpCode(HttpStatus.OK)
@@ -75,14 +76,14 @@ export class AdminGatewayController {
   @Get('orders')
   @ApiOperation({ summary: 'List semua order' })
   @ApiOkResponse({ type: PaginatedOrdersResponseDto, description: 'Daftar order berhalaman' })
-  getOrders(@Query() q: any) { return this.client.send(ADMIN_PATTERNS.GET_ORDERS, q); }
+  getOrders(@Query() q: any) { return this.client.send(ADMIN_PATTERNS.GET_ORDERS, q).pipe(retry({ count: 2, delay: 300 })); }
 
   @Get('orders/:id')
   @ApiParam({ name: 'id' })
   @ApiOperation({ summary: 'Detail satu order untuk admin' })
   @ApiOkResponse({ type: AdminOrderDetailResponseDto, description: 'Order & payment details' })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  getOrderDetail(@Param('id', ParseIntPipe) id: number) { return this.client.send(ADMIN_PATTERNS.GET_ORDER_DETAIL, { orderId: id }); }
+  getOrderDetail(@Param('id', ParseIntPipe) id: number) { return this.client.send(ADMIN_PATTERNS.GET_ORDER_DETAIL, { orderId: id }).pipe(retry({ count: 2, delay: 300 })); }
 
   @Patch('orders/:id/status')
   @HttpCode(HttpStatus.OK)
@@ -97,7 +98,7 @@ export class AdminGatewayController {
   @Get('products')
   @ApiOperation({ summary: 'List semua produk' })
   @ApiOkResponse({ type: PaginatedProductsResponseDto, description: 'Daftar produk berhalaman' })
-  getProducts(@Query() q: any) { return this.client.send(ADMIN_PATTERNS.GET_PRODUCTS, q); }
+  getProducts(@Query() q: any) { return this.client.send(ADMIN_PATTERNS.GET_PRODUCTS, q).pipe(retry({ count: 2, delay: 300 })); }
 
   @Patch('products/:id/toggle-active')
   @HttpCode(HttpStatus.OK)

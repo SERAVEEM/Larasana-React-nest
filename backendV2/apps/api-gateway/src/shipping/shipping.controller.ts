@@ -1,6 +1,7 @@
 import { Controller, Get, Inject, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import { retry } from 'rxjs/operators';
 import { SERVICES, SHIPPING_PATTERNS } from '../../../../libs/shared/src';
 import { ShippingMethod } from '../../../../libs/shared/src/entities/shipping-method.entity';
 
@@ -13,12 +14,12 @@ export class ShippingGatewayController {
   @ApiOperation({ summary: 'Daftar kurir pengiriman' })
   @ApiOkResponse({ type: [ShippingMethod], description: 'Daftar kurir pengiriman aktif berhasil diambil' })
   getAll(@Query('addressId') addressId?: string) {
-    return this.client.send(SHIPPING_PATTERNS.GET_ALL, { addressId: addressId ? Number(addressId) : undefined });
+    return this.client.send(SHIPPING_PATTERNS.GET_ALL, { addressId: addressId ? Number(addressId) : undefined }).pipe(retry({ count: 2, delay: 300 }));
   }
 
   @Get('cities')
   @ApiOperation({ summary: 'Daftar kota RajaOngkir' })
   getCities() {
-    return this.client.send(SHIPPING_PATTERNS.GET_CITIES, {});
+    return this.client.send(SHIPPING_PATTERNS.GET_CITIES, {}).pipe(retry({ count: 2, delay: 300 }));
   }
 }

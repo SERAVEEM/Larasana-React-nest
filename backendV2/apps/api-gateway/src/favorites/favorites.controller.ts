@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Delete, Param, Query, UseGuards, Inject, ParseIntPipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiOkResponse, ApiCreatedResponse, ApiUnauthorizedResponse, ApiConflictResponse } from '@nestjs/swagger';
+import { retry } from 'rxjs/operators';
 import { SERVICES, FAVORITES_PATTERNS } from '../../../../libs/shared/src';
 import { JwtAuthGuard } from '../common/guards';
 import { GetUser } from '../common/get-user.decorator';
@@ -21,7 +22,7 @@ export class FavoritesGatewayController {
   @ApiOkResponse({ type: [Favorite], description: 'Daftar produk favorit berhasil diambil' })
   @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto })
   getMyFavorites(@GetUser() user: any, @Query() query: FavoritesQueryDto) {
-    return this.client.send(FAVORITES_PATTERNS.GET_MY, { userId: user.sub, ...query });
+    return this.client.send(FAVORITES_PATTERNS.GET_MY, { userId: user.sub, ...query }).pipe(retry({ count: 2, delay: 300 }));
   }
 
   @Post(':productId')
@@ -50,6 +51,6 @@ export class FavoritesGatewayController {
   @ApiOkResponse({ schema: { type: 'boolean', example: true }, description: 'Status favorit produk' })
   @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto })
   check(@GetUser() user: any, @Param('productId', ParseIntPipe) productId: number) {
-    return this.client.send(FAVORITES_PATTERNS.CHECK, { userId: user.sub, productId });
+    return this.client.send(FAVORITES_PATTERNS.CHECK, { userId: user.sub, productId }).pipe(retry({ count: 2, delay: 300 }));
   }
 }

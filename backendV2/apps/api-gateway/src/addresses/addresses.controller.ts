@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Put, Patch, Delete, Param, Body, UseGuards, Inject, ParseIntPipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiOkResponse, ApiCreatedResponse, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import { retry } from 'rxjs/operators';
 import { SERVICES, ADDRESSES_PATTERNS } from '../../../../libs/shared/src';
 import { JwtAuthGuard } from '../common/guards';
 import { GetUser } from '../common/get-user.decorator';
@@ -21,7 +22,7 @@ export class AddressesGatewayController {
   @ApiOkResponse({ type: [Address], description: 'Daftar alamat user berhasil diambil' })
   @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto })
   getAll(@GetUser() user: any) {
-    return this.client.send(ADDRESSES_PATTERNS.GET_MY, { userId: user.sub });
+    return this.client.send(ADDRESSES_PATTERNS.GET_MY, { userId: user.sub }).pipe(retry({ count: 2, delay: 300 }));
   }
 
   @Post()

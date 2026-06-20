@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { GatewayAppModule } from './app.module';
 import { RpcExceptionFilter } from './common/rpc-exception.filter';
+import { TimeoutInterceptor } from './common/timeout.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(GatewayAppModule);
@@ -11,6 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
 
   app.useGlobalFilters(new RpcExceptionFilter());
+  app.useGlobalInterceptors(new TimeoutInterceptor());
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, forbidNonWhitelisted: true,

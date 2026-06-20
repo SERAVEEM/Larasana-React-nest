@@ -19,6 +19,7 @@ import { PaymentsService } from './payments.service';
 import { MidtransService } from './midtrans.service';
 import { UploadController } from './upload.controller';
 import { R2Service } from './r2.service';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [

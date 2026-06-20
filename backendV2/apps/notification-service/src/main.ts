@@ -5,18 +5,19 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { NotificationAppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    NotificationAppModule,
-    {
-      transport: Transport.TCP,
-      options: {
-        host: '0.0.0.0',
-        port: Number(process.env.NOTIFICATION_SERVICE_PORT ?? 3003),
-      },
+  const app = await NestFactory.create(NotificationAppModule);
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+    options: {
+      host: '0.0.0.0',
+      port: Number(process.env.NOTIFICATION_SERVICE_PORT ?? 3003),
     },
-  );
+  });
   app.useGlobalFilters(new AllExceptionsToRpcFilter());
-  await app.listen();
-  console.log('📧 Notification Service running on TCP :3003');
+  await app.startAllMicroservices();
+  
+  const port = process.env.PORT || 4003;
+  await app.listen(port);
+  console.log(`📧 Notification Service running (TCP :3003, HTTP :${port})`);
 }
 bootstrap();

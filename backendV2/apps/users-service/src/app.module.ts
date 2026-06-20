@@ -13,6 +13,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AdminService } from './admin.service';
       User, RefreshToken, EmailVerification, PasswordReset, Order, Payment, Product,
     ]),
     JwtModule.register({}),
+    HealthModule,
     ClientsModule.register([
       {
         name: SERVICES.NOTIFICATION,
