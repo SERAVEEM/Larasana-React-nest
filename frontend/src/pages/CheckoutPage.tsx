@@ -3,6 +3,7 @@ import AddressSection from '../components/Checkout/AddressSection';
 import ShippingSection from '../components/Checkout/ShippingSection';
 import PaymentSection from '../components/Checkout/PaymentSection';
 import PriceSummary from '../components/Checkout/PriceSummary';
+import { Helmet } from 'react-helmet-async';
 import '../style/Checkout.css';
 
 export default function CheckoutPage() {
@@ -99,6 +100,11 @@ export default function CheckoutPage() {
 
   return (
     <div className="co-wrapper">
+      <Helmet>
+        {product && product.images && product.images[0] && (
+          <link rel="preload" as="image" href={product.images[0]} {...({ fetchPriority: 'high' } as any)} />
+        )}
+      </Helmet>
       <div className="co-header-space" />
       <div className="co-container">
         
@@ -118,6 +124,8 @@ export default function CheckoutPage() {
                 src={product.images[0]} 
                 alt={product.name} 
                 className="co-product-img" 
+                loading="eager"
+                {...({ fetchPriority: 'high' } as any)}
               />
             </div>
           </div>
