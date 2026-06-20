@@ -4,9 +4,10 @@ import '../style/hero.css';
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [shouldLoad, setShouldLoad] = useState(() => {
+  const [shouldLoad] = useState(true);
+  const [isSplashComplete, setIsSplashComplete] = useState(() => {
     try {
-      return !!sessionStorage.getItem('larasana_splash_shown');
+      return sessionStorage.getItem('larasana_splash_shown') === 'true';
     } catch {
       return false;
     }
@@ -19,24 +20,23 @@ export default function Hero() {
   };
 
   useEffect(() => {
-    if (shouldLoad) return;
+    if (isSplashComplete) return;
 
     const handleSplashComplete = () => {
-      setShouldLoad(true);
+      setIsSplashComplete(true);
     };
 
     window.addEventListener('splash-completed', handleSplashComplete);
 
-    // Safety fallback: load video after 4 seconds regardless
     const timer = setTimeout(() => {
-      setShouldLoad(true);
+      setIsSplashComplete(true);
     }, 4000);
 
     return () => {
       window.removeEventListener('splash-completed', handleSplashComplete);
       clearTimeout(timer);
     };
-  }, [shouldLoad]);
+  }, [isSplashComplete]);
 
   useEffect(() => {
     if (!shouldLoad) return;
@@ -100,7 +100,7 @@ export default function Hero() {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           onCanPlay={handleVideoReady}
           style={{
             position: 'absolute',

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useProductDetail } from '../hooks/useProductDetail';
 import ImageCarousel from '../components/Product/ImageCarousel';
 import ProductInfo from '../components/Product/ProductInfo';
@@ -114,6 +115,11 @@ export default function ProductDetailPage() {
 
   return (
     <div className="pd-wrapper">
+      <Helmet>
+        {product.images && product.images[0] && (
+          <link rel="preload" as="image" href={product.images[0]} {...({ fetchPriority: 'high' } as any)} />
+        )}
+      </Helmet>
       <div className="pd-header-space" />
       <div className="pd-container">
         

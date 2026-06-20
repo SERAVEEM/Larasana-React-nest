@@ -10,6 +10,32 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isFontReady, setIsFontReady] = useState(false);
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(() => {
+    if (window.location.pathname !== '/') return true;
+    const win = window as unknown as { __heroVideoReady?: boolean };
+    return !!win.__heroVideoReady;
+  });
+
+  // Video loading validation (only on homepage)
+  useEffect(() => {
+    if (window.location.pathname !== '/') return;
+
+    const handleVideoReady = () => {
+      setIsVideoReady(true);
+    };
+
+    window.addEventListener('hero-video-ready', handleVideoReady);
+
+    // Safety timeout: 3.5s max wait to prevent blocking user on slow connection
+    const safetyTimer = setTimeout(() => {
+      setIsVideoReady(true);
+    }, 3500);
+
+    return () => {
+      window.removeEventListener('hero-video-ready', handleVideoReady);
+      clearTimeout(safetyTimer);
+    };
+  }, []);
 
   // 1. Font loading validation
   useEffect(() => {
@@ -83,15 +109,15 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     if (isFontReady) {
       const timer = setTimeout(() => {
         setMinTimeElapsed(true);
-      }, 4000); // 4s to let the entrance and shimmer animations play fully
+      }, 2000); // 4s to let the entrance and shimmer animations play fully
 
       return () => clearTimeout(timer);
     }
   }, [isFontReady]);
 
-  // 4. Coordinate transition sequence: slide up only when everything is loaded AND the minimum animation time has elapsed
+  // 4. Coordinate transition sequence: slide up only when everything is loaded, fonts ready, min time elapsed, and video is ready
   useEffect(() => {
-    if (isLoaded && isFontReady && minTimeElapsed) {
+    if (isLoaded && isFontReady && minTimeElapsed && isVideoReady) {
       setSlideUp(true);
 
       // Fallback safety timer: ensure onComplete is called even if onTransitionEnd fails to fire
@@ -100,7 +126,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       }, 1500); // 1.2s transition + 300ms buffer
       return () => clearTimeout(timer);
     }
-  }, [isLoaded, isFontReady, minTimeElapsed, onComplete]);
+  }, [isLoaded, isFontReady, minTimeElapsed, isVideoReady, onComplete]);
 
   const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && (e.propertyName === 'transform' || e.propertyName === 'opacity')) {

@@ -10,7 +10,7 @@ export const ASSETS = {
     impact: `${R2_BASE_URL}/Story%20Telling/impact.png`,
   },
   story: {
-    first: `${R2_BASE_URL}/Story/Story_First.webp`,
+    first: `${R2_BASE_URL}/Story%20Telling/story_first.avif`,
     legacy: `${R2_BASE_URL}/Story/Legacy.png`,
     history: `${R2_BASE_URL}/Story/History.png`,
     story: `${R2_BASE_URL}/Story/Story.png`,
@@ -33,8 +33,8 @@ export const ASSETS = {
     constelation: `${R2_BASE_URL}/Impact/CONSTELATION.png`,
   },
   aboutUs: {
-    first: `${R2_BASE_URL}/About%20Us/First.png`,
-    second: `${R2_BASE_URL}/About%20Us/Second.png`,
+    first: `${R2_BASE_URL}/About%20Us/First.avif`,
+    second: `${R2_BASE_URL}/About%20Us/second.avif`,
     fawwaz: `${R2_BASE_URL}/About%20Us/Fawwaz.png`,
     sheva: `${R2_BASE_URL}/About%20Us/anak%20agung%20sheva.png`,
     nauval: `${R2_BASE_URL}/About%20Us/nauval.png`,

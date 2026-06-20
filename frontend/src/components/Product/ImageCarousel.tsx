@@ -33,6 +33,8 @@ export default function ImageCarousel({
               src={images[activeImageIndex]}
               alt={`${productName} look ${activeImageIndex + 1}`}
               className="pd-active-img"
+              loading={activeImageIndex === 0 ? 'eager' : 'lazy'}
+              {...({ fetchPriority: activeImageIndex === 0 ? 'high' : 'auto' } as any)}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
