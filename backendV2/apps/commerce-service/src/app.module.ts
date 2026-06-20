@@ -1,24 +1,14 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   createDatabaseModule,
   User, RefreshToken, EmailVerification, PasswordReset, Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod,
 } from '../../../libs/shared/src';
-import { ProductsController } from './products.controller';
-import { ProductsService } from './products.service';
-import { FavoritesController } from './favorites.controller';
-import { FavoritesService } from './favorites.service';
-import { AddressesController } from './addresses.controller';
-import { AddressesService } from './addresses.service';
-import { ShippingController } from './shipping.controller';
-import { ShippingService } from './shipping.service';
-import { OrdersController } from './orders.controller';
-import { OrdersService } from './orders.service';
-import { PaymentsController } from './payments.controller';
-import { PaymentsService } from './payments.service';
-import { MidtransService } from './midtrans.service';
-import { UploadController } from './upload.controller';
-import { R2Service } from './r2.service';
+import { ProductsModule } from './products.module';
+import { FavoritesModule } from './favorites.module';
+import { AddressesModule } from './addresses.module';
+import { ShippingModule } from './shipping.module';
+import { OrdersModule } from './orders.module';
+import { UploadModule } from './upload.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -26,28 +16,13 @@ import { HealthModule } from './health/health.module';
     createDatabaseModule([
       User, RefreshToken, EmailVerification, PasswordReset, Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod,
     ]),
-    TypeOrmModule.forFeature([
-      Order, OrderItem, Payment, Product, ProductImage, Favorite, Address, ShippingMethod, User,
-    ]),
-  ],
-  controllers: [
-    ProductsController,
-    FavoritesController,
-    AddressesController,
-    ShippingController,
-    OrdersController,
-    PaymentsController,
-    UploadController,
-  ],
-  providers: [
-    ProductsService,
-    FavoritesService,
-    AddressesService,
-    ShippingService,
-    OrdersService,
-    PaymentsService,
-    MidtransService,
-    R2Service,
+    HealthModule,
+    ProductsModule,
+    FavoritesModule,
+    AddressesModule,
+    ShippingModule,
+    OrdersModule,
+    UploadModule,
   ],
 })
 export class CommerceAppModule {}

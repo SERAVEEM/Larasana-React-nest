@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ServiceContainer } from '../core/di/ServiceContainer';
 import { CheckoutService } from '../core/services/CheckoutService';
+import { IDR_PER_USD } from '../core/config/currency';
 import { showAlert } from '../utils/alerts';
 import type { OrderDetails, PaymentState } from '../types/payment';
 
@@ -46,7 +47,7 @@ export function usePayment() {
 
   const formatPrice = (value: number): string => {
     if (currency === 'IDR') {
-      const idrValue = value * 15000;
+      const idrValue = value * IDR_PER_USD;
       return 'Rp ' + idrValue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
     return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

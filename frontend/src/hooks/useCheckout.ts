@@ -6,6 +6,7 @@ import { ProductService } from '../core/services/ProductService';
 import { Address } from '../core/domain/models/Address';
 import { ShippingOption } from '../core/domain/models/ShippingOption';
 import { Product } from '../core/domain/models/Product';
+import { IDR_PER_USD } from '../core/config/currency';
 import { showAlert } from '../utils/alerts';
 import type { CheckoutStepState } from '../types/checkout';
 
@@ -204,7 +205,7 @@ export function useCheckout() {
 
   const formatPrice = (value: number): string => {
     if (isIndonesian) {
-      const idrValue = value * 15000;
+      const idrValue = value * IDR_PER_USD;
       return 'Rp ' + idrValue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
     return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

@@ -1,3 +1,5 @@
+import { IDR_PER_USD } from '../../config/currency';
+
 export class Product {
   readonly id: string;
   readonly name: string;
@@ -76,7 +78,7 @@ export class Product {
 
   getFormattedPrice(currency: 'USD' | 'IDR'): string {
     if (currency === 'IDR') {
-      const idrValue = this.numericPrice * 15000;
+      const idrValue = this.numericPrice * IDR_PER_USD;
       return 'Rp ' + idrValue.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
     return this.price;

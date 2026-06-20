@@ -6,6 +6,8 @@ import { ShippingMethod, Address } from '../../../libs/shared/src';
 @Injectable()
 export class ShippingService {
   private citiesCache: any[] | null = null;
+  private citiesCacheExpiresAt = 0;
+  private readonly CITIES_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
   constructor(
     @InjectRepository(ShippingMethod)
@@ -561,7 +563,7 @@ export class ShippingService {
     if (!apiKey || apiKey.trim() === '') return fallbackCities;
 
     try {
-      if (!this.citiesCache) {
+      if (!this.citiesCache || Date.now() > this.citiesCacheExpiresAt) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000);
 
@@ -580,6 +582,7 @@ export class ShippingService {
           const results = resJson.rajaongkir?.results;
           if (results && Array.isArray(results) && results.length > 0) {
             this.citiesCache = results;
+            this.citiesCacheExpiresAt = Date.now() + this.CITIES_CACHE_TTL_MS;
             return this.citiesCache;
           }
           return fallbackCities;

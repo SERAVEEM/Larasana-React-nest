@@ -79,7 +79,7 @@ export class PaymentsService {
     });
 
     const isIdr = address.country === 'ID';
-    const exchangeRate = 15000;
+    const exchangeRate = Number(process.env.RAJAONGKIR_USD_RATE ?? '15000');
     const midtransAmount = Number((totalAmount * exchangeRate).toFixed(0));
 
     const midtransItems = [
