@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Get base URL and client secret key from environment variables, fallback to localhost gateway
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 const CLIENT_SECRET = import.meta.env.VITE_FRONTEND_CLIENT_SECRET || '';
 
@@ -36,7 +35,6 @@ client.interceptors.response.use(
     if (status === 401) {
       // Unauthorized: Clear tokens and potentially redirect to login
       localStorage.removeItem('larasana_auth_token');
-      // window.location.href = '/login'; // Optional: auto redirect on session expiry
     } else if (status === 403) {
       console.error('Forbidden: You do not have permissions for this resource.');
     } else if (status >= 500) {
