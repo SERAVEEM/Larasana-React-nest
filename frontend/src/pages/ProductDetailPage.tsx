@@ -43,8 +43,58 @@ export default function ProductDetailPage() {
 
   if (isInitialLoad) {
     return (
-      <div className="pd-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div style={{ fontSize: '1.2rem', color: '#666', fontFamily: "'Inter', sans-serif" }}>Loading Product Details...</div>
+      <div className="pd-wrapper">
+        <div className="pd-header-space" />
+        <div className="pd-container">
+          <div className="pd-content-grid">
+            {/* Left Column: Image Gallery Skeleton */}
+            <div className="pd-gallery-column">
+              <div className="pd-carousel-container skeleton-shimmer" style={{ background: '#fcfcfc', border: '1px solid #eee' }}>
+                {/* Visual shimmer container */}
+              </div>
+            </div>
+
+            {/* Right Column: Info Details Skeleton */}
+            <div className="pd-info-column">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2.2rem' }}>
+                {/* Title & Price Row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eaeaea', paddingBottom: '1.5rem' }}>
+                  <div className="skeleton-shimmer" style={{ width: '55%', height: '2.8rem' }} />
+                  <div className="skeleton-shimmer" style={{ width: '25%', height: '2.5rem' }} />
+                </div>
+
+                {/* Description Lines */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  <div className="skeleton-shimmer" style={{ width: '100%', height: '1.1rem' }} />
+                  <div className="skeleton-shimmer" style={{ width: '95%', height: '1.1rem' }} />
+                  <div className="skeleton-shimmer" style={{ width: '85%', height: '1.1rem' }} />
+                </div>
+
+                {/* Size Selection Grid */}
+                <div>
+                  <div className="skeleton-shimmer" style={{ width: '120px', height: '1.2rem', marginBottom: '1.2rem' }} />
+                  <div style={{ display: 'flex', gap: '0.8rem' }}>
+                    <div className="skeleton-shimmer" style={{ width: '3.2rem', height: '3.2rem', borderRadius: '50%' }} />
+                    <div className="skeleton-shimmer" style={{ width: '3.2rem', height: '3.2rem', borderRadius: '50%' }} />
+                    <div className="skeleton-shimmer" style={{ width: '3.2rem', height: '3.2rem', borderRadius: '50%' }} />
+                  </div>
+                </div>
+
+                {/* Cards Section */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  <div className="skeleton-shimmer" style={{ height: '11rem', borderRadius: '20px' }} />
+                  <div className="skeleton-shimmer" style={{ height: '11rem', borderRadius: '20px' }} />
+                </div>
+
+                {/* Action Buttons Row */}
+                <div style={{ display: 'flex', gap: '1.2rem', marginTop: '0.5rem' }}>
+                  <div className="skeleton-shimmer" style={{ flex: 1, height: '3.5rem', borderRadius: '30px' }} />
+                  <div className="skeleton-shimmer" style={{ width: '3.5rem', height: '3.5rem', borderRadius: '50%' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

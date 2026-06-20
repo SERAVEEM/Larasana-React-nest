@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 interface QrCodeBoxProps {
   qrImageUrl: string | null;
   paymentState: 'idle' | 'verifying' | 'success' | 'expired';
@@ -5,23 +7,32 @@ interface QrCodeBoxProps {
 
 export default function QrCodeBox({ qrImageUrl, paymentState }: QrCodeBoxProps) {
   const isExpired = paymentState === 'expired';
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <div className="pay-qrcode-box" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+    <div className="pay-qrcode-box" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '220px', position: 'relative' }}>
       {qrImageUrl ? (
-        <img
-          src={qrImageUrl}
-          alt="QRIS Payment Code"
-          style={{
-            width: '220px',
-            height: '220px',
-            objectFit: 'contain',
-            background: '#fff',
-            padding: '10px',
-            borderRadius: '8px',
-            filter: isExpired ? 'grayscale(1) contrast(0.5)' : 'none'
-          }}
-        />
+        <>
+          {!imageLoaded && (
+            <div className="skeleton-shimmer-dark" style={{ width: '220px', height: '220px', borderRadius: '8px', position: 'absolute' }} />
+          )}
+          <img
+            src={qrImageUrl}
+            alt="QRIS Payment Code"
+            onLoad={() => setImageLoaded(true)}
+            style={{
+              width: '220px',
+              height: '220px',
+              objectFit: 'contain',
+              background: '#fff',
+              padding: '10px',
+              borderRadius: '8px',
+              filter: isExpired ? 'grayscale(1) contrast(0.5)' : 'none',
+              opacity: imageLoaded ? 1 : 0,
+              transition: 'opacity 0.3s ease'
+            }}
+          />
+        </>
       ) : (
         /* Fallback custom SVG QR code for high-definition premium appearance */
         <svg
