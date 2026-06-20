@@ -4,6 +4,7 @@ import { ServiceContainer } from '../core/di/ServiceContainer';
 import { CheckoutService } from '../core/services/CheckoutService';
 import { IDR_PER_USD } from '../core/config/currency';
 import { showAlert } from '../utils/alerts';
+import { client } from '../api/client';
 import type { OrderDetails, PaymentState } from '../types/payment';
 
 export function usePayment() {
@@ -91,32 +92,105 @@ export function usePayment() {
     return () => clearInterval(timer);
   }, [paymentState]);
 
-  // Background payment status polling every 3 seconds
+  // Real-time payment status monitoring via Server-Sent Events (SSE) with Polling Fallback
   useEffect(() => {
     if (!orderDetails.order?.id || paymentState === 'success' || paymentState === 'expired') return;
 
-    const interval = setInterval(() => {
-      checkoutService.getPaymentStatus(orderDetails.order.id)
-        .then((res) => {
-          if (res.paymentStatus === 'paid' || res.orderStatus === 'processing') {
-            clearInterval(interval);
-            setPaymentState('success');
-            navigate('/payment-success', {
-              state: {
-                orderId: orderDetails.order.orderCode,
-                amountPaid: totalAmount,
-                productName: orderDetails.product.name
-              }
-            });
-          }
-        })
-        .catch((err) => {
-          console.error('Failed to poll payment status:', err);
-        });
-    }, 3000);
+    const controller = new AbortController();
+    const token = localStorage.getItem('larasana_auth_token');
+    const clientKey = String(client.defaults.headers['x-larasana-client-key'] || '');
+    const baseUrl = client.defaults.baseURL || 'http://localhost:3000/api/v1';
 
-    return () => clearInterval(interval);
+    let fallbackInterval: NodeJS.Timeout | null = null;
+
+    const connectSse = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/checkout/payment-status/${orderDetails.order.id}/stream`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'x-larasana-client-key': clientKey,
+            'Accept': 'text/event-stream'
+          },
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error(`SSE failed with status: ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) return;
+
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              try {
+                const jsonStr = line.slice(5).trim();
+                const eventData = JSON.parse(jsonStr);
+                const status = eventData.status;
+
+                if (status === 'paid' || status === 'processing') {
+                  setPaymentState('success');
+                  navigate('/payment-success', {
+                    state: {
+                      orderId: orderDetails.order.orderCode,
+                      amountPaid: totalAmount,
+                      productName: orderDetails.product.name
+                    }
+                  });
+                  return;
+                }
+              } catch (e) {
+                // Ignore parse errors on partial messages
+              }
+            }
+          }
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.warn('SSE payment stream connection failed, falling back to 3s polling:', err);
+          
+          fallbackInterval = setInterval(() => {
+            checkoutService.getPaymentStatus(orderDetails.order.id)
+              .then((res) => {
+                if (res.paymentStatus === 'paid' || res.orderStatus === 'processing') {
+                  if (fallbackInterval) clearInterval(fallbackInterval);
+                  setPaymentState('success');
+                  navigate('/payment-success', {
+                    state: {
+                      orderId: orderDetails.order.orderCode,
+                      amountPaid: totalAmount,
+                      productName: orderDetails.product.name
+                    }
+                  });
+                }
+              })
+              .catch((pollErr) => {
+                console.error('Polling fallback error:', pollErr);
+              });
+          }, 3000);
+        }
+      }
+    };
+
+    connectSse();
+
+    return () => {
+      controller.abort();
+      if (fallbackInterval) clearInterval(fallbackInterval);
+    };
   }, [orderDetails, navigate, totalAmount, paymentState, checkoutService]);
+
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
