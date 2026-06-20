@@ -7,6 +7,7 @@ import {
   ApiBadRequestResponse, ApiUnauthorizedResponse, ApiConflictResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import { SERVICES, AUTH_PATTERNS } from '../../../../libs/shared/src';
 import { JwtAuthGuard } from '../common/guards';
 import { GetUser } from '../common/get-user.decorator';
@@ -47,6 +48,7 @@ export class AuthGatewayController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 attempts per minute
   @ApiOperation({ summary: 'Login' })
   @ApiOkResponse({ type: AuthResponseDto, description: 'Login berhasil' })
   @ApiUnauthorizedResponse({ type: UnauthorizedResponseDto, description: 'Kredensial salah atau akun tidak aktif' })
@@ -97,6 +99,7 @@ export class AuthGatewayController {
 
   @Post('send-otp')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 3, ttl: 600000 } }) // 3 OTP requests per 10 minutes
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Kirim OTP verifikasi email' })
@@ -109,6 +112,7 @@ export class AuthGatewayController {
 
   @Post('verify-email')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 600000 } }) // 5 OTP attempts per 10 minutes
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Verifikasi OTP 6 digit' })
