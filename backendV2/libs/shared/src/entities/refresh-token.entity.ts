@@ -1,6 +1,6 @@
 import {
   Entity, PrimaryGeneratedColumn, Column,
-  CreateDateColumn, ManyToOne, JoinColumn,
+  CreateDateColumn, ManyToOne, JoinColumn, Index,
 } from 'typeorm';
 import { User } from './user.entity';
 
@@ -9,8 +9,10 @@ export class RefreshToken {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
+  @Index('idx_refresh_tokens_user_id')
   @Column({ name: 'user_id', unsigned: true })
   userId: number;
+
 
   @Column({ name: 'token_hash', length: 255, unique: true })
   tokenHash: string;

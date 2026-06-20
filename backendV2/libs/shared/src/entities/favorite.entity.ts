@@ -1,13 +1,15 @@
 import {
   Entity, PrimaryGeneratedColumn, Column,
-  CreateDateColumn, ManyToOne, JoinColumn,
+  CreateDateColumn, ManyToOne, JoinColumn, Index,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from './user.entity';
 import { Product } from './product.entity';
 
 @Entity('favorites')
+@Index('idx_favorites_user_product', ['userId', 'productId'], { unique: true })
 export class Favorite {
+
   @ApiProperty({ example: 1 })
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;

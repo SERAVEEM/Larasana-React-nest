@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { Address, ShippingMethod } from '../../../../../libs/shared/src';
 import { ShippingProvider } from './shipping-provider.interface';
 
 @Injectable()
 export class RajaOngkirProvider implements ShippingProvider {
-  private citiesCache: any[] | null = null;
-  private citiesCacheExpiresAt = 0;
-  private readonly CITIES_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+  constructor(
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+  ) {}
+
 
   async fetchRates(address: Address): Promise<ShippingMethod[]> {
     const apiKey = process.env.RAJAONGKIR_API_KEY;
@@ -177,35 +181,36 @@ export class RajaOngkirProvider implements ShippingProvider {
     if (!apiKey || apiKey.trim() === '') return fallbackCities;
 
     try {
-      if (!this.citiesCache || Date.now() > this.citiesCacheExpiresAt) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const cacheKey = 'shipping:cities';
+      const cached = await this.cacheManager.get<any[]>(cacheKey);
+      if (cached) return cached;
 
-        const response = await fetch('https://api.rajaongkir.com/starter/city', {
-          headers: { 'key': apiKey },
-          signal: controller.signal
-        });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-        clearTimeout(timeoutId);
+      const response = await fetch('https://api.rajaongkir.com/starter/city', {
+        headers: { 'key': apiKey },
+        signal: controller.signal
+      });
 
-        if (!response.ok) {
-          console.error('RajaOngkir: Failed to fetch city list:', response.status);
-          return fallbackCities;
-        } else {
-          const resJson = await response.json() as any;
-          const results = resJson.rajaongkir?.results;
-          if (results && Array.isArray(results) && results.length > 0) {
-            this.citiesCache = results;
-            this.citiesCacheExpiresAt = Date.now() + this.CITIES_CACHE_TTL_MS;
-            return this.citiesCache;
-          }
-          return fallbackCities;
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        console.error('RajaOngkir: Failed to fetch city list:', response.status);
+        return fallbackCities;
+      } else {
+        const resJson = await response.json() as any;
+        const results = resJson.rajaongkir?.results;
+        if (results && Array.isArray(results) && results.length > 0) {
+          await this.cacheManager.set(cacheKey, results, 24 * 60 * 60 * 1000);
+          return results;
         }
+        return fallbackCities;
       }
-      return this.citiesCache;
     } catch (err) {
       console.warn('RajaOngkir city fetch failed or timed out, using fallback cities list. Error:', err.message || err);
       return fallbackCities;
     }
+
   }
 }

@@ -1,7 +1,7 @@
 import {
   Entity, PrimaryGeneratedColumn, Column,
   CreateDateColumn, UpdateDateColumn,
-  ManyToOne, JoinColumn,
+  ManyToOne, JoinColumn, Index,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from './user.entity';
@@ -13,8 +13,10 @@ export class Address {
   id: number;
 
   @ApiProperty({ example: 1 })
+  @Index('idx_addresses_user_id')
   @Column({ name: 'user_id', unsigned: true })
   userId: number;
+
 
   @ApiProperty({ example: 'Rumah' })
   @Column({ length: 50, default: 'Rumah' })

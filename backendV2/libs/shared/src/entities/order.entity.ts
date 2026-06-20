@@ -1,7 +1,7 @@
 import {
   Entity, PrimaryGeneratedColumn, Column,
   CreateDateColumn, UpdateDateColumn,
-  ManyToOne, JoinColumn, OneToMany,
+  ManyToOne, JoinColumn, OneToMany, Index,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from './user.entity';
@@ -20,8 +20,10 @@ export class Order {
   orderCode: string;
 
   @ApiProperty({ example: 1 })
+  @Index('idx_orders_buyer_id')
   @Column({ name: 'buyer_id', unsigned: true })
   buyerId: number;
+
 
   @ApiProperty({ example: 135.00 })
   @Column({ name: 'total_amount', type: 'decimal', precision: 12, scale: 2 })

@@ -189,8 +189,9 @@ export class PaymentsService {
     if (newStatus === 'paid') { payment.paidAt = new Date(); await this.orderRepo.update(payment.orderId, { status: 'processing' }); }
     if (newStatus === 'expired' || newStatus === 'failed') await this.orderRepo.update(payment.orderId, { status: 'cancelled' });
     await this.paymentRepo.save(payment);
-    return { received: true };
+    return { received: true, orderId: payment.orderId, status: newStatus };
   }
+
 
   private mapStatus(ts: string, fs?: string): any {
     if (ts === 'capture') return fs === 'accept' ? 'paid' : 'failed';
