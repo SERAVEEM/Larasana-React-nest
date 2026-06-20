@@ -20,3 +20,6 @@ export * from './database/database.module';
 
 // Filters
 export * from './filters/all-exceptions-rpc.filter';
+
+// Config helpers
+export * from './config/require-env';

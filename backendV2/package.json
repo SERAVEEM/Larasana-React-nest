@@ -9,7 +9,10 @@
     "start:notification": "nest start notification-service --watch -r tsconfig-paths/register",
     "dev": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"npm run start:gateway\" \"npm run start:users\" \"npm run start:commerce\" \"npm run start:notification\"",
     "build": "nest build api-gateway && nest build users-service && nest build commerce-service && nest build notification-service",
-    "start:prod": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"node dist/api-gateway/apps/api-gateway/src/main.js\" \"node dist/users-service/apps/users-service/src/main.js\" \"node dist/commerce-service/apps/commerce-service/src/main.js\" \"node dist/notification-service/apps/notification-service/src/main.js\""
+    "start:prod": "concurrently -n gateway,users,commerce,notification -c \"cyan,magenta,yellow,blue\" \"node dist/api-gateway/apps/api-gateway/src/main.js\" \"node dist/users-service/apps/users-service/src/main.js\" \"node dist/commerce-service/apps/commerce-service/src/main.js\" \"node dist/notification-service/apps/notification-service/src/main.js\"",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1066.0",
@@ -42,11 +45,34 @@
     "@nestjs/testing": "^10.0.0",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
+    "@types/jest": "^30.0.0",
     "@types/multer": "^2.1.0",
     "@types/node": "^20.0.0",
     "@types/nodemailer": "^6.4.15",
     "@types/passport-jwt": "^4.0.1",
     "concurrently": "^8.2.2",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
     "typescript": "^5.1.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "apps/**/*.(t|j)s",
+      "libs/**/*.(t|j)s"
+    ],
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@app/shared(.*)$": "<rootDir>/libs/shared/src$1"
+    }
   }
 }

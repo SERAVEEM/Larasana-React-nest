@@ -11,6 +11,7 @@ import { OAuth2Client } from 'google-auth-library';
 import {
   User, RefreshToken, EmailVerification, PasswordReset,
   SERVICES, NOTIFICATION_PATTERNS,
+  requireSecret,
 } from '../../../libs/shared/src';
 
 @Injectable()
@@ -205,11 +206,11 @@ export class AuthService {
     const payload = { sub: user.id, email: user.email, role: user.role };
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_ACCESS_SECRET ?? 'ganti_random_string_panjang_access',
+        secret: requireSecret('JWT_ACCESS_SECRET'),
         expiresIn: process.env.JWT_ACCESS_EXPIRES_IN ?? '15m',
       }),
       this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_REFRESH_SECRET ?? 'ganti_random_string_panjang_refresh',
+        secret: requireSecret('JWT_REFRESH_SECRET'),
         expiresIn: process.env.JWT_REFRESH_EXPIRES_IN ?? '7d',
       }),
     ]);

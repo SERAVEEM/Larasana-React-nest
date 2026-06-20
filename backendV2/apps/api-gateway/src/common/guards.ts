@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
+import { requireEnv } from '../../../../libs/shared/src';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -23,7 +24,7 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_ACCESS_SECRET ?? 'ganti_random_string_panjang_access',
+        secret: requireEnv('JWT_ACCESS_SECRET'),
       });
 
       req.user = payload;
