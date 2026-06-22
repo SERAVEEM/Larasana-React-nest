@@ -11,49 +11,54 @@ Frontend (port 5173)
         ↓ HTTP
 API Gateway (port 3000)   ← satu-satunya yang dapat request dari luar
         ↓ TCP
-├── auth-service        (3001)  — register, login, JWT, OTP
-├── users-service       (3002)  — profil user
-├── orders-service      (3003)  — riwayat order
-├── products-service    (3004)  — katalog produk
-├── payments-service    (3005)  — checkout, Midtrans
-├── admin-service       (3006)  — panel admin
-├── notification-service(3007)  — kirim email
-└── [favorites, addresses, shipping dihandle payments-service]
+├── users-service        (TCP: 3001, HTTP: 4001)  — akun user, auth, Google login, admin
+├── commerce-service     (TCP: 3002, HTTP: 4002)  — produk, favorit, alamat, kurir, order, checkout, Midtrans
+└── notification-service (TCP: 3003, HTTP: 4003)  — kirim email OTP & order confirmation
 
-Semua service → MySQL (XAMPP)
+Semua service → MySQL Database
 ```
 
 ---
 
 ## Cara Menjalankan
 
+### 1. Prasyarat
+* Node.js & npm
+* MySQL Server (misal via XAMPP atau Docker)
+
+### 2. Konfigurasi Environment
 ```bash
 npm install
 cp .env.example .env
-# isi .env
-
-# Jalankan semua sekaligus (Windows)
-start-all.bat
-
-# Atau manual — buka 8 terminal terpisah:
-npm run start:notification   # terminal 1
-npm run start:auth           # terminal 2
-npm run start:users          # terminal 3
-npm run start:orders         # terminal 4
-npm run start:products       # terminal 5
-npm run start:payments       # terminal 6
-npm run start:admin          # terminal 7
-npm run start:gateway        # terminal 8 — terakhir
+# Lengkapi variabel di file .env sesuai kebutuhan
 ```
 
-Swagger: `http://localhost:3000/api/docs`
+### 3. Menjalankan Service
+```bash
+# Jalankan semua service sekaligus (Windows)
+start-all.bat
+
+# Atau manual dengan npm run:
+npm run start:users          # terminal 1
+npm run start:commerce       # terminal 2
+npm run start:notification   # terminal 3
+npm run start:gateway        # terminal 4 (API Gateway)
+```
+
+Swagger API Docs dapat diakses di: `http://localhost:3000/api/docs`
 
 ---
 
 ## Database
 
-Import SQL berurutan ke phpMyAdmin:
+Import SQL ke phpMyAdmin atau DBMS pilihan Anda:
 1. `larasana_db.sql`
 
 ---
 
+## Testing
+
+Jalankan pengujian unit (unit tests) Jest:
+```bash
+npm test
+```
