@@ -523,11 +523,11 @@ app.use(helmet());
 
 ## Definition of done (overall)
 
-- [ ] No hardcoded secret fallbacks remain (`grep -rn "?? 'secret'" backendV2` is empty)
-- [ ] `npm test` passes in both `backendV2` and `frontend`, with at least the signature/fallback/validation tests above in place
-- [ ] Login/OTP endpoints return 429 under rapid repeated requests
-- [ ] A downed `commerce-service` produces an 8s timeout response, not an indefinite hang
-- [ ] `/health` responds correctly on each backend service
-- [ ] The exchange rate exists in exactly one place per codebase (frontend constant, backend env var)
-- [ ] `commerce-service/src/app.module.ts` no longer lists more than 2–3 controllers directly (the rest live in their own feature modules)
-- [ ] `shipping.service.ts` is under ~150 lines, with provider-specific logic moved out
+- [x] No hardcoded secret fallbacks remain (`grep -rn "?? 'secret'" backendV2` is empty)
+- [x] `npm test` passes in both `backendV2` and `frontend`, with at least the signature/fallback/validation tests above in place
+- [x] Login/OTP endpoints return 429 under rapid repeated requests
+- [x] A downed `commerce-service` produces an 8s timeout response, not an indefinite hang
+- [x] `/health` responds correctly on each backend service
+- [x] The exchange rate exists in exactly one place per codebase (frontend constant, backend env var)
+- [x] `commerce-service/src/app.module.ts` no longer lists more than 2–3 controllers directly (the rest live in their own feature modules)
+- [x] `shipping.service.ts` is under ~150 lines, with provider-specific logic moved out

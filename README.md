@@ -352,9 +352,12 @@ frontend/
 │   ├── api/          # Axios client singleton & interceptors configuration
 │   ├── assets/       # Promotional video, catalog images, and custom Didot fonts
 │   ├── components/   # Navbar, Footer, SmoothScroll, SplashScreen, and layouts
+│   ├── core/         # Core business logic (domain models, dependency injection, and services)
+│   ├── hooks/        # Reusable custom React hooks (e.g. usePayment, useCheckout)
 │   ├── pages/        # Main route views (Landing, Product Detail, Checkout, Payment)
 │   │   └── admin/    # Admin panel pages (dashboard metrics, product managers)
 │   ├── style/        # Vanilla CSS stylesheets matched per page/component
+│   ├── types/        # TypeScript type and interface declarations
 │   └── utils/        # Dynamic script loaders, Google auth scripts, and alert helpers
 ├── package.json      # Dependencies (Vite 8, React 19, Framer Motion, Lenis)
 └── vite.config.ts    # Bundler settings
