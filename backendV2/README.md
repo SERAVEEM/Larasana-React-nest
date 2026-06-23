@@ -6,16 +6,35 @@ Platform Digital Tenun Lombok — arsitektur microservices dengan NestJS monorep
 
 ## Arsitektur
 
-```
-Frontend (port 5173)
-        ↓ HTTP
-API Gateway (port 3000)   ← satu-satunya yang dapat request dari luar
-        ↓ TCP
-├── users-service        (TCP: 3001, HTTP: 4001)  — akun user, auth, Google login, admin
-├── commerce-service     (TCP: 3002, HTTP: 4002)  — produk, favorit, alamat, kurir, order, checkout, Midtrans
-└── notification-service (TCP: 3003, HTTP: 4003)  — kirim email OTP & order confirmation
+```mermaid
+graph TD
+    %% Styling
+    classDef client fill:#f9f9fb,stroke:#4f46e5,stroke-width:2px,color:#1f2937;
+    classDef gateway fill:#e0e7ff,stroke:#4338ca,stroke-width:2px,color:#1f2937;
+    classDef service fill:#f3f4f6,stroke:#6b7280,stroke-width:2px,color:#1f2937;
+    classDef db fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#1f2937;
 
-Semua service → MySQL Database
+    FE[Frontend SPA / Port 5173]:::client
+    GW[API Gateway / Port 3000]:::gateway
+    
+    subgraph Microservices ["Microservices (TCP Broker)"]
+        US[Users Service <br> TCP: 3001 / HTTP: 4001]:::service
+        CS[Commerce Service <br> TCP: 3002 / HTTP: 4002]:::service
+        NS[Notification Service <br> TCP: 3003 / HTTP: 4003]:::service
+    end
+    
+    DB[(MySQL Database)]:::db
+
+    %% Relationships
+    FE -->|HTTP / HTTPS| GW
+    GW -->|TCP Proxy| US
+    GW -->|TCP Proxy| CS
+    
+    US -->|TypeORM| DB
+    CS -->|TypeORM| DB
+    
+    US -->|TCP OTP| NS
+    CS -->|TCP Order Mail| NS
 ```
 
 ---
