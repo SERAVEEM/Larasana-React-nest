@@ -38,7 +38,7 @@ Beyond standard e-commerce features, LARASANA weaves a rich narrative layer arou
 The user interface is designed with a premium, high-contrast visual aesthetic utilizing high-fidelity motion graphics, immersive typography, and staggered layouts to evoke a luxury fashion house experience.
 
 <p align="center">
-  <img src="https://pub-f243a32e4dee45969b6714c325a336f8.r2.dev/About%20Us/First.png" alt="LARASANA Brand Identity and Visual Layouts" width="90%" />
+  <img src="https://pub-f243a32e4dee45969b6714c325a336f8.r2.dev/About%20Us/First.avif" alt="LARASANA Brand Identity and Visual Layouts" width="90%" />
 </p>
 
 ---
