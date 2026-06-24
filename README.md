@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/React-19.x-61DAFB?style=flat&logo=react&logoColor=black" alt="React" />
-  <img src="https://img.shields.io/badge/TypeScript-6.x-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Vite-8.x-646CFF?style=flat&logo=vite&logoColor=white" alt="Vite" />
-  <img src="https://img.shields.io/badge/NestJS-10.x-E0234E?style=flat&logo=nestjs&logoColor=white" alt="NestJS" />
+  <img src="https://img.shields.io/badge/React-19.2.5-61DAFB?style=flat&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-6.0.3-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite-8.0.10-646CFF?style=flat&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/NestJS-10.4.22-E0234E?style=flat&logo=nestjs&logoColor=white" alt="NestJS" />
   <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white" alt="MySQL" />
   <img src="https://img.shields.io/badge/Vercel-Deployed-000000?style=flat&logo=vercel&logoColor=white" alt="Vercel" />
   <img src="https://img.shields.io/badge/Railway-Deployed-131415?style=flat&logo=railway&logoColor=white" alt="Railway" />
@@ -48,31 +48,31 @@ The user interface is designed with a premium, high-contrast visual aesthetic ut
 The platform is engineered using a decoupled, service-oriented architecture designed to handle concurrent operations, secure payment processing, and high-fidelity motion layouts.
 
 ### A. Frontend (Client-Side)
-* **Core Framework**: **React 19.x** (utilizing functional component models, custom hooks, and concurrent rendering).
-* **Language Platform**: **TypeScript 6.x** (ensures strict compile-time type safety across complex cart states, order payloads, and API interfaces).
-* **Build Tooling**: **Vite 8.x** (leverages native ES modules for fast compilation, hot module replacement, and optimized production bundling).
-* **State & Navigation Routing**: **React Router DOM 7.x** (provides client-side routing, protected admin route guards, and browser history transitions).
+* **Core Framework**: **React 19.2.5** (utilizing functional component models, custom hooks, and concurrent rendering).
+* **Language Platform**: **TypeScript 6.0.3** (ensures strict compile-time type safety across complex cart states, order payloads, and API interfaces).
+* **Build Tooling**: **Vite 8.0.10** (leverages native ES modules for fast compilation, hot module replacement, and optimized production bundling).
+* **State & Navigation Routing**: **React Router DOM 7.15.0** (provides client-side routing, protected admin route guards, and browser history transitions).
 * **Motion & UX Engineering**:
-  * **Lenis 1.x**: Overrides default browser scroll-physics with inertia-based smooth scrolling, creating a premium luxury feel.
-  * **Framer Motion 11.x**: Drives micro-interactions, layout morphing, staggered element card dealing, and page entrance animations.
-  * **ScrollReveal 4.x**: Controls staggered, viewport-triggered element reveal behaviors on container entry.
-* **SEO & Metadata**: **React Helmet Async 2.x** (injects page titles, meta descriptions, and OpenGraph tags dynamically per route).
-* **API Client**: **Axios 1.16.x** (configured as a singleton with custom interceptor hooks to coordinate gateways).
+  * **Lenis 1.3.23**: Overrides default browser scroll-physics with inertia-based smooth scrolling, creating a premium luxury feel.
+  * **Framer Motion 11.18.2**: Drives micro-interactions, layout morphing, staggered element card dealing, and page entrance animations.
+  * **ScrollReveal 4.0.9**: Controls staggered, viewport-triggered element reveal behaviors on container entry.
+* **SEO & Metadata**: **React Helmet Async 2.0.5** (injects page titles, meta descriptions, and OpenGraph tags dynamically per route).
+* **API Client**: **Axios 1.16.1** (configured as a singleton with custom interceptor hooks to coordinate gateways).
 
 ### B. Backend (Server-Side)
-* **Core Framework**: **NestJS 10.x** (a progressive Node.js framework building modular, enterprise-grade server-side architectures).
+* **Core Framework**: **NestJS 10.4.22** (a progressive Node.js framework building modular, enterprise-grade server-side architectures).
 * **Monorepo Architecture**: Nest CLI monorepo workspace (segregates independent applications from shared libraries).
 * **Internal Microservice Broker**: **TCP Transport Protocol** (NestJS native microservice TCP communication to enable low-overhead, fast internal messaging).
 * **Database & ORM**:
   * **Database Engine**: **MySQL** / MariaDB (schema constraints, foreign keys, and indexes are restored via `larasana_db.sql`).
-  * **ORM**: **TypeORM 0.3.x** / `@nestjs/typeorm` (manages schema synchronization, data-mapper queries, and transaction tables).
+  * **ORM**: **TypeORM 0.3.30** / `@nestjs/typeorm` (manages schema synchronization, data-mapper queries, and transaction tables).
 * **Security & Reliability**:
   * HTTP security headers protection using **Helmet**.
   * Global and endpoint-specific rate limiting via **@nestjs/throttler** (default 20 req/min, Login/OTP attempts throttled strictly).
   * Global timeout interceptor (8 seconds) and idempotent request retries to handle transient failures.
   * Hashing credentials via `bcrypt` (adaptive salt-rounds hashing).
   * Double JSON Web Token (JWT) Access/Refresh Token cycle via `@nestjs/passport` and `passport-jwt` with strict validation.
-* **Transactional Emailing**: **Nodemailer 6.x** (connects to SMTP engines to send secure HTML OTPs and Password Reset links).
+* **Transactional Emailing**: **Nodemailer 6.10.1** (connects to SMTP engines to send secure HTML OTPs and Password Reset links).
 * **Health & Reliability Monitoring**: **@nestjs/terminus** health indicator endpoints resolving DB connectivity and service liveness.
 
 ### C. Third-Party Integrations
