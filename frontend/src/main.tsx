@@ -16,6 +16,7 @@ const StoryTelling = lazy(() => import('./pages/StoryTelling.tsx'));
 const HeroShowcasePage = lazy(() => import('./pages/HeroShowcasePage.tsx'));
 const Footer = lazy(() => import('./components/Footer.tsx'));
 const AdminLayout = lazy(() => import('./components/AdminLayout.tsx'));
+import AdminRoute from './components/AdminRoute.tsx';
 
 // Lazy loaded page components
 const LoginPage = lazy(() => import('./pages/LoginPage.tsx'));
@@ -76,12 +77,12 @@ function RootApp() {
               <Route path="/payment" element={<><Navbar /><PaymentPage /><Footer /></>} />
               <Route path="/payment-success" element={<><Navbar /><FinishPaymentPage /><Footer /></>} />
               <Route path="/my-orders" element={<><Navbar /><MyOrdersPage /><Footer /></>} />
-              <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
-              <Route path="/admin/products" element={<AdminLayout><AdminProducts /></AdminLayout>} />
-              <Route path="/admin/products/new" element={<AdminLayout><AdminAddProduct /></AdminLayout>} />
-              <Route path="/admin/products/edit/:id" element={<AdminLayout><AdminEditProduct /></AdminLayout>} />
-              <Route path="/admin/orders" element={<AdminLayout><AdminOrders /></AdminLayout>} />
-              <Route path="/admin/orders/:id" element={<AdminLayout><AdminOrderDetails /></AdminLayout>} />
+              <Route path="/admin" element={<AdminRoute><AdminLayout><AdminDashboard /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/products" element={<AdminRoute><AdminLayout><AdminProducts /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/products/new" element={<AdminRoute><AdminLayout><AdminAddProduct /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/products/edit/:id" element={<AdminRoute><AdminLayout><AdminEditProduct /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/orders" element={<AdminRoute><AdminLayout><AdminOrders /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/orders/:id" element={<AdminRoute><AdminLayout><AdminOrderDetails /></AdminLayout></AdminRoute>} />
             </Routes>
           </Suspense>
         </SmoothScroll>
