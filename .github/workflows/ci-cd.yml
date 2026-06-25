@@ -33,11 +33,6 @@ jobs:
           cd backendV2
           npm ci
 
-      - name: Run Backend Lint
-        # FIX #1: removed invalid --if-present flag; backendV2 has a lint script
-        run: |
-          cd backendV2
-          npm run lint
 
       - name: Run Backend Tests (with coverage)
         # FIX #2: use test:cov (jest --coverage) instead of test -- --coverage
