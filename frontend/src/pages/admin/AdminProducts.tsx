@@ -14,7 +14,6 @@ export default function AdminProducts() {
   // Fetch products asynchronously from backend
   useEffect(() => {
     let active = true;
-    setLoading(true);
     getProductsAsync()
       .then((data) => {
         if (active) {

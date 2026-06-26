@@ -16,7 +16,6 @@ export default function AdminOrders() {
   // Fetch orders asynchronously from backend
   useEffect(() => {
     let active = true;
-    setLoading(true);
     getOrdersAsync()
       .then((data) => {
         if (active) {

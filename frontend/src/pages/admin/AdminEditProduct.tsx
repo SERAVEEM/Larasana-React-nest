@@ -14,6 +14,13 @@ export default function AdminEditProduct() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Derived state: reset loading when ID changes
+  const [prevId, setPrevId] = useState(id);
+  if (id !== prevId) {
+    setPrevId(id);
+    setLoading(true);
+  }
+
   // Form states
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
@@ -49,7 +56,6 @@ export default function AdminEditProduct() {
   useEffect(() => {
     if (!id) return;
     let active = true;
-    setLoading(true);
     getProductByIdAsync(id)
       .then(data => {
         if (active) {

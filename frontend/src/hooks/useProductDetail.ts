@@ -12,6 +12,14 @@ export function useProductDetail() {
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Derived state: reset loading when ID changes
+  const [prevId, setPrevId] = useState(id);
+  if (id !== prevId) {
+    setPrevId(id);
+    setLoading(true);
+  }
+
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('XL');
   const [isLiked, setIsLiked] = useState(false);
@@ -59,7 +67,6 @@ export function useProductDetail() {
   useEffect(() => {
     if (!id) return;
     let active = true;
-    setLoading(true);
 
     if (prevIdRef.current && prevIdRef.current !== id) {
       const matchPrev = prevIdRef.current.match(/^([a-zA-Z_-]*)([0-9]+)$/);

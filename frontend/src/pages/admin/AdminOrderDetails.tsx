@@ -13,11 +13,17 @@ export default function AdminOrderDetails() {
   const [status, setStatus] = useState<Order['status']>('Pending');
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
+  // Derived state: reset loading when ID changes
+  const [prevId, setPrevId] = useState(id);
+  if (id !== prevId) {
+    setPrevId(id);
+    setLoading(true);
+  }
+
   // Load order data from local storage asynchronously
   useEffect(() => {
     if (!id) return;
     let active = true;
-    setLoading(true);
     getOrderByIdAsync(id)
       .then(data => {
         if (active) {

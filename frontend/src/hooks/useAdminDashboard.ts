@@ -26,7 +26,6 @@ export function useAdminDashboard() {
   // Fetch all dashboard metrics from the services on mount
   useEffect(() => {
     let active = true;
-    setLoading(true);
     
     Promise.all([
       productService.getProducts(), 

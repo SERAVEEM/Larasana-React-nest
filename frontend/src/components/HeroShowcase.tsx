@@ -30,23 +30,39 @@ export default function HeroShowcase() {
   const productService = ServiceContainer.resolve<ProductService>('ProductService');
   const [hasScrolledIntoView, setHasScrolledIntoView] = useState(false);
   const [isEntranceDone, setIsEntranceDone] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
   const [gridItems, setGridItems] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(5);
+  const [visibleCount, setVisibleCount] = useState(() => {
+    if (typeof window === 'undefined') return 5;
+    const width = window.innerWidth;
+    if (width <= 768) return 1;
+    if (width <= 1024) return 2;
+    return 5;
+  });
 
   const sectionRef = useRef<HTMLElement>(null);
   const whiteBgRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // 1. Detect device viewport to branch 
+  // 1. Detect device viewport and align visibleCount on resize
   useEffect(() => {
-    const checkDevice = () => {
-      setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width <= 768);
+      if (width <= 768) {
+        setVisibleCount(1);
+      } else if (width <= 1024) {
+        setVisibleCount(2);
+      } else {
+        setVisibleCount(5);
+      }
     };
-    checkDevice();
-    window.addEventListener('resize', checkDevice);
-    return () => window.removeEventListener('resize', checkDevice);
+    
+    // We already initialize the state with correct values on mount,
+    // so we only need to listen for resize events.
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // 2. Entrance done observer timer
@@ -58,24 +74,6 @@ export default function HeroShowcase() {
     }, delay);
     return () => clearTimeout(timer);
   }, [hasScrolledIntoView, isMobile]);
-
-  // 3. Keep visible count aligned with device
-  useEffect(() => {
-    if (isMobile) {
-      setVisibleCount(1);
-      return;
-    }
-    const handleResize = () => {
-      if (window.innerWidth <= 1024) {
-        setVisibleCount(2);
-      } else {
-        setVisibleCount(5);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isMobile]);
 
   // 4. Smooth scrolling carousel on desktop/tablet resize widths
   useEffect(() => {

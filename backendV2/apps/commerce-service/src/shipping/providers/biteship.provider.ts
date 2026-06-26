@@ -6,7 +6,8 @@ import { ShippingProvider } from './shipping-provider.interface';
 export class BiteshipProvider implements ShippingProvider {
   async fetchRates(address: Address): Promise<ShippingMethod[]> {
     const apiKey = process.env.BITESHIP_API_KEY;
-    if (!apiKey || apiKey.trim() === '') return [];
+    const enabled = process.env.BITESHIP_ENABLED === 'true';
+    if (!enabled || !apiKey || apiKey.trim() === '') return [];
 
     const originPostalCode = Number(process.env.BITESHIP_ORIGIN_POSTAL_CODE || '83355');
     const usdRate = Number(process.env.RAJAONGKIR_USD_RATE || '15000');
