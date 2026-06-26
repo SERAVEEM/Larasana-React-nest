@@ -92,8 +92,8 @@ jobs:
           NODE_ENV=test
           DB_HOST=mysql
           DB_PORT=3306
-          DB_USER=root
-          DB_PASS=
+          DB_USERNAME=root
+          DB_PASSWORD=
           DB_NAME=larasana
           JWT_ACCESS_SECRET=ci_access_secret
           JWT_REFRESH_SECRET=ci_refresh_secret
@@ -104,6 +104,11 @@ jobs:
           COMMERCE_SERVICE_PORT=3002
           NOTIFICATION_SERVICE_HOST=notification-service
           NOTIFICATION_SERVICE_PORT=3003
+          MAIL_HOST=localhost
+          MAIL_PORT=1025
+          MAIL_USER=test
+          MAIL_PASS=test
+          MAIL_FROM="LARASANA <no-reply@larasana.id>"
           EOF
 
       - name: Set up Docker Compose
@@ -127,6 +132,13 @@ jobs:
             sleep 5
           done
 
+      # Import the database schema and seed data before running tests
+      - name: Import Database Dump
+        run: |
+          echo "Importing database dump..."
+          docker compose exec -T mysql mysql -u root larasana < backendV2/larasana_db.sql
+          echo "Database imported successfully."
+
       # FIX #5: cypress is now in devDependencies so npm ci installs it automatically.
       # FIX #6: removed build: — the dev server doesn't need a prior production build.
       #         cypress-io/github-action backgrounds `start` automatically.
@@ -139,7 +151,8 @@ jobs:
           wait-on-timeout: 60
           browser: chrome
         env:
-          VITE_API_BASE_URL: http://localhost:80/api
+          VITE_API_BASE_URL: http://localhost:80/api/v1
+          VITE_FRONTEND_CLIENT_SECRET: ci_client_secret
 
       - name: Upload Cypress Screenshots on Failure
         if: failure()
