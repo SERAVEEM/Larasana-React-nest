@@ -2,6 +2,9 @@ import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 const CLIENT_SECRET = import.meta.env.VITE_FRONTEND_CLIENT_SECRET || '';
+if (!CLIENT_SECRET) {
+  console.warn('[Larasana] VITE_FRONTEND_CLIENT_SECRET is not set. API requests may fail due to missing x-larasana-client-key header.');
+}
 
 export const client = axios.create({
   baseURL: BASE_URL,
@@ -33,6 +36,8 @@ client.interceptors.response.use(
     const status = error.response?.status;
     
     if (status === 401) {
+  console.error('[Larasana] Unauthorized request (401). Check that VITE_FRONTEND_CLIENT_SECRET is correctly set and the auth token is valid.');
+  localStorage.removeItem('larasana_auth_token');
       // Unauthorized: Clear tokens and potentially redirect to login
       localStorage.removeItem('larasana_auth_token');
     } else if (status === 403) {
