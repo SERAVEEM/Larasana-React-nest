@@ -87,9 +87,10 @@ export function useProductDetail() {
     let apiId = id;
     if (id.startsWith('grid-')) {
       apiId = id.replace('grid-', '');
-    } else if (id.startsWith('p')) {
-      apiId = id.replace('p', '');
+    } else if (/^p[0-9]/.test(id)) {
+      apiId = id.replace(/^p/, '');
     }
+    console.debug('[ProductDetail] Resolved apiId:', apiId, 'from id:', id);
 
     productService.getProductById(apiId)
       .then((p) => {
@@ -130,17 +131,16 @@ export function useProductDetail() {
     const match = id.match(/^([a-zA-Z_-]*)([0-9]+)$/);
     if (!match) return;
     setDirection('prev');
-    const prefix = match[1];
     const currentNumericId = parseInt(match[2], 10);
     const currentIndex = productList.findIndex((p) => p.id === currentNumericId);
     if (currentIndex === -1) {
       const prevId = Math.max(1, currentNumericId - 1);
-      navigate(`/product/${prefix}${prevId}`);
+      navigate(`/product/${prevId}`);
       return;
     }
     const prevIndex = (currentIndex - 1 + productList.length) % productList.length;
     const prevProduct = productList[prevIndex];
-    navigate(`/product/${prefix}${prevProduct.id}`);
+    navigate(`/product/${prevProduct.id}`);
   };
 
   const handleNextProduct = () => {
@@ -148,17 +148,16 @@ export function useProductDetail() {
     const match = id.match(/^([a-zA-Z_-]*)([0-9]+)$/);
     if (!match) return;
     setDirection('next');
-    const prefix = match[1];
     const currentNumericId = parseInt(match[2], 10);
     const currentIndex = productList.findIndex((p) => p.id === currentNumericId);
     if (currentIndex === -1) {
       const nextId = currentNumericId + 1;
-      navigate(`/product/${prefix}${nextId}`);
+      navigate(`/product/${nextId}`);
       return;
     }
     const nextIndex = (currentIndex + 1) % productList.length;
     const nextProduct = productList[nextIndex];
-    navigate(`/product/${prefix}${nextProduct.id}`);
+    navigate(`/product/${nextProduct.id}`);
   };
 
   const handleBack = () => {
