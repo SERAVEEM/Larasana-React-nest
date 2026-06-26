@@ -33,6 +33,8 @@ export class MidtransService {
   private readonly logger = new Logger(MidtransService.name);
 
   get isMockMode(): boolean {
+    // Explicit override: set MIDTRANS_MOCK=true in .env to skip real API calls
+    if (process.env.MIDTRANS_MOCK === 'true') return true;
     const key = this.serverKey;
     return (
       !key ||

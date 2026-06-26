@@ -14,7 +14,7 @@ export default function AdminRoute({ children }: AdminRouteProps) {
     return <Navigate to="/login" replace />;
   }
 
-  let user: { role?: string } | null = null;
+  let user: { role?: string };
   try {
     user = JSON.parse(userStr);
   } catch (e) {

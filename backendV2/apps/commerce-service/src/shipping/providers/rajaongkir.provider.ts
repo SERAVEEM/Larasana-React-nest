@@ -124,8 +124,9 @@ export class RajaOngkirProvider implements ShippingProvider {
         courier: courierCode
       });
 
+      const timeoutMs = Number(process.env.RAJAONGKIR_TIMEOUT_MS ?? '10000');
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
       const response = await fetch('https://api.rajaongkir.com/starter/cost', {
         method: 'POST',
@@ -185,8 +186,9 @@ export class RajaOngkirProvider implements ShippingProvider {
       const cached = await this.cacheManager.get<any[]>(cacheKey);
       if (cached) return cached;
 
+      const timeoutMs = Number(process.env.RAJAONGKIR_TIMEOUT_MS ?? '10000');
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
       const response = await fetch('https://api.rajaongkir.com/starter/city', {
         headers: { 'key': apiKey },
