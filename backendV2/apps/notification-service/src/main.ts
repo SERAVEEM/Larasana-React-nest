@@ -16,7 +16,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsToRpcFilter());
   await app.startAllMicroservices();
   
-  const port = process.env.PORT || 4003;
+  const port = process.env.NOTIFICATION_SERVICE_HTTP_PORT || 4003;
   await app.listen(port);
   console.log(`📧 Notification Service running (TCP :3003, HTTP :${port})`);
 }
