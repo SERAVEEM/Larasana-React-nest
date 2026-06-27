@@ -59,6 +59,11 @@ async function bootstrap() {
       return next();
     }
 
+    //  Allow Health Checks
+    if (req.path === '/health' || req.path === '/api/v1/health') {
+      return next();
+    }
+
     //  Validate Client Secret Key
     const expectedKey = process.env.FRONTEND_CLIENT_SECRET;
     if (!expectedKey) {
