@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api/v1' : 'http://localhost:3000/api/v1');
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 const CLIENT_SECRET = import.meta.env.VITE_FRONTEND_CLIENT_SECRET || '';
 if (!CLIENT_SECRET) {
@@ -16,9 +16,9 @@ export const client = axios.create({
   timeout: 10000, // 10 seconds timeout
 });
 
-// Request interceptor to automatically attach authorization tokens
 client.interceptors.request.use(
   (config) => {
+    console.debug('[Larasana API Request]', config.method?.toUpperCase(), (config.baseURL || '') + config.url);
     const token = localStorage.getItem('larasana_auth_token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
