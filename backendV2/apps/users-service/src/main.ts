@@ -13,7 +13,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsToRpcFilter());
   await app.startAllMicroservices();
   
-  const port = process.env.PORT || 4001;
+  const port = process.env.USERS_SERVICE_HTTP_PORT || 4001;
   await app.listen(port);
   console.log(`👤 users-service running (TCP :3001, HTTP :${port})`);
 }
