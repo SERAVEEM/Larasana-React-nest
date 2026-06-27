@@ -8,4 +8,4 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-CMD ["node", "dist/api-gateway/apps/api-gateway/src/main.js"]
+CMD ["npm", "run", "start:prod"]
