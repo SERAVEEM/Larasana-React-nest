@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api/v1' : 'http://localhost:3000/api/v1');
+
 const CLIENT_SECRET = import.meta.env.VITE_FRONTEND_CLIENT_SECRET || '';
 if (!CLIENT_SECRET) {
   console.warn('[Larasana] VITE_FRONTEND_CLIENT_SECRET is not set. API requests may fail due to missing x-larasana-client-key header.');
