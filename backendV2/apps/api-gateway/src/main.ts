@@ -64,6 +64,11 @@ async function bootstrap() {
       return next();
     }
 
+    //  Allow public product catalog (no auth needed to browse products)
+    if (req.path === '/api/v1/products' || req.path.match(/^\/api\/v1\/products\/[^/]+$/)) {
+      return next();
+    }
+
     //  Validate Client Secret Key
     const expectedKey = process.env.FRONTEND_CLIENT_SECRET;
     if (!expectedKey) {

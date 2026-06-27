@@ -93,12 +93,13 @@ export default function HeroShowcase() {
   // 5. Scroll triggers
   useEffect(() => {
     let active = true;
+    const fallbackImages = [farLeftImg, leftImg, midImg, rightImg, farRightImg];
     productService.getPublicProducts()
       .then((items) => {
         if (active) {
-          const formatted = items.map((p) => ({
+          const formatted = items.map((p, idx) => ({
             id: `grid-${p.id}`,
-            image: p.image || '/images/product/far left.png',
+            image: p.image || fallbackImages[idx % fallbackImages.length],
             name: p.name,
             price: p.price,
             rating: p.averageRating.toFixed(1),
