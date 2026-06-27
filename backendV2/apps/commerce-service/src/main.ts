@@ -14,7 +14,7 @@ async function bootstrap() {
   await app.startAllMicroservices();
   
   const port = process.env.COMMERCE_SERVICE_HTTP_PORT || 4002;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`🛍️ commerce-service running (TCP :3002, HTTP :${port})`);
 }
 bootstrap();
