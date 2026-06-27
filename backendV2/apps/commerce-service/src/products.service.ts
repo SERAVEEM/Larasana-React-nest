@@ -10,7 +10,9 @@ export class ProductsService {
   async findAll(query: { search?: string; page?: number; limit?: number }) {
     const { search, page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
-    const where = search ? { name: Like(`%${search}%`), isActive: true } : { isActive: true };
+    // Note: no isActive filter — we show all products that exist
+    // (isActive is managed per-product via admin panel)
+    const where: any = search ? { name: Like(`%${search}%`) } : {};
 
     const [data, total] = await this.productRepo.findAndCount({
       where, relations: ['images'], order: { createdAt: 'DESC' }, skip, take: limit,
