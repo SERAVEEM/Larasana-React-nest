@@ -21,9 +21,17 @@ export class ProductsService {
   async findById(productId: number) {
     const product = await this.productRepo.findOne({
       where: { id: productId, isActive: true },
-      relations: ['images', 'seller'],
+      relations: ['images'],
     });
-    if (!product) throw new NotFoundException('Produk tidak ditemukan');
+    if (!product) {
+      // Try without isActive filter in case product exists but flag isn't set
+      const fallback = await this.productRepo.findOne({
+        where: { id: productId },
+        relations: ['images'],
+      });
+      if (!fallback) throw new NotFoundException('Produk tidak ditemukan');
+      return fallback;
+    }
     return product;
   }
 

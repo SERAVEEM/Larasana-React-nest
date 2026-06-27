@@ -17,8 +17,19 @@ export class ProductService extends BaseService {
   async getProductById(id: string): Promise<Product | undefined> {
     const numericId = parseInt(id.replace(/\D/g, ''));
     if (isNaN(numericId)) return undefined;
-    const rawProduct = await this.get<any>(`/products/${numericId}`);
-    if (!rawProduct) return undefined;
+    let rawProduct: any;
+    try {
+      rawProduct = await this.get<any>(`/products/${numericId}`);
+    } catch (err: any) {
+      // 404 or other HTTP errors — product not found or unavailable
+      console.warn(`[ProductService] /products/${numericId} returned error:`, err?.response?.status, err?.message);
+      return undefined;
+    }
+    // Guard: ensure the response is a real product object (not an error payload like { statusCode, message })
+    if (!rawProduct || rawProduct.id == null || typeof rawProduct.id === 'object') {
+      console.warn('[ProductService] Unexpected response shape from /products/' + numericId + ':', JSON.stringify(rawProduct)?.substring(0, 200));
+      return undefined;
+    }
     return Product.fromRaw(rawProduct);
   }
 
