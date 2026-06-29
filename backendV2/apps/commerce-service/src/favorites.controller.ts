@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseFilters } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { FavoritesService } from './favorites.service';
-import { FAVORITES_PATTERNS } from '../../../libs/shared/src';
+import { FAVORITES_PATTERNS, AllExceptionsToRpcFilter } from '../../../libs/shared/src';
 
+@UseFilters(AllExceptionsToRpcFilter)
 @Controller()
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}

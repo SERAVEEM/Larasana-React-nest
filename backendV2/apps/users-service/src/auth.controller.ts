@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseFilters } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import { AUTH_PATTERNS } from '../../../libs/shared/src';
+import { AUTH_PATTERNS, AllExceptionsToRpcFilter } from '../../../libs/shared/src';
 
+@UseFilters(AllExceptionsToRpcFilter)
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

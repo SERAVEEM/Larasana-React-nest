@@ -85,6 +85,9 @@ export default function CheckoutPage() {
                 {/* Payment Card */}
                 <div className="skeleton-shimmer" style={{ height: '7rem', borderRadius: '20px' }} />
 
+                {/* Payment Card */}
+                <div className="skeleton-shimmer" style={{ height: '7rem', borderRadius: '20px' }} />
+
                 {/* Summary Card */}
                 <div className="skeleton-shimmer" style={{ height: '9.5rem', borderRadius: '20px' }} />
 
@@ -107,7 +110,7 @@ export default function CheckoutPage() {
       </Helmet>
       <div className="co-header-space" />
       <div className="co-container">
-        
+
         {/* Back Button */}
         <button className="co-back-button" onClick={handleBack} aria-label="Go back">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -116,14 +119,14 @@ export default function CheckoutPage() {
         </button>
 
         <div className="co-content-grid">
-          
+
           {/* Left Column: Product Image */}
           <div className="co-image-column">
             <div className="co-image-card">
-              <img 
-                src={product.images[0]} 
-                alt={product.name} 
-                className="co-product-img" 
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                className="co-product-img"
                 loading="eager"
                 {...({ fetchPriority: 'high' } as any)}
               />
@@ -132,7 +135,7 @@ export default function CheckoutPage() {
 
           {/* Right Column: Checkout Details */}
           <div className="co-details-column">
-            
+
             {/* Title Block */}
             <div className="co-title-row">
               <div>
@@ -209,8 +212,8 @@ export default function CheckoutPage() {
             />
 
             {/* Checkout Action Button */}
-            <button 
-              className="co-checkout-btn" 
+            <button
+              className="co-checkout-btn"
               onClick={handleCheckout}
               disabled={checkoutState !== 'idle'}
               style={{

@@ -6,10 +6,10 @@ export { Product } from '../core/domain/models/Product';
 export { Order, OrderItem } from '../core/domain/models/Order';
 
 export interface DashboardStats {
-  users: { total: number; buyers: number; sellers: number };
-  orders: { total: number; pending: number };
-  products: { total: number };
-  revenue: { total: number };
+  users: { total: number; buyers: number; sellers: number; change?: string };
+  orders: { total: number; pending: number; change?: string };
+  products: { total: number; change?: string };
+  revenue: { total: number; change?: string };
 }
 
 // Helper format function for currency

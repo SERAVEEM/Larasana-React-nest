@@ -33,9 +33,21 @@ export class RpcExceptionFilter implements ExceptionFilter {
     // 2. RPC error from microservice
     //    Shape: { status: "error", message: string | { statusCode, message, error } }
     //    The `message` field may be:
+    //      - A JSON string containing { statusCode, message, error }
     //      - A string (generic errors)
     //      - An object with { statusCode, message, error } (our custom filter payload)
-    const payload = exception?.message;
+    let payload = exception?.message;
+
+    if (typeof payload === 'string') {
+      try {
+        const parsed = JSON.parse(payload);
+        if (parsed && typeof parsed === 'object' && typeof parsed.statusCode === 'number') {
+          payload = parsed;
+        }
+      } catch (err) {
+        // Not a JSON string, leave as string
+      }
+    }
 
     // If payload is an object with statusCode, use that
     if (payload && typeof payload === 'object' && typeof payload.statusCode === 'number') {

@@ -300,7 +300,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password_hash`, `role`, `is_email_verified`, `is_active`, `avatar_url`, `phone`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Admin Larasana', 'admin@larasana.id', '$2b$12$KIXq3G1eG0uvGj.fz3o5fO7J9BQZS5Bl7ZqkbGkCpV7XcA1QbV9m', 'admin', 1, 1, NULL, NULL, '2026-05-03 01:09:24', '2026-05-03 01:09:24', NULL);
+(1, 'Admin Larasana', 'admin@larasana.id', '$2a$12$OOA8cO8aoKAuAS.Q8CGwweTxgxNBfQ5vTyJxcosgldZ9qL8AQ96d2', 'admin', 1, 1, NULL, NULL, '2026-05-03 01:09:24', '2026-05-03 01:09:24', NULL);
 
 --
 -- Indexes for dumped tables

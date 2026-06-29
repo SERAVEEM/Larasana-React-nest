@@ -30,35 +30,72 @@ export class AdminService {
     private readonly productRepo: Repository<Product>,
   ) {}
 
-  // ── DASHBOARD STATS ────────────────────────────────────────
   async getDashboardStats() {
-    const [
-      totalUsers,
-      totalBuyers,
-      totalSellers,
-      totalOrders,
-      pendingOrders,
-      totalProducts,
-      totalRevenue,
-    ] = await Promise.all([
-      this.userRepo.count({ where: { isActive: true } }),
-      this.userRepo.count({ where: { role: 'buyer', isActive: true } }),
-      this.userRepo.count({ where: { role: 'seller', isActive: true } }),
-      this.orderRepo.count(),
-      this.orderRepo.count({ where: { status: 'pending' } }),
-      this.productRepo.count({ where: { isActive: true } }),
-      this.paymentRepo
-        .createQueryBuilder('p')
-        .select('SUM(p.amount)', 'total')
-        .where('p.status = :status', { status: 'paid' })
-        .getRawOne(),
-    ]);
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+    const totalUsers = await this.userRepo.count({ where: { isActive: true } });
+    const totalBuyers = await this.userRepo.count({ where: { role: 'buyer', isActive: true } });
+    const totalSellers = await this.userRepo.count({ where: { role: 'seller', isActive: true } });
+    const totalOrders = await this.orderRepo.count();
+    const pendingOrders = await this.orderRepo.count({ where: { status: 'pending' } });
+    const totalProducts = await this.productRepo.count({ where: { isActive: true } });
+    const totalRevenueObj = await this.paymentRepo
+      .createQueryBuilder('p')
+      .select('SUM(p.amount)', 'total')
+      .where('p.status = :status', { status: 'paid' })
+      .getRawOne();
+    const totalRevenue = Number(totalRevenueObj?.total ?? 0);
+
+    // Weekly change calculations
+    const usersCurrent = await this.userRepo.createQueryBuilder('u')
+      .where('u.createdAt >= :sevenDaysAgo AND u.isActive = 1', { sevenDaysAgo })
+      .getCount();
+    const usersPrevious = await this.userRepo.createQueryBuilder('u')
+      .where('u.createdAt >= :fourteenDaysAgo AND u.createdAt < :sevenDaysAgo AND u.isActive = 1', { fourteenDaysAgo, sevenDaysAgo })
+      .getCount();
+
+    const ordersCurrent = await this.orderRepo.createQueryBuilder('o')
+      .where('o.createdAt >= :sevenDaysAgo', { sevenDaysAgo })
+      .getCount();
+    const ordersPrevious = await this.orderRepo.createQueryBuilder('o')
+      .where('o.createdAt >= :fourteenDaysAgo AND o.createdAt < :sevenDaysAgo', { fourteenDaysAgo, sevenDaysAgo })
+      .getCount();
+
+    const revenueCurrentObj = await this.paymentRepo.createQueryBuilder('p')
+      .select('SUM(p.amount)', 'total')
+      .where('p.status = :status AND p.createdAt >= :sevenDaysAgo', { status: 'paid', sevenDaysAgo })
+      .getRawOne();
+    const revenueCurrent = Number(revenueCurrentObj?.total ?? 0);
+
+    const revenuePreviousObj = await this.paymentRepo.createQueryBuilder('p')
+      .select('SUM(p.amount)', 'total')
+      .where('p.status = :status AND p.createdAt >= :fourteenDaysAgo AND p.createdAt < :sevenDaysAgo', { status: 'paid', fourteenDaysAgo, sevenDaysAgo })
+      .getRawOne();
+    const revenuePrevious = Number(revenuePreviousObj?.total ?? 0);
+
+    const productsNew = await this.productRepo.createQueryBuilder('prod')
+      .where('prod.createdAt >= :sevenDaysAgo AND prod.isActive = 1', { sevenDaysAgo })
+      .getCount();
+
+    const calculatePercentageChange = (curr: number, prev: number) => {
+      if (prev === 0) return curr > 0 ? '+100% from last week' : '0% from last week';
+      const pct = ((curr - prev) / prev) * 100;
+      const sign = pct >= 0 ? '+' : '';
+      return `${sign}${pct.toFixed(0)}% from last week`;
+    };
+
+    const revenueChange = calculatePercentageChange(revenueCurrent, revenuePrevious);
+    const ordersChange = calculatePercentageChange(ordersCurrent, ordersPrevious);
+    const customersChange = calculatePercentageChange(usersCurrent, usersPrevious);
+    const productsChange = productsNew > 0 ? `+${productsNew} new products this week` : 'Steady inventory';
 
     return {
-      users: { total: totalUsers, buyers: totalBuyers, sellers: totalSellers },
-      orders: { total: totalOrders, pending: pendingOrders },
-      products: { total: totalProducts },
-      revenue: { total: Number(totalRevenue?.total ?? 0) },
+      users: { total: totalUsers, buyers: totalBuyers, sellers: totalSellers, change: customersChange },
+      orders: { total: totalOrders, pending: pendingOrders, change: ordersChange },
+      products: { total: totalProducts, change: productsChange },
+      revenue: { total: totalRevenue, change: revenueChange },
     };
   }
 

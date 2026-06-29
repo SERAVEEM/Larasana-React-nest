@@ -24,7 +24,11 @@ export default function LoginPage() {
       const res = await client.post('/auth/login', { email, password });
       localStorage.setItem('larasana_auth_token', res.data.tokens.accessToken);
       localStorage.setItem('larasana_user', JSON.stringify(res.data.user));
-      navigate('/');
+      if (res.data.user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err: any) {
       const errMsg = err.response?.data?.message || 'Email atau password salah';
       setError(Array.isArray(errMsg) ? errMsg[0] : errMsg);
@@ -40,7 +44,11 @@ export default function LoginPage() {
       const res = await client.post('/auth/google', { idToken: response.credential });
       localStorage.setItem('larasana_auth_token', res.data.tokens.accessToken);
       localStorage.setItem('larasana_user', JSON.stringify(res.data.user));
-      navigate('/');
+      if (res.data.user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err: any) {
       const errMsg = err.response?.data?.message || 'Google login failed, please try again.';
       setError(Array.isArray(errMsg) ? errMsg[0] : errMsg);

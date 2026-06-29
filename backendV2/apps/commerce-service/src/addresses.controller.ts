@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseFilters } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AddressesService } from './addresses.service';
-import { ADDRESSES_PATTERNS } from '../../../libs/shared/src';
+import { ADDRESSES_PATTERNS, AllExceptionsToRpcFilter } from '../../../libs/shared/src';
 
+@UseFilters(AllExceptionsToRpcFilter)
 @Controller()
 export class AddressesController {
   constructor(private readonly addressesService: AddressesService) {}

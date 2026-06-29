@@ -76,6 +76,22 @@ export function useAdminDashboard() {
     return stats?.users?.total ?? 0;
   }, [stats]);
 
+  const revenueChange = useMemo(() => {
+    return stats?.revenue?.change ?? '0% from last week';
+  }, [stats]);
+
+  const ordersChange = useMemo(() => {
+    return stats?.orders?.change ?? '0% from last week';
+  }, [stats]);
+
+  const productsChange = useMemo(() => {
+    return stats?.products?.change ?? 'Steady inventory';
+  }, [stats]);
+
+  const customersChange = useMemo(() => {
+    return stats?.users?.change ?? '0% from last week';
+  }, [stats]);
+
   // Best selling products based on DB sales
   const bestProducts = useMemo(() => {
     return [...products]
@@ -214,6 +230,10 @@ export function useAdminDashboard() {
     totalProductCount,
     totalCustomers,
     bestProducts,
-    graphData
+    graphData,
+    revenueChange,
+    ordersChange,
+    productsChange,
+    customersChange
   };
 }

@@ -15,8 +15,32 @@ export default function AdminDashboard() {
     totalProductCount,
     totalCustomers,
     bestProducts,
-    graphData
+    graphData,
+    revenueChange,
+    ordersChange,
+    productsChange,
+    customersChange
   } = useAdminDashboard();
+
+  const renderTrendIcon = (change: string) => {
+    if (change.startsWith('+')) {
+      return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px' }}>
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+          <polyline points="17 6 23 6 23 12" />
+        </svg>
+      );
+    }
+    if (change.startsWith('-')) {
+      return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', transform: 'scaleY(-1)' }}>
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+          <polyline points="17 6 23 6 23 12" />
+        </svg>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="admin-container">
@@ -64,11 +88,8 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="admin-metric-change">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-              <polyline points="17 6 23 6 23 12" />
-            </svg>
-            +20% from last week
+            {renderTrendIcon(revenueChange)}
+            {revenueChange}
           </div>
         </div>
 
@@ -95,11 +116,8 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="admin-metric-change">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-              <polyline points="17 6 23 6 23 12" />
-            </svg>
-            +7% from last week
+            {renderTrendIcon(ordersChange)}
+            {ordersChange}
           </div>
         </div>
 
@@ -125,7 +143,7 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="admin-metric-change" style={{ color: '#aaa' }}>
-            Steady inventory
+            {productsChange}
           </div>
         </div>
 
@@ -151,11 +169,8 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="admin-metric-change">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-              <polyline points="17 6 23 6 23 12" />
-            </svg>
-            +9% from last week
+            {renderTrendIcon(customersChange)}
+            {customersChange}
           </div>
         </div>
       </div>

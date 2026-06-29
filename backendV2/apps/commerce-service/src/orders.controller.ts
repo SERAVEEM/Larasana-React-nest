@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseFilters } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { OrdersService } from './orders.service';
-import { ORDERS_PATTERNS } from '../../../libs/shared/src';
+import { ORDERS_PATTERNS, AllExceptionsToRpcFilter } from '../../../libs/shared/src';
 
+@UseFilters(AllExceptionsToRpcFilter)
 @Controller()
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}

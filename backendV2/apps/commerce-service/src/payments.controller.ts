@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseFilters } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { PaymentsService } from './payments.service';
-import { PAYMENTS_PATTERNS } from '../../../libs/shared/src';
+import { PAYMENTS_PATTERNS, AllExceptionsToRpcFilter } from '../../../libs/shared/src';
 
+@UseFilters(AllExceptionsToRpcFilter)
 @Controller()
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) { }

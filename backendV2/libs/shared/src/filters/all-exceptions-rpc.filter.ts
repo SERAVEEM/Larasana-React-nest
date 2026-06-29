@@ -28,18 +28,18 @@ export class AllExceptionsToRpcFilter extends BaseRpcExceptionFilter {
           ? response
           : (response as any)?.message ?? exception.message;
 
-      return throwError(() => new RpcException({
+      return throwError(() => new RpcException(JSON.stringify({
         statusCode: status,
         message,
         error: HttpStatus[status] ?? 'Error',
-      }));
+      })));
     }
 
     // Generic / unknown error
-    return throwError(() => new RpcException({
+    return throwError(() => new RpcException(JSON.stringify({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       message: exception?.message ?? 'Internal server error',
       error: 'Internal Server Error',
-    }));
+    })));
   }
 }

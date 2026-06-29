@@ -1,8 +1,9 @@
-import { Controller, Logger } from '@nestjs/common';
+import { Controller, Logger, UseFilters } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { UPLOAD_PATTERNS } from '../../../libs/shared/src';
+import { UPLOAD_PATTERNS, AllExceptionsToRpcFilter } from '../../../libs/shared/src';
 import { R2Service } from './r2.service';
 
+@UseFilters(AllExceptionsToRpcFilter)
 @Controller()
 export class UploadController {
   private readonly logger = new Logger(UploadController.name);
