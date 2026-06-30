@@ -34,6 +34,15 @@ This document serves as the comprehensive technical manual detailing the system 
 
 Beyond standard e-commerce features, LARASANA weaves a rich narrative layer around each garment (Artisan Storytelling) and highlights the ecological and socio-economic impact (Eco-Social Impact) of the purchase. Every thread tells a story of heritage, and every transaction directly supports the native artisan communities of Lombok, Indonesia, ensuring that their century-old craft survives and thrives in the global marketplace.
 
+### Fitur Utama (Key Features)
+* **Premium E-Commerce Platform**: Penjelajahan katalog produk, manajemen keranjang belanja, checkout, dan manajemen status pesanan.
+* **Artisan Storytelling & Narrative Layers**: Kisah di balik setiap kain tenun Lombok dan profil perajin lokal untuk melestarikan warisan budaya.
+* **Integrasi Gateway Pembayaran (Midtrans)**: Mendukung transaksi aman via QRIS, Virtual Account (BCA, BNI, BRI, Mandiri), dan e-wallet.
+* **Integrasi Kurir Logistik & Shipping Rates**: Kalkulasi tarif pengiriman real-time dari Biteship, RajaOngkir (domestik), dan EasyPost (internasional).
+* **Real-time Status Streaming (SSE)**: Pelacakan status pembayaran pesanan secara langsung via Server-Sent Events (SSE) dengan fallback polling otomatis.
+* **Admin Dashboard & Management**: Dashboard untuk memantau metrik penjualan, manajemen produk, manajemen stok, dan pemrosesan pesanan.
+* **Autentikasi & Keamanan Ganda**: Menggunakan JWT Access/Refresh Token, login Google OAuth (SSO), rate limiting, dan client secret validation.
+
 ### Brand Identity & Creative Direction
 The user interface is designed with a premium, high-contrast visual aesthetic utilizing high-fidelity motion graphics, immersive typography, and staggered layouts to evoke a luxury fashion house experience.
 
@@ -451,7 +460,50 @@ VITE_FRONTEND_CLIENT_SECRET="your_client_secret_placeholder"
 
 ---
 
-### B. Production Environment Variables (Railway & Vercel)
+### B. Cara Menjalankan Aplikasi Secara Lokal (Running the Application Locally)
+
+#### 1. Persyaratan Sistem
+* Node.js (versi v18 atau terbaru)
+* MySQL Database Server
+* npm (Node Package Manager)
+
+#### 2. Setup Database
+1. Buat database baru di MySQL dengan nama `larasana_db`.
+2. Impor struktur dan data awal menggunakan file SQL yang disediakan di backend:
+   ```bash
+   mysql -u username -p larasana_db < backendV2/larasana_db.sql
+   ```
+
+#### 3. Konfigurasi Environment (`.env`)
+1. Salin template konfigurasi dan sesuaikan nilai variabelnya sesuai dengan petunjuk pada bagian **Environment Configuration** di atas.
+   * Buat file `backendV2/.env`
+   * Buat file `frontend/.env.development`
+
+#### 4. Menjalankan Backend (NestJS Microservices)
+Masuk ke direktori `backendV2`, instal dependensi, lalu jalankan semua service secara konkuren:
+```bash
+cd backendV2
+npm install
+npm run dev
+```
+Perintah `npm run dev` akan menjalankan API Gateway dan 3 microservices secara bersamaan di port berikut:
+* **API Gateway**: Port 3000
+* **Users Service**: Port 3001
+* **Commerce Service**: Port 3002
+* **Notification Service**: Port 3003
+
+#### 5. Menjalankan Frontend (React SPA)
+Buka terminal baru, masuk ke direktori `frontend`, instal dependensi, lalu jalankan development server:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Frontend akan berjalan di `http://localhost:5173`.
+
+---
+
+### C. Production Environment Variables (Railway & Vercel)
 When deploying to live servers, configure these variables directly in your cloud dashboard settings.
 
 #### 1. Backend (Railway Service Variables)
